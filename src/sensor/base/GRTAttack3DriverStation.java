@@ -55,17 +55,18 @@ public class GRTAttack3DriverStation extends GRTDriverStation
     }
 
     public void buttonPressed(ButtonEvent e) {
-		if(e.getButtonID() == GRTAttack3Joystick.KEY_BUTTON_1 && e.getSource() == left){
-            notifyListeners(KEY_LEFT_SHIFT, ShiftEvent.KEY_SHIFT_UP);
-            notifyListeners(KEY_RIGHT_SHIFT, ShiftEvent.KEY_SHIFT_UP);
-
-        } else if (e.getButtonID() == GRTAttack3Joystick.KEY_BUTTON_1 && e.getSource() == right){
+	//When either trigger is held, shift down while triggers held
+	if( e.getButtonID() == GRTAttack3Joystick.KEY_BUTTON_1 ){
             notifyListeners(KEY_LEFT_SHIFT, ShiftEvent.KEY_SHIFT_DOWN);
             notifyListeners(KEY_RIGHT_SHIFT, ShiftEvent.KEY_SHIFT_DOWN);
-
         }
     }
 
     public void buttonReleased(ButtonEvent e) {
+	//When either trigger is released, shift back up
+	if( e.getButtonID() == GRTAttack3Joystick.KEY_BUTTON_1 ){
+            notifyListeners(KEY_LEFT_SHIFT, ShiftEvent.KEY_SHIFT_UP);
+            notifyListeners(KEY_RIGHT_SHIFT, ShiftEvent.KEY_SHIFT_UP);
+	}
     }
 }
