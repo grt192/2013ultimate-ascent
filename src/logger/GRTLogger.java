@@ -1,6 +1,5 @@
 package logger;
 
-import com.sun.squawk.microedition.io.FileConnection;
 import edu.wpi.first.wpilibj.DriverStationLCD;
 import edu.wpi.first.wpilibj.Timer;
 import java.io.IOException;
@@ -22,23 +21,22 @@ public final class GRTLogger {
 
     private static final DriverStationLCD dash =
             DriverStationLCD.getInstance();
-    //PREFIXES: Prefix to every message of the three categories
-    private static final String LOG_INFO_PREFIX = "[INFO]:";
-    private static final String LOG_ERROR_PREFIX = "[ERROR]:";
-    private static final String LOG_SUCCESS_PREFIX = "[SUCCESS]";
+    private static final int LOGTYPE_INFO = 0;
+    private static final int LOGTYPE_ERROR = 1;
+    private static final int LOGTYPE_SUCCESS = 2;
     //RPC Keys for the three kinds of log messages
-    private static final int LOG_INFO_KEY = 100;
-    private static final int LOG_ERROR_KEY = 101;
-    private static final int LOG_SUCCESS_KEY = 102;
+    private static final int[] KEY = {100, 101, 102};
+    //Prefixes for the three kinds of log messages
+    private static final String[] PREFIX = {"[INFO]:", "[ERROR]:", "[SUCCESS]:"};
     private static final Vector dsBuffer = new Vector();
     private static Vector logReceivers = new Vector();
     private static boolean rpcEnabled = false;
     private static final String NEWLINE = System.getProperty("line.separator");
     
     private static boolean fileLogging = false;
-    private static String[] loggingFileNames;     //File to which we log our output.
-    private static FileConnection[] fileConnections;
+    private static String[] loggingFileNames;     //Files to which we log our output.
     private static OutputStreamWriter[] fileWriters;
+    //indices of logfiles
     public static final int FILE_INFO_LOG = 0;
     public static final int FILE_ERROR_LOG = 1;
     public static final int FILE_SUCCESS_LOG = 2;
@@ -87,8 +85,10 @@ public final class GRTLogger {
 
     /**
      * File paths to log to.
+     * The first filepath is the info logfile, second filepath is error
+     * logfile, third filepath is successes, fourth is a consolidation of all.
      *
-     * @param filenames absolute file paths, e.g.
+     * @param filenames array of absolute file paths, e.g.
      * "/logging/info_081912-001253.txt"
      */
     public static void setLoggingFiles(String[] filenames) {
@@ -103,17 +103,88 @@ public final class GRTLogger {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-        if (fileConnections != null)
-            for (int i = 0; i < fileConnections.length; i++)
-                if (fileConnections[i] != null)
-                    try {
-                        fileConnections[i].close();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
         
-        fileConnections = new FileConnection[filenames.length];
         fileWriters = new OutputStreamWriter[filenames.length];
+    }
+
+    /**
+     * Log a general message.
+     *
+     * @param data message to log.
+     */
+    public static void logInfo(String data) {
+        log(data, LOGTYPE_INFO);
+    }
+
+    /**
+     * Log an error message.
+     *
+     * @param data message to log.
+     */
+    public static void logError(String data) {
+        log(data, LOGTYPE_ERROR);
+    }
+
+    /**
+     * Log a success message.
+     *
+     * @param data message to log.
+     */
+    public static void logSuccess(String data) {
+        log(data, LOGTYPE_SUCCESS);
+    }
+    
+    private static void log(String data, int logtype) {
+        String message = elapsedTime() + " " + PREFIX[logtype] + data;
+        System.out.println(message);
+
+        if (rpcEnabled) {
+            RPCMessage e = new RPCMessage(KEY[logtype], message);
+            for (Enumeration en = logReceivers.elements(); en.hasMoreElements();)
+                ((RPCConnection) en.nextElement()).send(e);
+        }
+        if (fileLogging) {
+            int fileNum = FILE_INFO_LOG;
+            if (logtype == LOGTYPE_ERROR)
+                fileNum = FILE_ERROR_LOG;
+            else if (logtype == LOGTYPE_SUCCESS)
+                fileNum = FILE_SUCCESS_LOG;
+            
+            logLineToFile(message, fileNum);
+            logLineToFile(message, FILE_CONSOLIDATED_LOG);
+        }
+    }
+
+    /**
+     * Logs a general message, and displays it on the driver station.
+     *
+     * @param data message to log
+     */
+    public static void dsLogInfo(String data) {
+        dsLog(data, LOGTYPE_INFO);
+    }
+    
+    /**
+     * Logs an error message, and displays it on the driver station.
+     *
+     * @param data message to log
+     */
+    public static void dsLogError(String data) {
+        dsLog(data, LOGTYPE_ERROR);
+    }
+
+    /**
+     * Logs a success message, and displays it on the driver station.
+     *
+     * @param data message to log
+     */
+    public static void dsLogSuccess(String data) {
+        dsLog(data, LOGTYPE_SUCCESS);
+    }
+    
+    private static void dsLog(String data, int logtype) {
+        dsPrintln(PREFIX[logtype] + data);
+        log(data, logtype);
     }
 
     private static void logLineToFile(String message, int fileDescriptor) {
@@ -124,16 +195,12 @@ public final class GRTLogger {
          */
         String url = "file://" + loggingFileNames[fileDescriptor];
         message += NEWLINE;
-        
+
         //if connection and writer not already created, open one
-        if (fileConnections[fileDescriptor] == null ||
-                !fileConnections[fileDescriptor].isOpen())
+        if (fileWriters[fileDescriptor] == null)
             try {
-                fileConnections[fileDescriptor] =
-                        (FileConnection) Connector.open(url);
-                fileConnections[fileDescriptor].create();
                 fileWriters[fileDescriptor] = new OutputStreamWriter(
-                        fileConnections[fileDescriptor].openOutputStream());
+                        Connector.openOutputStream(url));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -145,96 +212,6 @@ public final class GRTLogger {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    /**
-     * Log a general message.
-     *
-     * @param data message to log.
-     */
-    public static void logInfo(String data) {
-        String message = elapsedTime() + " " + LOG_INFO_PREFIX + data;
-        System.out.println(message);
-
-        if (rpcEnabled) {
-            RPCMessage e = new RPCMessage(LOG_INFO_KEY, message);
-            for (Enumeration en = logReceivers.elements(); en.hasMoreElements();)
-                ((RPCConnection) en.nextElement()).send(e);
-        }
-        if (fileLogging) {
-            logLineToFile(message, FILE_INFO_LOG);
-            logLineToFile(message, FILE_CONSOLIDATED_LOG);
-        }
-    }
-
-    /**
-     * Logs a general message, and displays it on the driver station.
-     *
-     * @param data message to log
-     */
-    public static void dsLogInfo(String data) {
-        dsPrintln(LOG_INFO_PREFIX + data);
-        logInfo(data);
-    }
-
-    /**
-     * Log an error message.
-     *
-     * @param data message to log.
-     */
-    public static void logError(String data) {
-        String message = elapsedTime() + " " + LOG_ERROR_PREFIX + data;
-        System.out.println(message);
-
-        if (rpcEnabled) {
-            RPCMessage e = new RPCMessage(LOG_ERROR_KEY, message);
-            for (Enumeration en = logReceivers.elements(); en.hasMoreElements();)
-                ((RPCConnection) en.nextElement()).send(e);
-        }
-        if (fileLogging) {
-            logLineToFile(message, FILE_ERROR_LOG);
-            logLineToFile(message, FILE_CONSOLIDATED_LOG);
-        }
-    }
-
-    /**
-     * Logs an error message, and displays it on the driver station.
-     *
-     * @param data message to log
-     */
-    public static void dsLogError(String data) {
-        dsPrintln(LOG_ERROR_PREFIX + data);
-        logError(data);
-    }
-
-    /**
-     * Log a success message.
-     *
-     * @param data message to log.
-     */
-    public static void logSuccess(String data) {
-        String message = elapsedTime() + " " + LOG_SUCCESS_PREFIX + data;
-        System.out.println(message);
-
-        if (rpcEnabled) {
-            RPCMessage e = new RPCMessage(LOG_SUCCESS_KEY, message);
-            for (Enumeration en = logReceivers.elements(); en.hasMoreElements();)
-                ((RPCConnection) en.nextElement()).send(e);
-        }
-        if (fileLogging) {
-            logLineToFile(message, FILE_SUCCESS_LOG);
-            logLineToFile(message, FILE_CONSOLIDATED_LOG);
-        }
-    }
-
-    /**
-     * Logs a success message, and displays it on the driver station.
-     *
-     * @param data message to log
-     */
-    public static void dsLogSuccess(String data) {
-        dsPrintln(LOG_ERROR_PREFIX + data);
-        logSuccess(data);
     }
 
     private static String elapsedTime() {
