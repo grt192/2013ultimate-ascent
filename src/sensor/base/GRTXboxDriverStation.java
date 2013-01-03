@@ -15,7 +15,6 @@ public class GRTXboxDriverStation extends GRTDriverStation
         implements XboxJoystickListener, ButtonListener {
 
     private final GRTXBoxJoystick primary;
-    private final GRTXBoxJoystick secondary;
 
     /**
      * Creates a new driver station using XBox controllers.
@@ -25,12 +24,9 @@ public class GRTXboxDriverStation extends GRTDriverStation
      * @param name name of driver station.
      */
     public GRTXboxDriverStation(GRTXBoxJoystick primary,
-            GRTXBoxJoystick secondary,
             String name) {
         super(name);
         this.primary = primary;
-        this.secondary = secondary;
-
     }
 
     protected void startListening() {
