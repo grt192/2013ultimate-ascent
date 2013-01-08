@@ -1,12 +1,17 @@
 package mechanism;
 
+import actuator.GRTSolenoid;
 import actuator.Motor;
+import event.events.EncoderEvent;
+import event.listeners.EncoderListener;
 import logger.GRTLogger;
+import sensor.GRTEncoder;
 
 /**
- * Standard 4 motor drivetrain.
+ * A Drive Train that is capable of
+ * shifting, and has rotary encoders.
  *
- * @author ajc
+ * @author andrew, keshav
  */
 public class GRTDriveTrain {
 
@@ -18,7 +23,15 @@ public class GRTDriveTrain {
     private double leftBackSF = 1;
     private double rightFrontSF = -1;
     private double rightBackSF = -1;
+    
+    private boolean shifting;
+    private GRTSolenoid leftShifter, rightShifter;
+    
+    private boolean hasEncoders;
+    private GRTEncoder leftEncoder, rightEncoder;
 
+    boolean halfPowered = false;    //State variable determining if we run at 1/2 power. 
+    
     /**
      * Constructs a new drivetrain.
      *
@@ -34,7 +47,69 @@ public class GRTDriveTrain {
         this.leftBack = leftBack;
         this.rightFront = rightFront;
         this.rightBack = rightBack;
+        
+        this.shifting = false;
+        this.leftShifter = null;
+        this.rightShifter = null;
+        
+        this.hasEncoders = false;
+        this.leftEncoder = this.rightEncoder = null;
     }
+    
+    public GRTDriveTrain(Motor leftFront, Motor leftBack,
+            Motor rightFront, Motor rightBack,
+            GRTEncoder leftEncoder, GRTEncoder rightEncoder) {
+
+        this.leftFront = leftFront;
+        this.leftBack = leftBack;
+        this.rightFront = rightFront;
+        this.rightBack = rightBack;
+        
+        this.shifting = false;
+        this.leftShifter = null;
+        this.rightShifter = null;
+        
+        this.hasEncoders = true;
+        this.leftEncoder = leftEncoder;
+        this.rightEncoder = rightEncoder;
+    }
+
+    public GRTDriveTrain(Motor leftFront, Motor leftBack,
+            Motor rightFront, Motor rightBack,
+            GRTSolenoid leftShifter, GRTSolenoid rightShifter) {
+
+        this.leftFront = leftFront;
+        this.leftBack = leftBack;
+        this.rightFront = rightFront;
+        this.rightBack = rightBack;
+        
+        this.shifting = true;
+        this.leftShifter = leftShifter;
+        this.rightShifter = rightShifter;
+        
+        this.hasEncoders = false;
+        this.leftEncoder = this.rightEncoder = null;
+    }
+    
+    public GRTDriveTrain(Motor leftFront, Motor leftBack,
+            Motor rightFront, Motor rightBack,
+            GRTSolenoid leftShift, GRTSolenoid rightShift,
+            GRTEncoder leftEncoder, GRTEncoder rightEncoder) {
+        
+        this(leftFront, leftBack, rightFront, rightBack);
+        
+        this.shifting = true;
+        this.leftShifter = leftShift;
+        this.rightShifter = rightShift;
+        
+        this.hasEncoders = true;
+        this.leftEncoder = leftEncoder;
+        this.rightEncoder = rightEncoder;
+    }
+    
+    
+    
+    
 
     /**
      * Depending on robot orientation, drivetrain configuration, controller
@@ -55,18 +130,54 @@ public class GRTDriveTrain {
         this.rightFrontSF = rightFrontSF;
         this.rightBackSF = rightBackSF;
     }
-
+    
     /**
-     * TankDrive uses differential steering.
+     * Set the left and right side speeds of the drivetrain motors
      *
      * @param leftVelocity left drivetrain velocity
      * @param rightVelocity right drivetrain velocity
      */
-    public void tankDrive(double leftVelocity, double rightVelocity) {
-        GRTLogger.logInfo("" + leftVelocity);
+    public void setMotorSpeeds(double leftVelocity, double rightVelocity) {
+        GRTLogger.logInfo("Left: " +  leftVelocity +"\tRight: " + rightVelocity);
         leftFront.setSpeed(leftVelocity * leftFrontSF);
-        leftBack.setSpeed(leftVelocity * leftBackSF);
         rightFront.setSpeed(rightVelocity * rightFrontSF);
-        rightBack.setSpeed(rightVelocity * rightBackSF);
+        
+        //If we're full powered, then command the other two motors as well.
+        if (!halfPowered){
+            leftBack.setSpeed(leftVelocity * leftBackSF);
+            rightBack.setSpeed(rightVelocity * rightBackSF);
+        }
+    }
+    
+    public void setHalfPowered(){
+        halfPowered = true;
+    }
+    
+    public void setFullPowered(){
+        halfPowered = false;
+    }
+    
+    public void shiftUp(){
+        GRTLogger.logInfo("Shifting down? " + shifting);
+        if(shifting){
+            leftShifter.engage(false);
+            rightShifter.engage(false); 
+        }
+    }
+    
+    public void shiftDown(){
+        GRTLogger.logInfo("Shifting down? " + shifting);
+        if(shifting){
+            leftShifter.engage(true);
+            rightShifter.engage(true);
+        }
+    }
+    
+    public GRTEncoder getLeftEncoder(){
+        return leftEncoder;
+    }
+    
+    public GRTEncoder getRightEncoder(){
+        return rightEncoder;
     }
 }

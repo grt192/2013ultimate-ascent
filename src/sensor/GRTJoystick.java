@@ -2,25 +2,26 @@ package sensor;
 
 import core.Sensor;
 import edu.wpi.first.wpilibj.Joystick;
-import event.events.Attack3JoystickEvent;
+import event.events.JoystickEvent;
 import event.events.ButtonEvent;
-import event.listeners.Attack3JoystickListener;
+import event.listeners.GRTJoystickListener;
 import event.listeners.ButtonListener;
 import java.util.Enumeration;
 import java.util.Vector;
+import logger.GRTLogger;
 
 /**
  * Wrapper class for a Logitech Attack 3 Joystick.
  *
  * @author dan
  */
-public class GRTAttack3Joystick extends Sensor {
+public class GRTJoystick extends Sensor {
 
     private final Vector joystickListeners;
     private final Vector buttonListeners;
     private final Joystick joystick;
-    public static final int KEY_BUTTON_0 = 0;
-    public static final int KEY_BUTTON_1 = 1;
+
+    public static final int KEY_BUTTON_TRIGGER = 1;
     public static final int KEY_BUTTON_2 = 2;
     public static final int KEY_BUTTON_3 = 3;
     public static final int KEY_BUTTON_4 = 4;
@@ -45,8 +46,9 @@ public class GRTAttack3Joystick extends Sensor {
      * @param pollTime how often to poll the joystick
      * @param name name of joystick
      */
-    public GRTAttack3Joystick(int channel, int pollTime, String name) {
+    public GRTJoystick(int channel, int pollTime, String name) {
         super(name, pollTime, NUM_DATA);
+        
         joystick = new Joystick(channel);
         joystickListeners = new Vector();
         buttonListeners = new Vector();
@@ -76,25 +78,25 @@ public class GRTAttack3Joystick extends Sensor {
 
         } else { //we are now a joystick
             //only reach here if not a button
-            Attack3JoystickEvent e =
-                    new Attack3JoystickEvent(this, id, newDatum);
+            JoystickEvent e =
+                    new JoystickEvent(this, id, newDatum);
             switch (id) {
                 case (KEY_X):
                     for (Enumeration en = joystickListeners.elements(); en.
                             hasMoreElements();)
-                        ((Attack3JoystickListener) en.nextElement()).XAxisMoved(
+                        ((GRTJoystickListener) en.nextElement()).XAxisMoved(
                                 e);
                     break;
                 case (KEY_Y):
                     for (Enumeration en = joystickListeners.elements(); en.
                             hasMoreElements();)
-                        ((Attack3JoystickListener) en.nextElement()).YAxisMoved(
+                        ((GRTJoystickListener) en.nextElement()).YAxisMoved(
                                 e);
                     break;
                 case (KEY_JOYSTICK_ANGLE):
                     for (Enumeration en = joystickListeners.elements(); en.
                             hasMoreElements();)
-                        ((Attack3JoystickListener) en.nextElement()).
+                        ((GRTJoystickListener) en.nextElement()).
                                 AngleChanged(e);
                     break;
             }
@@ -109,11 +111,11 @@ public class GRTAttack3Joystick extends Sensor {
         buttonListeners.removeElement(b);
     }
 
-    public void addJoystickListener(Attack3JoystickListener l) {
+    public void addJoystickListener(GRTJoystickListener l) {
         joystickListeners.addElement(l);
     }
 
-    public void removeJoystickListener(Attack3JoystickListener l) {
+    public void removeJoystickListener(GRTJoystickListener l) {
         joystickListeners.removeElement(l);
     }
 }

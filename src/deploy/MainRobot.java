@@ -3,18 +3,14 @@ package deploy;
 import actuator.GRTSolenoid;
 import actuator.GRTTalon;
 import actuator.GRTVictor;
-import controller.ShiftingDriveController;
+import controller.DriveController;
 import edu.wpi.first.wpilibj.Compressor;
 import java.util.Calendar;
 import java.util.TimeZone;
 import logger.GRTLogger;
 import mechanism.GRTDriveTrain;
-import mechanism.GRTRobotBase;
-import mechanism.ShiftingDriveTrain;
-import sensor.GRTAttack3Joystick;
+import sensor.GRTJoystick;
 import sensor.GRTBatterySensor;
-import sensor.GRTXBoxJoystick;
-import sensor.base.*;
 
 /**
  * Constructor for the main robot. Put all robot components here.
@@ -22,9 +18,9 @@ import sensor.base.*;
  * @author ajc
  */
 public class MainRobot extends GRTRobot {
-
-    private GRTRobotBase robotBase;
    
+    private GRTDriveTrain dt;
+    
     /**
      * Initializer for the robot. Calls an appropriate initialization function.
      */
@@ -35,7 +31,7 @@ public class MainRobot extends GRTRobot {
     
     public void disabled() {
         GRTLogger.logInfo("Disabling robot. Halting drivetrain");
-        robotBase.tankDrive(0.0, 0.0);
+        dt.setMotorSpeeds(0.0, 0.0);
     }
 
     /**
@@ -49,18 +45,16 @@ public class MainRobot extends GRTRobot {
                 Calendar.MONTH) + 1 + "T" + cal.get(Calendar.HOUR_OF_DAY) + cal.
                 get(Calendar.MINUTE) + cal.get(Calendar.SECOND);
         GRTLogger.logInfo("Date string = " + dateStr);
-        String loggingFiles[] = new String[]{"/logs/" + dateStr + "_info.log",
-            "/logs/" + dateStr + "_success.log", "/logs/" + dateStr
-            + "_error.log", "/logs/" + dateStr + "_all.log"};
-        GRTLogger.setLoggingFiles(loggingFiles);
-        //GRTLogger.enableFileLogging();
+        String loggingFile = "/test.log";
+        GRTLogger.setLoggingFile(loggingFile);
+        GRTLogger.enableFileLogging();
 
         GRTLogger.logInfo("GRTFramework v6 starting up.");
 
         //Driver station components
-        GRTAttack3Joystick primary = new GRTAttack3Joystick(1, 12, "primary");
-        GRTAttack3Joystick secondary =
-                new GRTAttack3Joystick(2, 12, "secondary");
+        GRTJoystick primary = new GRTJoystick(1, 12, "primary");
+        GRTJoystick secondary =
+                new GRTJoystick(2, 12, "secondary");
         primary.startPolling();
         secondary.startPolling();
         primary.enable();
@@ -94,21 +88,17 @@ public class MainRobot extends GRTRobot {
         GRTLogger.logInfo("Motors initialized");
 
         //Mechanisms
-        ShiftingDriveTrain dt = new ShiftingDriveTrain(leftDT1, leftDT2,
+        dt = new GRTDriveTrain(leftDT1, leftDT2,
                 rightDT1, rightDT2, leftShifter, rightShifter);
         
-        robotBase = new GRTRobotBase(dt, batterySensor);
-        GRTDriverStation driverStation =
-                new GRTAttack3DriverStation(primary, secondary, "driverStation");
-        driverStation.enable();
         GRTLogger.logInfo("Mechanisms initialized");
 
         //Controllers
-        ShiftingDriveController shiftingControl =
-                new ShiftingDriveController(dt, driverStation, "driveControl");
+        DriveController shiftingControl =
+                new DriveController(dt, primary, secondary);
         GRTLogger.logInfo("Controllers Initialized");
-        driverStation.addDrivingListener(shiftingControl);
-	driverStation.addShiftListener(shiftingControl);
+        
+        
         
         addTeleopController(shiftingControl);
 
@@ -127,9 +117,15 @@ public class MainRobot extends GRTRobot {
         batterySensor.enable();
 
         //Driver station components
-        GRTXBoxJoystick joy = new GRTXBoxJoystick(1, 25, "Joystick");
-        joy.startPolling();
-        joy.enable();
+        GRTJoystick joy1 = new GRTJoystick(1, 25, "Joystick");
+        GRTJoystick joy2 = new GRTJoystick(2, 25, "Joystick");
+        
+        joy1.startPolling(); 
+        joy1.enable();
+        
+        joy2.startPolling(); 
+        joy2.enable();
+
         GRTLogger.logInfo("Joysticks initialized");
         
         // PWM outputs
@@ -147,12 +143,10 @@ public class MainRobot extends GRTRobot {
         //Mechanisms
         GRTDriveTrain dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2);
         dt.setScaleFactors(1, -1, -1, 1);
-
-        robotBase = new GRTRobotBase(dt, batterySensor);
         
-        GRTDriverStation driverStation =
-                new GRTXboxDriverStation(joy, "Driver Station");
-        driverStation.enable();
         GRTLogger.logInfo("mechanisms intialized");
+        
+        GRTLogger.logInfo("Big G, Little O");
+        GRTLogger.logInfo("Go Go Go!");
     }
 }

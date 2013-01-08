@@ -3,12 +3,13 @@ package logger;
 import edu.wpi.first.wpilibj.DriverStationLCD;
 import edu.wpi.first.wpilibj.Timer;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.util.Enumeration;
 import java.util.Vector;
 import javax.microedition.io.Connector;
-import rpc.RPCConnection;
-import rpc.RPCMessage;
+import javax.microedition.io.OutputConnection;
 
 /**
  * Static class that is responsible for all system logging.
@@ -30,43 +31,14 @@ public final class GRTLogger {
     private static final String[] PREFIX = {"[INFO]:", "[ERROR]:", "[SUCCESS]:"};
     private static final Vector dsBuffer = new Vector();
     private static Vector logReceivers = new Vector();
-    private static boolean rpcEnabled = false;
-    private static final String NEWLINE = System.getProperty("line.separator");
     
     private static boolean fileLogging = false;
-    private static String[] loggingFileNames;     //Files to which we log our output.
-    private static OutputStreamWriter[] fileWriters;
-    //indices of logfiles
-    public static final int FILE_INFO_LOG = 0;
-    public static final int FILE_ERROR_LOG = 1;
-    public static final int FILE_SUCCESS_LOG = 2;
-    public static final int FILE_CONSOLIDATED_LOG = 3;
+    private static String loggingFileName;     //Files to which we log our output.
+    private static PrintStream fileWriter;
 
     static {
         for (int i = 0; i < 6; i++)
             dsBuffer.addElement("");
-    }
-
-    public static void addLogListener(RPCConnection conn) {
-        logReceivers.addElement(conn);
-    }
-
-    public static void removeLogListener(RPCConnection conn) {
-        logReceivers.removeElement(conn);
-    }
-
-    /**
-     * Enable sending of RPCMessages.
-     */
-    public static void enableRPC() {
-        rpcEnabled = true;
-    }
-
-    /**
-     * Disable sending of RPCMessages.
-     */
-    public static void disableRPC() {
-        rpcEnabled = false;
     }
 
     /**
@@ -84,27 +56,20 @@ public final class GRTLogger {
     }
 
     /**
-     * File paths to log to.
-     * The first filepath is the info logfile, second filepath is error
-     * logfile, third filepath is successes, fourth is a consolidation of all.
+     * File path to log to.
      *
-     * @param filenames array of absolute file paths, e.g.
-     * "/logging/info_081912-001253.txt"
+     * @param filename absolute file path, e.g.: "/081912-001253.txt"
      */
-    public static void setLoggingFiles(String[] filenames) {
-        loggingFileNames = filenames;
+    public static void setLoggingFile(String filename) {
+        loggingFileName = filename;
         
         //if there are previous connections, finish writing and close them all
-        if (fileWriters != null)
-            for (int i = 0; i < fileWriters.length; i++)
-                if (fileWriters[i] != null)
-                    try {
-                        fileWriters[i].close();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-        
-        fileWriters = new OutputStreamWriter[filenames.length];
+        if (fileWriter != null)
+            try {
+                fileWriter.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
     }
 
     /**
@@ -138,20 +103,8 @@ public final class GRTLogger {
         String message = elapsedTime() + " " + PREFIX[logtype] + data;
         System.out.println(message);
 
-        if (rpcEnabled) {
-            RPCMessage e = new RPCMessage(KEY[logtype], message);
-            for (Enumeration en = logReceivers.elements(); en.hasMoreElements();)
-                ((RPCConnection) en.nextElement()).send(e);
-        }
         if (fileLogging) {
-            int fileNum = FILE_INFO_LOG;
-            if (logtype == LOGTYPE_ERROR)
-                fileNum = FILE_ERROR_LOG;
-            else if (logtype == LOGTYPE_SUCCESS)
-                fileNum = FILE_SUCCESS_LOG;
-            
-            logLineToFile(message, fileNum);
-            logLineToFile(message, FILE_CONSOLIDATED_LOG);
+            logLineToFile(message);
         }
     }
 
@@ -187,29 +140,30 @@ public final class GRTLogger {
         log(data, logtype);
     }
 
-    private static void logLineToFile(String message, int fileDescriptor) {
+    private static void logLineToFile(String message) {
         /* 
          * Note: because it only prepends "file://" with 2 slashes,
          * loggingFileNames[fileDescriptor] should return an
          * absolute path (ex: /logging/info_081912-001253.txt)
          */
-        String url = "file://" + loggingFileNames[fileDescriptor];
-        message += NEWLINE;
+        String url = "file://" + loggingFileName;
 
         //if connection and writer not already created, open one
-        if (fileWriters[fileDescriptor] == null)
+        if (fileWriter == null){
             try {
-                fileWriters[fileDescriptor] = new OutputStreamWriter(
-                        Connector.openOutputStream(url));
+                OutputStream out = ((OutputConnection)Connector.open(url, Connector.WRITE)).openOutputStream();
+                PrintStream ps = new PrintStream(out);
+                fileWriter = ps;
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        }
         
         //write stuff to file, and flush
         try {
-            fileWriters[fileDescriptor].write(message);
-            fileWriters[fileDescriptor].flush();
-        } catch (IOException ex) {
+            fileWriter.println(message);
+            fileWriter.flush();
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }

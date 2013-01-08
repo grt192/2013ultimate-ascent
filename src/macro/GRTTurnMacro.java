@@ -8,6 +8,7 @@ import core.GRTMacro;
 import deploy.GRTRobot;
 import event.events.GyroEvent;
 import event.listeners.GyroListener;
+import logger.GRTLogger;
 import sensor.GRTGyro;
 
 /**
@@ -49,7 +50,7 @@ public class GRTTurnMacro extends GRTMacro  implements GyroListener {
 		
 		//If we've turned far enough, then we are ready to stop performing.
 		if(deltaAngle >= desiredTurnAngle){
-			log("Angle: " + e.getAngle());
+			GRTLogger.logInfo("Angle: " + e.getAngle());
 			hasCompletedExecution = true;
 		}
 	}

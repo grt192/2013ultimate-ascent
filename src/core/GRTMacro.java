@@ -10,12 +10,13 @@ import deploy.GRTRobot;
  *
  * @author student
  */
-public abstract class GRTMacro extends EventController {
+public abstract class GRTMacro {
 
     protected boolean hasCompletedExecution = false;
-
+    private String name;
+    
     public GRTMacro(String name) {
-        super(name);
+        this.name = name;
     }
 
     /**

@@ -6,6 +6,7 @@ import event.events.BatteryVoltageEvent;
 import event.listeners.BatteryVoltageListener;
 import java.util.Enumeration;
 import java.util.Vector;
+import logger.GRTLogger;
 
 /**
  * A battery sensor that retrieves main battery voltage from the analog sidecar.
