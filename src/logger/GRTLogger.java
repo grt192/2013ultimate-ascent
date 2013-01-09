@@ -1,15 +1,12 @@
 package logger;
 
+import com.sun.squawk.microedition.io.FileConnection;
 import edu.wpi.first.wpilibj.DriverStationLCD;
 import edu.wpi.first.wpilibj.Timer;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.util.Enumeration;
 import java.util.Vector;
 import javax.microedition.io.Connector;
-import javax.microedition.io.OutputConnection;
 
 /**
  * Static class that is responsible for all system logging.
@@ -17,28 +14,54 @@ import javax.microedition.io.OutputConnection;
  * @author agd
  */
 public final class GRTLogger {
-    
-    private GRTLogger(){}
 
+    private GRTLogger() {
+    }
     private static final DriverStationLCD dash =
             DriverStationLCD.getInstance();
     private static final int LOGTYPE_INFO = 0;
     private static final int LOGTYPE_ERROR = 1;
     private static final int LOGTYPE_SUCCESS = 2;
-    //RPC Keys for the three kinds of log messages
-    private static final int[] KEY = {100, 101, 102};
     //Prefixes for the three kinds of log messages
     private static final String[] PREFIX = {"[INFO]:", "[ERROR]:", "[SUCCESS]:"};
     private static final Vector dsBuffer = new Vector();
     private static Vector logReceivers = new Vector();
-    
     private static boolean fileLogging = false;
     private static String loggingFileName;     //Files to which we log our output.
     private static PrintStream fileWriter;
 
     static {
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 6; i++) {
             dsBuffer.addElement("");
+        }
+        try {
+            FileConnection numFile = (FileConnection) Connector.open("file:///logs/filenum.log");
+
+            int fileNum;
+
+            if (!numFile.exists()) {
+                fileNum = 1;
+            } else {
+                fileNum = numFile.openInputStream().read();
+                numFile.delete();
+            }
+
+            String loggingFile = "/logs/log" + fileNum + ".log";
+            GRTLogger.setLoggingFile(loggingFile);
+            GRTLogger.enableFileLogging();
+
+            fileNum++;
+
+            if (!numFile.exists()) {
+                numFile.create();
+            }
+
+            numFile.openOutputStream().write(fileNum);
+
+            numFile.close();
+        } catch (IOException e) {
+            throw new Error("File logging fail");
+        }
     }
 
     /**
@@ -62,14 +85,15 @@ public final class GRTLogger {
      */
     public static void setLoggingFile(String filename) {
         loggingFileName = filename;
-        
+
         //if there are previous connections, finish writing and close them all
-        if (fileWriter != null)
+        if (fileWriter != null) {
             try {
                 fileWriter.close();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+        }
     }
 
     /**
@@ -98,7 +122,7 @@ public final class GRTLogger {
     public static void logSuccess(String data) {
         log(data, LOGTYPE_SUCCESS);
     }
-    
+
     private static void log(String data, int logtype) {
         String message = elapsedTime() + " " + PREFIX[logtype] + data;
         System.out.println(message);
@@ -116,7 +140,7 @@ public final class GRTLogger {
     public static void dsLogInfo(String data) {
         dsLog(data, LOGTYPE_INFO);
     }
-    
+
     /**
      * Logs an error message, and displays it on the driver station.
      *
@@ -134,7 +158,7 @@ public final class GRTLogger {
     public static void dsLogSuccess(String data) {
         dsLog(data, LOGTYPE_SUCCESS);
     }
-    
+
     private static void dsLog(String data, int logtype) {
         dsPrintln(PREFIX[logtype] + data);
         log(data, logtype);
@@ -149,16 +173,19 @@ public final class GRTLogger {
         String url = "file://" + loggingFileName;
 
         //if connection and writer not already created, open one
-        if (fileWriter == null){
+        if (fileWriter == null) {
             try {
-                OutputStream out = ((OutputConnection)Connector.open(url, Connector.WRITE)).openOutputStream();
-                PrintStream ps = new PrintStream(out);
+                FileConnection conn = (FileConnection) Connector.open(url);
+                if (!conn.exists()) {
+                    conn.create();
+                }
+                PrintStream ps = new PrintStream(conn.openOutputStream());
                 fileWriter = ps;
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
-        
+
         //write stuff to file, and flush
         try {
             fileWriter.println(message);
@@ -175,16 +202,19 @@ public final class GRTLogger {
         int minElapsed = secElapsed / 60;
         int hrElapsed = minElapsed / 60;
 
-        if (hrElapsed < 10)
+        if (hrElapsed < 10) {
             s.append("0");
+        }
         s.append(hrElapsed).append(":");
 
-        if (minElapsed % 60 < 10)
+        if (minElapsed % 60 < 10) {
             s.append("0");
+        }
         s.append(minElapsed % 60).append(":");
 
-        if (secElapsed % 60 < 10)
+        if (secElapsed % 60 < 10) {
             s.append("0");
+        }
         s.append(secElapsed % 60);
 
         return s.toString();

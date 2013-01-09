@@ -2,13 +2,12 @@ package sensor;
 
 import core.Sensor;
 import edu.wpi.first.wpilibj.Joystick;
-import event.events.JoystickEvent;
 import event.events.ButtonEvent;
-import event.listeners.GRTJoystickListener;
+import event.events.JoystickEvent;
 import event.listeners.ButtonListener;
+import event.listeners.GRTJoystickListener;
 import java.util.Enumeration;
 import java.util.Vector;
-import logger.GRTLogger;
 
 /**
  * Wrapper class for a Logitech Attack 3 Joystick.

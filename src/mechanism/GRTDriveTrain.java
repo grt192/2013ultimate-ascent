@@ -2,6 +2,7 @@ package mechanism;
 
 import actuator.GRTSolenoid;
 import actuator.Motor;
+import core.GRTLoggedProcess;
 import event.events.EncoderEvent;
 import event.listeners.EncoderListener;
 import logger.GRTLogger;
@@ -13,7 +14,7 @@ import sensor.GRTEncoder;
  *
  * @author andrew, keshav
  */
-public class GRTDriveTrain {
+public class GRTDriveTrain extends GRTLoggedProcess {
 
     private final Motor leftFront;
     private final Motor leftBack;
@@ -42,53 +43,27 @@ public class GRTDriveTrain {
      */
     public GRTDriveTrain(Motor leftFront, Motor leftBack,
             Motor rightFront, Motor rightBack) {
-
-        this.leftFront = leftFront;
-        this.leftBack = leftBack;
-        this.rightFront = rightFront;
-        this.rightBack = rightBack;
         
-        this.shifting = false;
-        this.leftShifter = null;
-        this.rightShifter = null;
-        
-        this.hasEncoders = false;
-        this.leftEncoder = this.rightEncoder = null;
+        this(leftFront, leftBack, rightFront, rightBack,
+                null, null, null, null);
     }
     
     public GRTDriveTrain(Motor leftFront, Motor leftBack,
             Motor rightFront, Motor rightBack,
             GRTEncoder leftEncoder, GRTEncoder rightEncoder) {
-
-        this.leftFront = leftFront;
-        this.leftBack = leftBack;
-        this.rightFront = rightFront;
-        this.rightBack = rightBack;
         
-        this.shifting = false;
-        this.leftShifter = null;
-        this.rightShifter = null;
-        
-        this.hasEncoders = true;
-        this.leftEncoder = leftEncoder;
-        this.rightEncoder = rightEncoder;
+        this(leftFront, leftBack, rightFront, rightBack,
+                null, null,
+                leftEncoder, rightEncoder);
     }
 
     public GRTDriveTrain(Motor leftFront, Motor leftBack,
             Motor rightFront, Motor rightBack,
             GRTSolenoid leftShifter, GRTSolenoid rightShifter) {
 
-        this.leftFront = leftFront;
-        this.leftBack = leftBack;
-        this.rightFront = rightFront;
-        this.rightBack = rightBack;
-        
-        this.shifting = true;
-        this.leftShifter = leftShifter;
-        this.rightShifter = rightShifter;
-        
-        this.hasEncoders = false;
-        this.leftEncoder = this.rightEncoder = null;
+        this(leftFront, leftBack, rightFront, rightBack,
+                leftShifter, rightShifter,
+                null, null);
     }
     
     public GRTDriveTrain(Motor leftFront, Motor leftBack,
@@ -96,7 +71,12 @@ public class GRTDriveTrain {
             GRTSolenoid leftShift, GRTSolenoid rightShift,
             GRTEncoder leftEncoder, GRTEncoder rightEncoder) {
         
-        this(leftFront, leftBack, rightFront, rightBack);
+        super("Drivetrain");
+        
+        this.leftFront = leftFront;
+        this.rightFront = rightFront;
+        this.leftBack = leftBack;
+        this.rightBack = rightBack;
         
         this.shifting = true;
         this.leftShifter = leftShift;
@@ -107,10 +87,6 @@ public class GRTDriveTrain {
         this.rightEncoder = rightEncoder;
     }
     
-    
-    
-    
-
     /**
      * Depending on robot orientation, drivetrain configuration, controller
      * configuration, motors on different parts of the drivetrain may need to be
@@ -132,13 +108,13 @@ public class GRTDriveTrain {
     }
     
     /**
-     * Set the left and right side speeds of the drivetrain motors
+     * Set the left and right side speeds of the drivetrain motors.
      *
      * @param leftVelocity left drivetrain velocity
      * @param rightVelocity right drivetrain velocity
      */
     public void setMotorSpeeds(double leftVelocity, double rightVelocity) {
-        GRTLogger.logInfo("Left: " +  leftVelocity +"\tRight: " + rightVelocity);
+        log("Left: " +  leftVelocity +"\tRight: " + rightVelocity);
         leftFront.setSpeed(leftVelocity * leftFrontSF);
         rightFront.setSpeed(rightVelocity * rightFrontSF);
         
@@ -147,6 +123,8 @@ public class GRTDriveTrain {
             leftBack.setSpeed(leftVelocity * leftBackSF);
             rightBack.setSpeed(rightVelocity * rightBackSF);
         }
+        
+        //TODO half power with 50% PWM command rather than one motor
     }
     
     public void setHalfPowered(){
