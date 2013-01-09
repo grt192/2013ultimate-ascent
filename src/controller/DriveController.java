@@ -5,7 +5,6 @@ import event.events.ButtonEvent;
 import event.events.JoystickEvent;
 import event.listeners.ButtonListener;
 import event.listeners.GRTJoystickListener;
-import logger.GRTLogger;
 import mechanism.GRTDriveTrain;
 import sensor.GRTJoystick;
 
@@ -28,7 +27,7 @@ public class DriveController extends EventController implements GRTJoystickListe
     private double leftVelocity;
     private double rightVelocity;
     
-    private boolean leftTriggerHeld, rightTriggerHeld;
+    private int triggersPressed = 0;
     
     /**
      * Creates a new driving controller.
@@ -43,8 +42,6 @@ public class DriveController extends EventController implements GRTJoystickListe
         
         this.left = leftStick;
         this.right = rightStick;
-        
-        this.leftTriggerHeld = this.rightTriggerHeld = false;
     }
 
     protected void startListening() {
@@ -91,29 +88,18 @@ public class DriveController extends EventController implements GRTJoystickListe
         if ( e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER ){
             dt.shiftDown();
             
-            if( e.getSource() == left ){
-                leftTriggerHeld = true;
-            } else if ( e.getSource() == right ){
-                rightTriggerHeld = false;
-            }
+            triggersPressed++;
         }
     }
     
     public void buttonReleased(ButtonEvent e) {
         if ( e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER ){
-            if ( e.getSource() == left ){
-                leftTriggerHeld = false;
-            } else if ( e.getSource() == right ) {
-                rightTriggerHeld = false;
-            }
+            triggersPressed--;
             
             //If neither trigger is still being held, then it's safe to shift back up.
-            if ( ! (leftTriggerHeld || rightTriggerHeld) ){
+            if (triggersPressed <= 0){
                 dt.shiftUp();
-            }
-            
-            GRTLogger.logInfo("Buttons release? Left_Triger=" + leftTriggerHeld + "\tRightTrigger=" + rightTriggerHeld);
-
+            }            
         }
     }
 }

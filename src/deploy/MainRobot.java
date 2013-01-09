@@ -3,14 +3,17 @@ package deploy;
 import actuator.GRTSolenoid;
 import actuator.GRTTalon;
 import actuator.GRTVictor;
+import com.sun.squawk.microedition.io.FileConnection;
 import controller.DriveController;
 import edu.wpi.first.wpilibj.Compressor;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.TimeZone;
+import javax.microedition.io.Connector;
 import logger.GRTLogger;
 import mechanism.GRTDriveTrain;
-import sensor.GRTJoystick;
 import sensor.GRTBatterySensor;
+import sensor.GRTJoystick;
 
 /**
  * Constructor for the main robot. Put all robot components here.
@@ -25,8 +28,12 @@ public class MainRobot extends GRTRobot {
      * Initializer for the robot. Calls an appropriate initialization function.
      */
     public MainRobot() {
+        
         //base2012Init();
         base2013Init();
+        
+        GRTLogger.logInfo("Big G, Little O");
+        GRTLogger.logInfo("Go Go Go!");
     }
     
     public void disabled() {
@@ -38,16 +45,6 @@ public class MainRobot extends GRTRobot {
      * Initializer for the 2013 robot.
      */
     private void base2013Init() {
-
-        //Init the logging files.
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        String dateStr = "" + cal.get(Calendar.YEAR) + "-" + cal.get(
-                Calendar.MONTH) + 1 + "T" + cal.get(Calendar.HOUR_OF_DAY) + cal.
-                get(Calendar.MINUTE) + cal.get(Calendar.SECOND);
-        GRTLogger.logInfo("Date string = " + dateStr);
-        String loggingFile = "/test.log";
-        GRTLogger.setLoggingFile(loggingFile);
-        GRTLogger.enableFileLogging();
 
         GRTLogger.logInfo("GRTFramework v6 starting up.");
 
@@ -141,12 +138,9 @@ public class MainRobot extends GRTRobot {
         GRTLogger.logInfo("Motors initialized");
 
         //Mechanisms
-        GRTDriveTrain dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2);
+        dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2);
         dt.setScaleFactors(1, -1, -1, 1);
         
         GRTLogger.logInfo("mechanisms intialized");
-        
-        GRTLogger.logInfo("Big G, Little O");
-        GRTLogger.logInfo("Go Go Go!");
     }
 }
