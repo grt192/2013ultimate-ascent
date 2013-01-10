@@ -25,13 +25,13 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     private double rightFrontSF = -1;
     private double rightBackSF = -1;
     
-    private boolean shifting;
+    private boolean hasShifters = false;
     private GRTSolenoid leftShifter, rightShifter;
     
-    private boolean hasEncoders;
+    private boolean hasEncoders = false;
     private GRTEncoder leftEncoder, rightEncoder;
 
-    boolean halfPowered = false;    //State variable determining if we run at 1/2 power. 
+    double power = 1;    //State variable determining if we run at 1/2 power. 
     
     /**
      * Constructs a new drivetrain.
@@ -78,13 +78,18 @@ public class GRTDriveTrain extends GRTLoggedProcess {
         this.leftBack = leftBack;
         this.rightBack = rightBack;
         
-        this.shifting = true;
-        this.leftShifter = leftShift;
-        this.rightShifter = rightShift;
+        if(leftShifter != null && rightShifter != null) {
+            this.hasShifters = true;
+            this.leftShifter = leftShift;
+            this.rightShifter = rightShift;
+        }
         
-        this.hasEncoders = true;
-        this.leftEncoder = leftEncoder;
-        this.rightEncoder = rightEncoder;
+        if(leftEncoder != null && rightEncoder != null) {
+            this.hasEncoders = true;
+            this.leftEncoder = leftEncoder;
+            this.rightEncoder = rightEncoder;
+        }
+        
     }
     
     /**
@@ -114,48 +119,59 @@ public class GRTDriveTrain extends GRTLoggedProcess {
      * @param rightVelocity right drivetrain velocity
      */
     public void setMotorSpeeds(double leftVelocity, double rightVelocity) {
-        log("Left: " +  leftVelocity +"\tRight: " + rightVelocity);
-        leftFront.setSpeed(leftVelocity * leftFrontSF);
-        rightFront.setSpeed(rightVelocity * rightFrontSF);
+        log("Left: " +  leftVelocity +"\tRight: " + rightVelocity);        
         
-        //If we're full powered, then command the other two motors as well.
-        if (!halfPowered){
-            leftBack.setSpeed(leftVelocity * leftBackSF);
-            rightBack.setSpeed(rightVelocity * rightBackSF);
+        leftFront.setSpeed(leftVelocity * leftFrontSF * power);
+        rightFront.setSpeed(rightVelocity * rightFrontSF * power);
+        leftBack.setSpeed(leftVelocity * leftBackSF * power);
+        rightBack.setSpeed(rightVelocity * rightBackSF * power);
+        
+    }
+        
+    /**
+     * Set the relative power output of the drivetrain
+     *
+     * @param power Percentage of power output (double between 0 and 1)
+     */
+    public void setPower(double power){
+        if(power > 1) {
+            this.power = 1;
+        } else if (power < 0) {
+            this.power = 0;
+        } else {
+            this.power = power;
         }
-        
-        //TODO half power with 50% PWM command rather than one motor
     }
     
-    public void setHalfPowered(){
-        halfPowered = true;
-    }
-    
-    public void setFullPowered(){
-        halfPowered = false;
+    public void setFullPower() {
+        this.power = 1;
     }
     
     public void shiftUp(){
-        GRTLogger.logInfo("Shifting down? " + shifting);
-        if(shifting){
+        GRTLogger.logInfo("Shifting up");
+        if(hasShifters){
             leftShifter.engage(false);
             rightShifter.engage(false); 
         }
     }
     
     public void shiftDown(){
-        GRTLogger.logInfo("Shifting down? " + shifting);
-        if(shifting){
+        GRTLogger.logInfo("Shifting down");
+        if(hasShifters){
             leftShifter.engage(true);
             rightShifter.engage(true);
         }
     }
     
     public GRTEncoder getLeftEncoder(){
-        return leftEncoder;
+        if(hasEncoders)
+            return leftEncoder;
+        return null;
     }
     
     public GRTEncoder getRightEncoder(){
-        return rightEncoder;
+        if(hasEncoders)
+            return rightEncoder;
+        return null;
     }
 }

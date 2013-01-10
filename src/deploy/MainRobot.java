@@ -13,6 +13,7 @@ import javax.microedition.io.Connector;
 import logger.GRTLogger;
 import mechanism.GRTDriveTrain;
 import sensor.GRTBatterySensor;
+import sensor.GRTEncoder;
 import sensor.GRTJoystick;
 
 /**
@@ -83,21 +84,30 @@ public class MainRobot extends GRTRobot {
         rightDT1.enable();
         rightDT2.enable();
         GRTLogger.logInfo("Motors initialized");
+        
+        // Encoders
+        GRTEncoder leftEnc = new GRTEncoder(1, 2, 1, 50, "leftEnc");
+        GRTEncoder rightEnc = new GRTEncoder(3, 4, 1, 50, "rightEnc");
+        leftEnc.enable();
+        rightEnc.enable();
+        leftEnc.startPolling();
+        rightEnc.startPolling();
+        GRTLogger.logInfo("Encoders initialized");
 
         //Mechanisms
         dt = new GRTDriveTrain(leftDT1, leftDT2,
-                rightDT1, rightDT2, leftShifter, rightShifter);
+                rightDT1, rightDT2, leftShifter, rightShifter, leftEnc, rightEnc);
         
         GRTLogger.logInfo("Mechanisms initialized");
 
         //Controllers
-        DriveController shiftingControl =
+        DriveController dc =
                 new DriveController(dt, primary, secondary);
         GRTLogger.logInfo("Controllers Initialized");
         
         
         
-        addTeleopController(shiftingControl);
+        addTeleopController(dc);
 
         GRTLogger.logSuccess("Ready to drive.");
     }
