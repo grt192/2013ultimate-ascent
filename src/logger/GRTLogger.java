@@ -224,7 +224,7 @@ public final class GRTLogger {
         dsBuffer.addElement(data);
         dsBuffer.removeElementAt(0);
 
-        dash.println(DriverStationLCD.Line.kMain6, 1,
+        dash.println(DriverStationLCD.Line.kUser1, 1,
                 (String) dsBuffer.elementAt(5));
         dash.println(DriverStationLCD.Line.kUser6, 1,
                 (String) dsBuffer.elementAt(4));
