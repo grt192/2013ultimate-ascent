@@ -2,9 +2,12 @@ package controller;
 
 import core.EventController;
 import event.events.ButtonEvent;
+import event.events.EncoderEvent;
 import event.events.JoystickEvent;
 import event.listeners.ButtonListener;
+import event.listeners.EncoderListener;
 import event.listeners.GRTJoystickListener;
+import logger.GRTLogger;
 import mechanism.GRTDriveTrain;
 import sensor.GRTJoystick;
 
@@ -15,7 +18,7 @@ import sensor.GRTJoystick;
  *
  * @author andrew, keshav
  */
-public class DriveController extends EventController implements GRTJoystickListener, ButtonListener {
+public class DriveController extends EventController implements GRTJoystickListener, ButtonListener, EncoderListener {
 
     //sensor
     GRTJoystick left, right;
@@ -50,6 +53,9 @@ public class DriveController extends EventController implements GRTJoystickListe
         
         right.addJoystickListener(this);
         right.addButtonListener(this);
+        
+        dt.getLeftEncoder().addListener(this);
+        dt.getRightEncoder().addListener(this);
     }
 
     protected void stopListening() {
@@ -58,21 +64,17 @@ public class DriveController extends EventController implements GRTJoystickListe
         
         right.removeJoystickListener(this);
         right.removeButtonListener(this);
+        
+        dt.getLeftEncoder().removeListener(this);
+        dt.getRightEncoder().removeListener(this);
     }
 
-    /**
-     * Callback that reponds to changes in the X-axis
-     * of the joysticks. Not implemented in this controller.
-     * 
-     * @param e The joystick event
-     */
     public void XAxisMoved(JoystickEvent e) {
     }
 
     public void YAxisMoved(JoystickEvent e) {
         if ( e.getSource() == left ){
             leftVelocity = e.getData();
-            System.out.println(leftVelocity);
         } else if ( e.getSource() == right ){
             rightVelocity = e.getData();
         }
@@ -86,8 +88,7 @@ public class DriveController extends EventController implements GRTJoystickListe
     public void buttonPressed(ButtonEvent e) {
         
         if ( e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER ){
-            dt.shiftDown();
-            
+            dt.shiftDown();           
             triggersPressed++;
         }
     }
@@ -101,5 +102,18 @@ public class DriveController extends EventController implements GRTJoystickListe
                 dt.shiftUp();
             }            
         }
+    }
+
+    public void rotationStarted(EncoderEvent e) {
+    }
+
+    public void degreeChanged(EncoderEvent e) {
+        GRTLogger.logInfo("Encoder degree: " + e.getData());
+    }
+
+    public void distanceChanged(EncoderEvent e) {
+    }
+
+    public void rotationStopped(EncoderEvent e) {
     }
 }

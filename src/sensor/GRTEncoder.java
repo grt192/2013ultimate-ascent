@@ -39,6 +39,7 @@ public class GRTEncoder extends Sensor {
         rotaryEncoder = new Encoder(channelA, channelB);
         rotaryEncoder.start();
 
+        encoderListeners = new Vector();
         distancePerPulse = pulseDistance;
     }
 
@@ -58,7 +59,8 @@ public class GRTEncoder extends Sensor {
         super(name, pollTime, NUM_DATA);
         rotaryEncoder = new Encoder(moduleNum, channelA, moduleNum, channelB);
         rotaryEncoder.start();
-
+            
+        encoderListeners = new Vector();
         distancePerPulse = pulseDistance;
     }
 
@@ -71,7 +73,7 @@ public class GRTEncoder extends Sensor {
 
     protected void notifyListeners(int id, double newDatum) {
         EncoderEvent e = new EncoderEvent(this, id, newDatum);
-
+            
         switch (id) {
             case DEGREES:
                 for (Enumeration en = encoderListeners.elements(); en.
