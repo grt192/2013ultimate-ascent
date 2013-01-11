@@ -3,7 +3,6 @@ package deploy;
 import actuator.GRTSolenoid;
 import actuator.GRTTalon;
 import actuator.GRTVictor;
-import com.sun.squawk.microedition.io.FileConnection;
 import controller.DriveController;
 import core.GRTMacroController;
 import core.GRTMacro;
@@ -13,6 +12,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.Vector;
 import javax.microedition.io.Connector;
+import edu.wpi.first.wpilibj.camera.AxisCamera;
 import logger.GRTLogger;
 import macro.MacroDelay;
 import macro.MacroDrive;
@@ -52,7 +52,7 @@ public class MainRobot extends GRTRobot {
      */
     private void base2013Init() {
 
-        GRTLogger.logInfo("GRTFramework v6 starting up.");
+        GRTLogger.logInfo("Base 2013: GRTFramework starting up.");
 
         //Driver station components
         GRTJoystick primary = new GRTJoystick(1, 12, "primary");
@@ -129,7 +129,7 @@ public class MainRobot extends GRTRobot {
      * Initialize function for the 2012 base.
      */
     private void base2012Init(){
-        GRTLogger.logInfo("GRTFramework v6 starting up.");
+        GRTLogger.logInfo("2012 Base: GRTFramework starting up.");
         
         //Battery Sensor
         GRTBatterySensor batterySensor = new GRTBatterySensor(10, "battery");
@@ -163,6 +163,9 @@ public class MainRobot extends GRTRobot {
         //Mechanisms
         dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2);
         dt.setScaleFactors(1, -1, -1, 1);
+        
+        AxisCamera cam = AxisCamera.getInstance();
+        cam.writeResolution(AxisCamera.ResolutionT.k640x480);
         
         GRTLogger.logInfo("mechanisms intialized");
     }

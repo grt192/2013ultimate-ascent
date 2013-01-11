@@ -87,16 +87,16 @@ public abstract class GRTLoggedProcess implements Runnable {
     /**
      * Logs a message.
      *
-     * @param message message to log.
+     * @param message message to logInfo.
      */
-    protected void log(String message) {
+    protected void logInfo(String message) {
         GRTLogger.logInfo(toString() + "\t" + message);
     }
 
     /**
      * Logs an error message.
      *
-     * @param message message to log.
+     * @param message message to logInfo.
      */
     protected void logError(String message) {
         GRTLogger.logError(toString() + "\t" + message);
@@ -105,7 +105,7 @@ public abstract class GRTLoggedProcess implements Runnable {
     /**
      * Logs a success message.
      *
-     * @param message message to log.
+     * @param message message to logInfo.
      */
     protected void logSuccess(String message) {
         GRTLogger.logSuccess(toString() + "\t" + message);
