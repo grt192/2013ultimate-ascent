@@ -3,8 +3,6 @@ package mechanism;
 import actuator.GRTSolenoid;
 import actuator.Motor;
 import core.GRTLoggedProcess;
-import event.events.EncoderEvent;
-import event.listeners.EncoderListener;
 import logger.GRTLogger;
 import sensor.GRTEncoder;
 
@@ -68,7 +66,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     
     public GRTDriveTrain(Motor leftFront, Motor leftBack,
             Motor rightFront, Motor rightBack,
-            GRTSolenoid leftShift, GRTSolenoid rightShift,
+            GRTSolenoid leftShifter, GRTSolenoid rightShifter,
             GRTEncoder leftEncoder, GRTEncoder rightEncoder) {
         
         super("Drivetrain");
@@ -80,8 +78,8 @@ public class GRTDriveTrain extends GRTLoggedProcess {
         
         if(leftShifter != null && rightShifter != null) {
             this.hasShifters = true;
-            this.leftShifter = leftShift;
-            this.rightShifter = rightShift;
+            this.leftShifter = leftShifter;
+            this.rightShifter = rightShifter;
         }
         
         if(leftEncoder != null && rightEncoder != null) {
@@ -119,7 +117,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
      * @param rightVelocity right drivetrain velocity
      */
     public void setMotorSpeeds(double leftVelocity, double rightVelocity) {
-        log("Left: " +  leftVelocity +"\tRight: " + rightVelocity);        
+        logInfo("Left: " +  leftVelocity +"\tRight: " + rightVelocity);        
         
         leftFront.setSpeed(leftVelocity * leftFrontSF * power);
         rightFront.setSpeed(rightVelocity * rightFrontSF * power);
@@ -164,14 +162,16 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     }
     
     public GRTEncoder getLeftEncoder(){
-        if(hasEncoders)
+        if(hasEncoders){
             return leftEncoder;
+        }
         return null;
     }
     
     public GRTEncoder getRightEncoder(){
-        if(hasEncoders)
+        if(hasEncoders){
             return rightEncoder;
+        }
         return null;
     }
 }
