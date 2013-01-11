@@ -21,6 +21,7 @@ public class GRTEncoder extends Sensor {
     public static final int DIRECTION = 2;
     public static final int STOPPED = 3;
     public static final int NUM_DATA = 4;
+    public static final int RATE = 5;
     private Vector encoderListeners;
 
     /**
@@ -67,6 +68,7 @@ public class GRTEncoder extends Sensor {
     protected void poll() {
         setState(DISTANCE, rotaryEncoder.getDistance());
         setState(DEGREES, rotaryEncoder.getDistance() / distancePerPulse);
+        setState(RATE, rotaryEncoder.getRate());
         setState(DIRECTION, rotaryEncoder.getDirection() ? TRUE : FALSE);
         setState(STOPPED, rotaryEncoder.getStopped() ? TRUE : FALSE);
     }
@@ -84,6 +86,11 @@ public class GRTEncoder extends Sensor {
                 for (Enumeration en = encoderListeners.elements(); en.
                         hasMoreElements();)
                     ((EncoderListener) en.nextElement()).distanceChanged(e);
+                break;
+            case RATE:
+                for (Enumeration en = encoderListeners.elements(); en.
+                        hasMoreElements();)
+                    ((EncoderListener) en.nextElement()).rateChanged(e);
                 break;
             case STOPPED:
                 if (newDatum == TRUE)

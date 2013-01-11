@@ -5,12 +5,17 @@ import actuator.GRTTalon;
 import actuator.GRTVictor;
 import com.sun.squawk.microedition.io.FileConnection;
 import controller.DriveController;
+import core.GRTMacroController;
+import core.GRTMacro;
 import edu.wpi.first.wpilibj.Compressor;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.util.Vector;
 import javax.microedition.io.Connector;
 import logger.GRTLogger;
+import macro.MacroDelay;
+import macro.MacroDrive;
 import mechanism.GRTDriveTrain;
 import sensor.GRTBatterySensor;
 import sensor.GRTEncoder;
@@ -105,10 +110,18 @@ public class MainRobot extends GRTRobot {
                 new DriveController(dt, primary, secondary);
         GRTLogger.logInfo("Controllers Initialized");
         
+        Vector macros = new Vector();
+        
+        
+        macros.addElement(new MacroDelay(3000));
+        macros.addElement(new MacroDelay(3000));
+        macros.addElement(new MacroDrive(dt, 100, 10000));
+        GRTMacroController mc = new GRTMacroController(macros);
         
         
         addTeleopController(dc);
-
+        addAutonomousController(mc);
+        
         GRTLogger.logSuccess("Ready to drive.");
     }
 

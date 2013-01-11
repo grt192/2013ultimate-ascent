@@ -68,7 +68,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     
     public GRTDriveTrain(Motor leftFront, Motor leftBack,
             Motor rightFront, Motor rightBack,
-            GRTSolenoid leftShift, GRTSolenoid rightShift,
+            GRTSolenoid leftShifter, GRTSolenoid rightShifter,
             GRTEncoder leftEncoder, GRTEncoder rightEncoder) {
         
         super("Drivetrain");
@@ -80,8 +80,8 @@ public class GRTDriveTrain extends GRTLoggedProcess {
         
         if(leftShifter != null && rightShifter != null) {
             this.hasShifters = true;
-            this.leftShifter = leftShift;
-            this.rightShifter = rightShift;
+            this.leftShifter = leftShifter;
+            this.rightShifter = rightShifter;
         }
         
         if(leftEncoder != null && rightEncoder != null) {
@@ -141,6 +141,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
         } else {
             this.power = power;
         }
+        log("Power: " + this.power);
     }
     
     public void setFullPower() {

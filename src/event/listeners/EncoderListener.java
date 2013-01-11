@@ -15,4 +15,7 @@ public interface EncoderListener {
     public void distanceChanged(EncoderEvent e);
 
     public void rotationStopped(EncoderEvent e);
+    
+    public void rateChanged(EncoderEvent e);
+    
 }
