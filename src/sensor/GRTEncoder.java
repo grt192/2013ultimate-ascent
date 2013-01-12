@@ -16,12 +16,13 @@ public class GRTEncoder extends Sensor {
 
     private Encoder rotaryEncoder;
     private double distancePerPulse;
-    public static final int DISTANCE = 0;
-    public static final int DEGREES = 1;
-    public static final int DIRECTION = 2;
-    public static final int STOPPED = 3;
-    public static final int NUM_DATA = 4;
-    public static final int RATE = 5;
+    public static final int KEY_DISTANCE = 0;
+    public static final int KEY_DEGREES = 1;
+    public static final int KEY_DIRECTION = 2;
+    public static final int KEY_STOPPED = 3;
+    public static final int KEY_RATE = 4;
+    
+    public static final int NUM_DATA = 5;
     private Vector encoderListeners;
 
     /**
@@ -42,6 +43,7 @@ public class GRTEncoder extends Sensor {
 
         encoderListeners = new Vector();
         distancePerPulse = pulseDistance;
+        rotaryEncoder.setDistancePerPulse(distancePerPulse);
     }
 
     /**
@@ -60,39 +62,41 @@ public class GRTEncoder extends Sensor {
         super(name, pollTime, NUM_DATA);
         rotaryEncoder = new Encoder(moduleNum, channelA, moduleNum, channelB);
         rotaryEncoder.start();
-            
+        
         encoderListeners = new Vector();
         distancePerPulse = pulseDistance;
+        rotaryEncoder.setDistancePerPulse(this.distancePerPulse);
+
     }
 
     protected void poll() {
-        setState(DISTANCE, rotaryEncoder.getDistance());
-        setState(DEGREES, rotaryEncoder.getDistance() / distancePerPulse);
-        setState(RATE, rotaryEncoder.getRate());
-        setState(DIRECTION, rotaryEncoder.getDirection() ? TRUE : FALSE);
-        setState(STOPPED, rotaryEncoder.getStopped() ? TRUE : FALSE);
+        setState(KEY_DISTANCE, rotaryEncoder.getDistance());
+        setState(KEY_DEGREES, rotaryEncoder.getDistance() / distancePerPulse);
+        setState(KEY_RATE, rotaryEncoder.getRate());
+        setState(KEY_DIRECTION, rotaryEncoder.getDirection() ? TRUE : FALSE);
+        setState(KEY_STOPPED, rotaryEncoder.getStopped() ? TRUE : FALSE);
     }
 
     protected void notifyListeners(int id, double newDatum) {
         EncoderEvent e = new EncoderEvent(this, id, newDatum);
             
         switch (id) {
-            case DEGREES:
+            case KEY_DEGREES:
                 for (Enumeration en = encoderListeners.elements(); en.
                         hasMoreElements();)
                     ((EncoderListener) en.nextElement()).degreeChanged(e);
                 break;
-            case DISTANCE:
+            case KEY_DISTANCE:
                 for (Enumeration en = encoderListeners.elements(); en.
                         hasMoreElements();)
                     ((EncoderListener) en.nextElement()).distanceChanged(e);
                 break;
-            case RATE:
+            case KEY_RATE:
                 for (Enumeration en = encoderListeners.elements(); en.
                         hasMoreElements();)
                     ((EncoderListener) en.nextElement()).rateChanged(e);
                 break;
-            case STOPPED:
+            case KEY_STOPPED:
                 if (newDatum == TRUE)
                     for (Enumeration en = encoderListeners.elements(); en.
                             hasMoreElements();)
