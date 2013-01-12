@@ -2,12 +2,9 @@ package controller;
 
 import core.EventController;
 import event.events.ButtonEvent;
-import event.events.EncoderEvent;
 import event.events.JoystickEvent;
 import event.listeners.ButtonListener;
-import event.listeners.EncoderListener;
 import event.listeners.GRTJoystickListener;
-import logger.GRTLogger;
 import mechanism.GRTDriveTrain;
 import sensor.GRTJoystick;
 
