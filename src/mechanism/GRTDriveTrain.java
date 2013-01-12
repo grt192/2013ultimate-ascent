@@ -1,8 +1,8 @@
 package mechanism;
 
-import actuator.GRTSolenoid;
-import actuator.Motor;
 import core.GRTLoggedProcess;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.SpeedController;
 import logger.GRTLogger;
 import sensor.GRTEncoder;
 
@@ -14,17 +14,17 @@ import sensor.GRTEncoder;
  */
 public class GRTDriveTrain extends GRTLoggedProcess {
 
-    private final Motor leftFront;
-    private final Motor leftBack;
-    private final Motor rightFront;
-    private final Motor rightBack;
+    private final SpeedController leftFront;
+    private final SpeedController leftBack;
+    private final SpeedController rightFront;
+    private final SpeedController rightBack;
     private double leftFrontSF = 1;
     private double leftBackSF = 1;
     private double rightFrontSF = -1;
     private double rightBackSF = -1;
     
     private boolean hasShifters = false;
-    private GRTSolenoid leftShifter, rightShifter;
+    private Solenoid leftShifter, rightShifter;
     
     private boolean hasEncoders = false;
     private GRTEncoder leftEncoder, rightEncoder;
@@ -39,15 +39,15 @@ public class GRTDriveTrain extends GRTLoggedProcess {
      * @param rightFront right front motor
      * @param rightBack right back motor
      */
-    public GRTDriveTrain(Motor leftFront, Motor leftBack,
-            Motor rightFront, Motor rightBack) {
+    public GRTDriveTrain(SpeedController leftFront, SpeedController leftBack,
+            SpeedController rightFront, SpeedController rightBack) {
         
         this(leftFront, leftBack, rightFront, rightBack,
                 null, null, null, null);
     }
     
-    public GRTDriveTrain(Motor leftFront, Motor leftBack,
-            Motor rightFront, Motor rightBack,
+    public GRTDriveTrain(SpeedController leftFront, SpeedController leftBack,
+            SpeedController rightFront, SpeedController rightBack,
             GRTEncoder leftEncoder, GRTEncoder rightEncoder) {
         
         this(leftFront, leftBack, rightFront, rightBack,
@@ -55,18 +55,18 @@ public class GRTDriveTrain extends GRTLoggedProcess {
                 leftEncoder, rightEncoder);
     }
 
-    public GRTDriveTrain(Motor leftFront, Motor leftBack,
-            Motor rightFront, Motor rightBack,
-            GRTSolenoid leftShifter, GRTSolenoid rightShifter) {
+    public GRTDriveTrain(SpeedController leftFront, SpeedController leftBack,
+            SpeedController rightFront, SpeedController rightBack,
+            Solenoid leftShifter, Solenoid rightShifter) {
 
         this(leftFront, leftBack, rightFront, rightBack,
                 leftShifter, rightShifter,
                 null, null);
     }
     
-    public GRTDriveTrain(Motor leftFront, Motor leftBack,
-            Motor rightFront, Motor rightBack,
-            GRTSolenoid leftShifter, GRTSolenoid rightShifter,
+    public GRTDriveTrain(SpeedController leftFront, SpeedController leftBack,
+            SpeedController rightFront, SpeedController rightBack,
+            Solenoid leftShifter, Solenoid rightShifter,
             GRTEncoder leftEncoder, GRTEncoder rightEncoder) {
         
         super("Drivetrain");
@@ -119,10 +119,10 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     public void setMotorSpeeds(double leftVelocity, double rightVelocity) {
         logInfo("Left: " +  leftVelocity +"\tRight: " + rightVelocity);        
         
-        leftFront.setSpeed(leftVelocity * leftFrontSF * power);
-        rightFront.setSpeed(rightVelocity * rightFrontSF * power);
-        leftBack.setSpeed(leftVelocity * leftBackSF * power);
-        rightBack.setSpeed(rightVelocity * rightBackSF * power);
+        leftFront.set(leftVelocity * leftFrontSF * power);
+        rightFront.set(rightVelocity * rightFrontSF * power);
+        leftBack.set(leftVelocity * leftBackSF * power);
+        rightBack.set(rightVelocity * rightBackSF * power);
         
     }
         
@@ -148,16 +148,16 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     public void shiftUp(){
         GRTLogger.logInfo("Shifting up");
         if(hasShifters){
-            leftShifter.engage(false);
-            rightShifter.engage(false); 
+            leftShifter.set(false);
+            rightShifter.set(false); 
         }
     }
     
     public void shiftDown(){
         GRTLogger.logInfo("Shifting down");
         if(hasShifters){
-            leftShifter.engage(true);
-            rightShifter.engage(true);
+            leftShifter.set(true);
+            rightShifter.set(true);
         }
     }
     
