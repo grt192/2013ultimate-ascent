@@ -26,8 +26,8 @@ public class MainRobot extends GRTRobot {
      */
     public MainRobot() {
         
-        base2012Init();
-//        base2013Init();
+//        base2012Init();
+        base2013Init();
         
         GRTLogger.logInfo("Big G, Little O");
         GRTLogger.logInfo("Go Go Go!");
@@ -94,8 +94,6 @@ public class MainRobot extends GRTRobot {
         DriveController dc =
                 new DriveController(dt, primary, secondary);
         GRTLogger.logInfo("Controllers Initialized");
-        
-        
         
         addTeleopController(dc);
 
