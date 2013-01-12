@@ -13,16 +13,16 @@ import java.util.Vector;
  *
  * @author andrew, keshav
  */
-public abstract class GRTMacro {
+public abstract class GRTMacro extends GRTLoggedProcess {
 
     protected boolean hasCompletedExecution = false;
     protected boolean hasTimedOut = false;
     protected boolean hasInitialized = false;
     private Vector macroListeners;
     private boolean hasStarted = false;
-    private double timeout = 500;
-    private double startTime = 0;
-    private String name;
+    private int timeout;
+    private long startTime;
+    private int pollTime;
     private static final int NOTIFY_INITIALIZE = 0;
     private static final int NOTIFY_COMPLETED = 1;
     private static final int NOTIFY_TIMEDOUT = 2;
@@ -35,19 +35,42 @@ public abstract class GRTMacro {
      * @param name Name of macro
      * @param timeout Time in ms after which macro will automatically stop
      * execution
+     * @param pollTime Time in ms how often to call perform()
      */
-    public GRTMacro(String name, double timeout) {
-        this.name = name;
+    public GRTMacro(String name, int timeout, int pollTime) {
+        super(name);
         this.timeout = timeout;
+        this.pollTime = pollTime;
         macroListeners = new Vector();
     }
+    
+    /**
+     * A GRTMacro specifies code to complete one discrete motion (ie. Turn a
+     * specified angle, drive a specific distance). Most useful for autonomous
+     * mode
+     *
+     * @param name Name of macro
+     * @param timeout Time in ms after which macro will automatically stop
+     * execution
+     */
+    public GRTMacro(String name, int timeout) {
+        this(name, timeout, 50);
+    }
 
+    /**
+     * Executes the macro.
+     * If it has not been started, it initializes the macro and
+     * repeatedly calls perform() until the macro has completed execution,
+     * then calls die().
+     */
     public void execute() {
         if (!hasStarted) {
             hasStarted = true;
+            
             initialize();
             notifyListeners(NOTIFY_INITIALIZE);
             this.startTime = System.currentTimeMillis();
+
             while (!hasCompletedExecution && !hasTimedOut) {
                 if ((System.currentTimeMillis() - startTime) > timeout) {
                     hasTimedOut = true;
@@ -55,10 +78,11 @@ public abstract class GRTMacro {
                     notifyListeners(NOTIFY_TIMEDOUT);
                     return;
                 }
+                
                 perform();
 
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(pollTime);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
@@ -78,7 +102,7 @@ public abstract class GRTMacro {
 
     /**
      *
-     * @return
+     * @return whether or not the macro has completed execution.
      */
     public boolean isDone() {
         return hasCompletedExecution;
@@ -92,12 +116,15 @@ public abstract class GRTMacro {
         return hasTimedOut;
     }
 
+    /**
+     * Resets the macro, as if it had never began.
+     */
     public void reset() {
         hasCompletedExecution = hasStarted = hasTimedOut = false;
     }
 
     /**
-     * Implemented on a per-macro basis
+     * Macro initialization.
      */
     protected abstract void initialize();
 
