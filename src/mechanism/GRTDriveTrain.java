@@ -139,6 +139,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
         } else {
             this.power = power;
         }
+        logInfo("Power: " + this.power);
     }
     
     public void setFullPower() {

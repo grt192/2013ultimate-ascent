@@ -18,7 +18,7 @@ import sensor.GRTJoystick;
  *
  * @author andrew, keshav
  */
-public class DriveController extends EventController implements GRTJoystickListener, ButtonListener, EncoderListener {
+public class DriveController extends EventController implements GRTJoystickListener, ButtonListener {
 
     //sensor
     GRTJoystick left, right;
@@ -52,10 +52,7 @@ public class DriveController extends EventController implements GRTJoystickListe
         left.addButtonListener(this);
         
         right.addJoystickListener(this);
-        right.addButtonListener(this);
-        
-        dt.getLeftEncoder().addListener(this);
-        dt.getRightEncoder().addListener(this);
+        right.addButtonListener(this);        
     }
 
     protected void stopListening() {
@@ -63,10 +60,7 @@ public class DriveController extends EventController implements GRTJoystickListe
         left.removeButtonListener(this);
         
         right.removeJoystickListener(this);
-        right.removeButtonListener(this);
-        
-        dt.getLeftEncoder().removeListener(this);
-        dt.getRightEncoder().removeListener(this);
+        right.removeButtonListener(this);        
     }
 
     public void XAxisMoved(JoystickEvent e) {
@@ -102,18 +96,5 @@ public class DriveController extends EventController implements GRTJoystickListe
                 dt.shiftUp();
             }            
         }
-    }
-
-    public void rotationStarted(EncoderEvent e) {
-    }
-
-    public void degreeChanged(EncoderEvent e) {
-        GRTLogger.logInfo("Encoder degree: " + e.getData());
-    }
-
-    public void distanceChanged(EncoderEvent e) {
-    }
-
-    public void rotationStopped(EncoderEvent e) {
     }
 }

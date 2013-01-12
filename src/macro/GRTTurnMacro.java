@@ -21,27 +21,24 @@ public class GRTTurnMacro extends GRTMacro implements GyroListener {
     private double deltaAngle = 0;
     private GRTGyro gyro = null;
 
-    public GRTTurnMacro(double degrees, GRTGyro gyro) {
-        super("Turn Macro");
+    public GRTTurnMacro(double degrees, GRTGyro gyro, int timeout) {
+        super("Turn Macro", timeout);
         this.desiredTurnAngle = degrees;
         this.gyro = gyro;
     }
 
     protected void perform() {
-        startListening();
+        
     }
 
     public void die() {
-        stopListening();
+        gyro.removeListener(this);
     }
-
-    protected void startListening() {
+    
+    protected void initialize() {
         gyro.addListener(this);
     }
 
-    protected void stopListening() {
-        gyro.removeListener(this);
-    }
 
     public void angleChanged(GyroEvent e) {
         deltaAngle = e.getAngle() - lastAngle;
@@ -53,4 +50,6 @@ public class GRTTurnMacro extends GRTMacro implements GyroListener {
             hasCompletedExecution = true;
         }
     }
+
+    
 }
