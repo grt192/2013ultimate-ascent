@@ -1,9 +1,14 @@
 package controller;
 
+import core.EventController;
 import event.events.ButtonBoardEvent;
+import event.events.ButtonEvent;
 import event.events.JoystickEvent;
+import event.events.PotentiometerEvent;
 import event.listeners.ButtonBoardListener;
+import event.listeners.ButtonListener;
 import event.listeners.GRTJoystickListener;
+import event.listeners.PotentiometerListener;
 import sensor.GRTJoystick;
 import mechanism.Belts;
 import mechanism.Climber;
@@ -14,9 +19,9 @@ import sensor.ButtonBoard;
 /**
  * Controller for shooter, picker-upper, internal belts, climbing
  * 
- * @author Calvin
+ * @author Calvin, Sidd
  */
-public class MechController implements GRTJoystickListener, ButtonBoardListener {
+public class MechController extends EventController implements GRTJoystickListener, PotentiometerListener, ButtonListener {
     
     private GRTJoystick leftJoy;
     private GRTJoystick rightJoy;
@@ -28,10 +33,16 @@ public class MechController implements GRTJoystickListener, ButtonBoardListener 
     private PickerUpper pickerUpper;
     private Shooter shooter;
     
+    private double angularVelocity;
+    private double shooterPreset1;
+    private double shooterPreset2;
+    private double shooterPreset3;
+    
     public MechController(GRTJoystick leftJoy, GRTJoystick rightJoy,
             GRTJoystick secondaryJoy, ButtonBoard buttonBoard,
             Shooter shooter, PickerUpper pickerUpper,
             Climber climber, Belts belts) {
+        super("Mechanism Controller");
         this.leftJoy = leftJoy;
         this.rightJoy = rightJoy;
         this.secondaryJoy = secondaryJoy;
@@ -41,23 +52,70 @@ public class MechController implements GRTJoystickListener, ButtonBoardListener 
         this.climber = climber;
         this.pickerUpper = pickerUpper;
         this.shooter = shooter;
+        
+    }
+    
+    protected void startListening() {
+        leftJoy.addJoystickListener(this);
+        leftJoy.addButtonListener(this);
+        
+        rightJoy.addJoystickListener(this);
+        rightJoy.addButtonListener(this);
+        
+        secondaryJoy.addJoystickListener(this);
+        secondaryJoy.addButtonListener(this);
+        
+        
+   }
+
+    protected void stopListening() {
+        leftJoy.removeJoystickListener(this);
+        leftJoy.removeButtonListener(this);
+        
+        rightJoy.removeJoystickListener(this);
+        rightJoy.removeButtonListener(this);
+        
+        secondaryJoy.removeJoystickListener(this);
+        secondaryJoy.removeButtonListener(this);
+        
     }
 
     public void XAxisMoved(JoystickEvent e) {
     }
 
     public void YAxisMoved(JoystickEvent e) {
+        if (e.getSource() == secondaryJoy) {
+            angularVelocity = e.getData();
+        }
+        
+        shooter.setAngularSpeed(-angularVelocity);
+        
     }
 
     public void AngleChanged(JoystickEvent e) {
     }
 
     public void buttonPressed(ButtonBoardEvent e) {
+       
     }
 
     public void buttonReleased(ButtonBoardEvent e) {
     }
+    
+     public void buttonPressed(ButtonEvent e) {
+         
+    }
+
+    public void buttonReleased(ButtonEvent e) {
+    }
 
     public void potentiometerChange(ButtonBoardEvent e) {
     }
+
+    public void valueChanged(PotentiometerEvent e) {
+    }
+
+    
+
+   
 }

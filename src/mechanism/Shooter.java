@@ -33,7 +33,12 @@ public class Shooter extends GRTLoggedProcess {
         //TODO
     }
     
-    public void setAngle(double speed) {
+   
+    public void setAngle(double angle) {
+        //TODO
+    }
+    
+    public void setAngularSpeed(double speed) {
         //TODO
     }
     
