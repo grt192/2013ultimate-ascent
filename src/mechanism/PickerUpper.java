@@ -21,7 +21,13 @@ public class PickerUpper extends GRTLoggedProcess{
         //TODO
     }
     
+    public void raise() {
+        //TODO
+    }
     
+    public void lower() {
+        //TODO
+    }
     
     public void pickUp() {
      

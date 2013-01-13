@@ -5,7 +5,6 @@ import event.events.ButtonBoardEvent;
 import event.events.ButtonEvent;
 import event.events.JoystickEvent;
 import event.events.PotentiometerEvent;
-import event.listeners.ButtonBoardListener;
 import event.listeners.ButtonListener;
 import event.listeners.GRTJoystickListener;
 import event.listeners.PotentiometerListener;
@@ -95,18 +94,31 @@ public class MechController extends EventController implements GRTJoystickListen
     public void AngleChanged(JoystickEvent e) {
     }
 
-    public void buttonPressed(ButtonBoardEvent e) {
-       
-    }
-
-    public void buttonReleased(ButtonBoardEvent e) {
-    }
     
-     public void buttonPressed(ButtonEvent e) {
+    public void buttonPressed(ButtonEvent e) {
+        if (e.getSource() == rightJoy) {
+            if (e.getButtonID() == GRTJoystick.KEY_BUTTON_3) {
+                pickerUpper.pickUp();
+            }
+            else if (e.getButtonID() == GRTJoystick.KEY_BUTTON_2) {
+                pickerUpper.spitOut();
+            }
+        }
+        
+        else if (e.getSource() == leftJoy) {
+            if (e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER) {
+                pickerUpper.lower();
+            }
+        }
          
     }
 
     public void buttonReleased(ButtonEvent e) {
+        if (e.getSource() == leftJoy) {
+            if (e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER) {
+                pickerUpper.raise();
+            }
+        }
     }
 
     public void potentiometerChange(ButtonBoardEvent e) {

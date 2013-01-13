@@ -7,7 +7,7 @@ package mechanism;
 import core.GRTLoggedProcess;
 
 /**
- * Mechanism code for the Belts
+ * Mechanism code for the Belts past the flipper. (i.e not PickUp Belts)
  * @author Sidd
  */
 public class Belts extends GRTLoggedProcess{
