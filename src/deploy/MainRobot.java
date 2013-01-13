@@ -4,8 +4,10 @@ import controller.DriveController;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.camera.AxisCamera;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import logger.GRTLogger;
 import mechanism.GRTDriveTrain;
 import sensor.GRTBatterySensor;
@@ -74,6 +76,12 @@ public class MainRobot extends GRTRobot {
         Victor rightDT1 = new Victor(1);
         Victor rightDT2 = new Victor(2);
         GRTLogger.logInfo("Motors initialized");
+        
+        //Add to Test Mode
+        LiveWindow.addActuator("DT", "leftDT1", leftDT1);
+        LiveWindow.addActuator("DT", "leftDT2", leftDT2);
+        LiveWindow.addActuator("DT", "rightDT1", rightDT1);
+        LiveWindow.addActuator("DT", "rightDT2", rightDT2);
 
         // Encoders
         GRTEncoder leftEnc = new GRTEncoder(1, 2, 1, 50, "leftEnc");
@@ -141,5 +149,12 @@ public class MainRobot extends GRTRobot {
         cam.writeResolution(AxisCamera.ResolutionT.k640x480);
 
         GRTLogger.logInfo("mechanisms intialized");
+    }
+    
+    public void test() {
+        while (isTest() && isEnabled()) {
+            LiveWindow.run();
+            Timer.delay(.1);
+        }
     }
 }
