@@ -1,5 +1,6 @@
 package event.events;
 
+import core.Sensor;
 import sensor.Potentiometer;
 
 /**
@@ -8,7 +9,7 @@ import sensor.Potentiometer;
  */
 public class PotentiometerEvent extends SensorEvent {
 
-    public PotentiometerEvent(Potentiometer source, double value) {
+    public PotentiometerEvent(Sensor source, double value) {
         super(source, 0, value);
     }
 
