@@ -166,7 +166,7 @@ public abstract class GRTLoggedProcess implements Runnable {
      * @return loggable string.
      */
     public String toString() {
-        return "[[" + getClass().getName() + ":" + getID() + "]]";
+        return "[[" + getID() + "]]";
     }
     
     /**
