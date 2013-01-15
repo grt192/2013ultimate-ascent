@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package sensor;
 
 import core.Sensor;
@@ -76,7 +72,7 @@ public class ButtonBoard extends Sensor {
                 for (Enumeration en = buttonListeners.elements(); en.hasMoreElements();)
                     ((ButtonListener) en.nextElement()).buttonReleased(e);
         } else { //potentiometer event
-            PotentiometerEvent e = new PotentiometerEvent(this, newDatum);
+            PotentiometerEvent e = new PotentiometerEvent(this, id, newDatum);
             for (Enumeration en = potentiometerListeners.elements(); en.hasMoreElements();)
                 ((PotentiometerListener) en.nextElement()).valueChanged(e);
         }

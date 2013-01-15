@@ -1,24 +1,23 @@
 package controller;
 
 import core.EventController;
-import event.events.ButtonBoardEvent;
 import event.events.ButtonEvent;
 import event.events.JoystickEvent;
 import event.events.PotentiometerEvent;
 import event.listeners.ButtonListener;
 import event.listeners.GRTJoystickListener;
 import event.listeners.PotentiometerListener;
-import sensor.GRTJoystick;
 import mechanism.Belts;
 import mechanism.Climber;
 import mechanism.PickerUpper;
 import mechanism.Shooter;
 import sensor.ButtonBoard;
+import sensor.GRTJoystick;
 
 /**
  * Controller for shooter, picker-upper, internal belts, climbing
  * 
- * @author Sidd
+ * @author Calvin
  */
 public class MechController extends EventController implements GRTJoystickListener, PotentiometerListener, ButtonListener {
     
@@ -65,8 +64,6 @@ public class MechController extends EventController implements GRTJoystickListen
         secondaryJoy.addButtonListener(this);
         
         buttonBoard.addButtonListener(this);
-        
-        
    }
 
     protected void stopListening() {
@@ -114,42 +111,30 @@ public class MechController extends EventController implements GRTJoystickListen
         }
         
         else if (e.getSource() == buttonBoard) {
-            if (e.getButtonID() == ButtonBoard.KEY_BUTTON1) {
-                shooter.setSpeed(shooterPreset1);
-            }
-            
-            else if (e.getButtonID() == ButtonBoard.KEY_BUTTON2) {
-                shooter.setSpeed(shooterPreset2);
-            }
-            
-            else if (e.getButtonID() == ButtonBoard.KEY_BUTTON3) {
-                shooter.setSpeed(shooterPreset3);
-            }
-            
-            else if (e.getButtonID() == ButtonBoard.KEY_BUTTON4) {
-                climber.popWheelie();
-            }
-            
-            else if (e.getButtonID() == ButtonBoard.KEY_BUTTON5) {
-                climber.climb();
+            switch (e.getButtonID()) {
+                case ButtonBoard.KEY_BUTTON1: shooter.setSpeed(shooterPreset1);
+                    break;
+                case ButtonBoard.KEY_BUTTON2: shooter.setSpeed(shooterPreset2);
+                    break;
+                case ButtonBoard.KEY_BUTTON3: shooter.setSpeed(shooterPreset3);
+                    break;
+                case ButtonBoard.KEY_BUTTON4: climber.popWheelie();
+                    break;
+                case ButtonBoard.KEY_BUTTON5: climber.climb();
+                    break;
             }
         }
         
         else if (e.getSource() == secondaryJoy) {
-            if (e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER) {
-                shooter.shoot();
+            switch (e.getButtonID()) {
+                case GRTJoystick.KEY_BUTTON_TRIGGER: shooter.shoot();
+                    break;
+                case GRTJoystick.KEY_BUTTON_2: belts.moveUp();
+                    break;
+                case GRTJoystick.KEY_BUTTON_3: belts.moveDown();
+                    break;
             }
-            
-            else if (e.getButtonID() == GRTJoystick.KEY_BUTTON_2) {
-                belts.moveUp();
-            }
-            
-            else if (e.getButtonID() == GRTJoystick.KEY_BUTTON_3) {
-                belts.moveDown();
-            }
-            
         }
-         
     }
 
     public void buttonReleased(ButtonEvent e) {
@@ -160,13 +145,7 @@ public class MechController extends EventController implements GRTJoystickListen
         }
     }
 
-    public void potentiometerChange(ButtonBoardEvent e) {
-    }
-
     public void valueChanged(PotentiometerEvent e) {
+        //TODO set trim for auto tracking
     }
-
-    
-
-   
 }
