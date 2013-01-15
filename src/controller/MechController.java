@@ -18,7 +18,7 @@ import sensor.ButtonBoard;
 /**
  * Controller for shooter, picker-upper, internal belts, climbing
  * 
- * @author Calvin, Sidd
+ * @author Sidd
  */
 public class MechController extends EventController implements GRTJoystickListener, PotentiometerListener, ButtonListener {
     
@@ -64,6 +64,8 @@ public class MechController extends EventController implements GRTJoystickListen
         secondaryJoy.addJoystickListener(this);
         secondaryJoy.addButtonListener(this);
         
+        buttonBoard.addButtonListener(this);
+        
         
    }
 
@@ -77,6 +79,7 @@ public class MechController extends EventController implements GRTJoystickListen
         secondaryJoy.removeJoystickListener(this);
         secondaryJoy.removeButtonListener(this);
         
+        buttonBoard.removeButtonListener(this);
     }
 
     public void XAxisMoved(JoystickEvent e) {
@@ -85,10 +88,9 @@ public class MechController extends EventController implements GRTJoystickListen
     public void YAxisMoved(JoystickEvent e) {
         if (e.getSource() == secondaryJoy) {
             angularVelocity = e.getData();
+             
         }
-        
         shooter.setAngularSpeed(-angularVelocity);
-        
     }
 
     public void AngleChanged(JoystickEvent e) {
@@ -109,6 +111,43 @@ public class MechController extends EventController implements GRTJoystickListen
             if (e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER) {
                 pickerUpper.lower();
             }
+        }
+        
+        else if (e.getSource() == buttonBoard) {
+            if (e.getButtonID() == ButtonBoard.KEY_BUTTON1) {
+                shooter.setSpeed(shooterPreset1);
+            }
+            
+            else if (e.getButtonID() == ButtonBoard.KEY_BUTTON2) {
+                shooter.setSpeed(shooterPreset2);
+            }
+            
+            else if (e.getButtonID() == ButtonBoard.KEY_BUTTON3) {
+                shooter.setSpeed(shooterPreset3);
+            }
+            
+            else if (e.getButtonID() == ButtonBoard.KEY_BUTTON4) {
+                climber.popWheelie();
+            }
+            
+            else if (e.getButtonID() == ButtonBoard.KEY_BUTTON5) {
+                climber.climb();
+            }
+        }
+        
+        else if (e.getSource() == secondaryJoy) {
+            if (e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER) {
+                shooter.shoot();
+            }
+            
+            else if (e.getButtonID() == GRTJoystick.KEY_BUTTON_2) {
+                belts.moveUp();
+            }
+            
+            else if (e.getButtonID() == GRTJoystick.KEY_BUTTON_3) {
+                belts.moveDown();
+            }
+            
         }
          
     }
