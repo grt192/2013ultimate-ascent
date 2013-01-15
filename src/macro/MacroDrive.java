@@ -21,6 +21,7 @@ public class MacroDrive extends GRTMacro implements EncoderListener {
     private double velocity = 1;
 
     /*
+     * Creates a new Driving Macro
      * 
      * @param dt GRTDriveTrain object
      * @param distance distance to travel in m (assumes travel in straight line)
@@ -39,6 +40,7 @@ public class MacroDrive extends GRTMacro implements EncoderListener {
     }
 
     protected void perform() {
+        //TODO
     }
 
     public void die() {

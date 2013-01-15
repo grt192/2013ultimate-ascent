@@ -12,7 +12,8 @@ import java.util.Vector;
 import logger.GRTLogger;
 
 /**
- *
+ * Creates a new MacroController that executes macros in sequence.
+ * 
  * @author keshav
  */
 public class GRTMacroController extends EventController implements MacroListener {

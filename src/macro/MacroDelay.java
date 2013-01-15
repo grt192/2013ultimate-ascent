@@ -16,7 +16,6 @@ public class MacroDelay extends GRTMacro {
     
     /**
      * Delay execution for specified time
-     * 
      * @param delay Time in ms to sleep
      */
     public MacroDelay(int delay) {

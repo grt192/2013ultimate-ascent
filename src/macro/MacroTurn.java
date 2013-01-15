@@ -12,7 +12,7 @@ import mechanism.GRTDriveTrain;
 import sensor.GRTGyro;
 
 /**
- * Macro that automatically turns the robot a
+ * Macro that automatically turns the robot a certain angle.
  *
  * @author Calvin
  */
