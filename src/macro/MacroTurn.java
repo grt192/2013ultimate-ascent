@@ -16,7 +16,7 @@ import sensor.GRTGyro;
  *
  * @author Calvin
  */
-public class GRTTurnMacro extends GRTMacro {
+public class MacroTurn extends GRTMacro {
 
     private double targetAngle;
     private double currentAngle;
@@ -50,7 +50,7 @@ public class GRTTurnMacro extends GRTMacro {
      * @param gyro gyroscope to track robot movement
      * @param dt drivetrain to command
      */
-    public GRTTurnMacro(double turnAngle, GRTGyro gyro, GRTDriveTrain dt) {
+    public MacroTurn(double turnAngle, GRTGyro gyro, GRTDriveTrain dt) {
         super("Turn Macro", 5000, 50);
         
         this.turnAngle = turnAngle;
