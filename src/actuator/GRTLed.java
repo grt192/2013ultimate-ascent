@@ -1,6 +1,5 @@
 package actuator;
 
-import core.Actuator;
 import edu.wpi.first.wpilibj.PWM;
 
 /**
@@ -8,7 +7,7 @@ import edu.wpi.first.wpilibj.PWM;
  *
  * @author gerberduffy
  */
-public class GRTLed extends Actuator {
+public class GRTLed {
 
     private static final int MAX_BRIGHTNESS = 255;
     private static final int OFF_BRIGHTNESS = 0;
@@ -23,7 +22,6 @@ public class GRTLed extends Actuator {
      * @param name name of LED
      */
     public GRTLed(int moduleNum, int channel, String name) {
-        super(name);
 
         led = new PWM(moduleNum, channel);
         led.setRaw(brightness);
@@ -36,7 +34,6 @@ public class GRTLed extends Actuator {
      * @param name name of LED
      */
     public GRTLed(int channel, String name) {
-        super(name);
 
         led = new PWM(channel);
         led.setRaw(brightness);
@@ -48,7 +45,6 @@ public class GRTLed extends Actuator {
      * @param brightness brightness of LED by varying duty cycle (0-255)
      */
     public void setBrightness(int brightness) {
-        if (enabled) {
             if (brightness > MAX_BRIGHTNESS) {
                 brightness = MAX_BRIGHTNESS;
             } else if (brightness < OFF_BRIGHTNESS) {
@@ -58,14 +54,13 @@ public class GRTLed extends Actuator {
             led.setRaw(brightness);
 
             this.brightness = brightness;
-        }
+        
     }
 
     /**
      * Turns LED off if it is on, and vice versa.
      */
     public void toggleState() {
-        if (enabled) {
             if (isOn()) {
                 led.setRaw(OFF_BRIGHTNESS);
                 brightness = OFF_BRIGHTNESS;
@@ -74,7 +69,7 @@ public class GRTLed extends Actuator {
                 led.setRaw(MAX_BRIGHTNESS);
                 brightness = MAX_BRIGHTNESS;
             }
-        }
+        
     }
 
     /**
@@ -87,7 +82,7 @@ public class GRTLed extends Actuator {
     }
 
     /**
-     * Returns true iff brightness is greater than 0.
+     * Returns true if brightness is greater than 0.
      *
      * @return true if on, false if off
      */
@@ -95,15 +90,4 @@ public class GRTLed extends Actuator {
         return this.brightness > OFF_BRIGHTNESS;
     }
 
-    /**
-     * Sets the brightness of this LED.
-     *
-     * @param command brightness of LED (0 to 1)
-     */
-    public void executeCommand(double command) {
-        if (enabled) {
-            brightness = (int) command * MAX_BRIGHTNESS;
-            led.setRaw(brightness);
-        }
-    }
 }
