@@ -26,6 +26,11 @@ public class ButtonBoard extends Sensor {
     public static final int KEY_BUTTON6 = 5;
     public static final int KEY_POT1 = 6;
     public static final int KEY_POT2 = 7;
+    
+    private static final int[] BUTTON_PINS = {-1, -1, -1, -1, -1, -1};
+    private static final int[] POT_PINS = {-1, -1};
+    private static final int[] LED_PINS = {-1, -1, -1};
+    
     private Vector buttonListeners = new Vector();
     private Vector potentiometerListeners = new Vector();
     
@@ -79,38 +84,67 @@ public class ButtonBoard extends Sensor {
     }
     
     protected void poll() {
-        for (int i = 4; i <= 9; i++) {  //iterate through button pins
-            try {
-                //button state IDs are offset from button pins by 4
-                setState(i - 4, ioBoard.getDigital(i) ? FALSE : TRUE);
-            } catch (EnhancedIOException ex) {
-                ex.printStackTrace();
-            }
+        for (int i = 0; i < 6; i++) {  //iterate through buttons
+            //button state IDs go from 0 through 5
+            setState(i, getButtonState(i + 1) ? FALSE : TRUE);
         }
         
-        for (int i = 1; i <= 2; i++) { //iterate through pot pins
-            try {
-                //button state IDs are offset from button pins by 5
-                setState(i + 5, ioBoard.getAnalogInRatio(i));
-            } catch (EnhancedIOException ex) {
-                ex.printStackTrace();
-            }
+        for (int i = 0; i < 2; i++) { //iterate through pot pins
+            //pot state IDs go from 6 to 7
+            setState(i + 6, getPotentiometerState(i + 1));
         }
     }
 
     /**
      * Set the state of an LED on the driver station.
+     * 
      * @param num number of LED, from 1-3
      * @param on whether or not the LED is on
      */
     public void setLED(int num, boolean on) {
         if (num <= 3 && num >= 1) {
             try {
-                ioBoard.setDigitalOutput(num, !on);
+                ioBoard.setDigitalOutput(LED_PINS[num - 1], !on);
             } catch (EnhancedIOException ex) {
                 ex.printStackTrace();
             }
         }
+    }
+    
+    /**
+     * Get the state of a button.
+     * 
+     * @param num number of button, from 1-6
+     * @return true if the button is pressed, false otherwise
+     */
+    public boolean getButtonState(int num) {
+        if (num <= 6 && num > 0) {
+            try {
+                return !ioBoard.getDigital(BUTTON_PINS[num - 1]);
+            } catch (EnhancedIOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Get the state of a potentiometer.
+     * 
+     * @param num number of the potentiometer, from 1-6
+     * @return the ratiometric turn of the potentiometer, from 0-1
+     */
+    public double getPotentiometerState(int num) {
+        if (num <= 2 && num > 0) {
+            try {
+                return ioBoard.getAnalogInRatio(POT_PINS[num - 1]);
+            } catch (EnhancedIOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        return Double.NaN;
     }
     
     /**
