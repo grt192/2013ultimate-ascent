@@ -27,9 +27,9 @@ public class ButtonBoard extends Sensor {
     public static final int KEY_POT1 = 6;
     public static final int KEY_POT2 = 7;
     
-    private static final int[] BUTTON_PINS = {-1, -1, -1, -1, -1, -1};
-    private static final int[] POT_PINS = {-1, -1};
-    private static final int[] LED_PINS = {-1, -1, -1};
+    private static final int[] BUTTON_PINS = {2, 4, 6, 1, 3, 5};
+    private static final int[] POT_PINS = {1, 3};
+    private static final int[] LED_PINS = {8, 10, 12};
     
     private Vector buttonListeners = new Vector();
     private Vector potentiometerListeners = new Vector();
