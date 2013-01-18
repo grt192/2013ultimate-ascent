@@ -43,30 +43,26 @@ public class ButtonBoard extends Sensor {
         super("Button Board", 12, 8);
         
         try {
-            //DIO 1-3 control LEDs
-            ioBoard.setDigitalConfig(1, DriverStationEnhancedIO.tDigitalConfig.kOutput);
-            ioBoard.setDigitalConfig(2, DriverStationEnhancedIO.tDigitalConfig.kOutput);
-            ioBoard.setDigitalConfig(3, DriverStationEnhancedIO.tDigitalConfig.kOutput);
+            for (int i = 0; i < BUTTON_PINS.length; i++)
+                ioBoard.setDigitalConfig(BUTTON_PINS[i], DriverStationEnhancedIO.tDigitalConfig.kInputPullUp);
             
-            //DIO 4-9 read buttons
-            ioBoard.setDigitalConfig(4, DriverStationEnhancedIO.tDigitalConfig.kInputPullUp);
-            ioBoard.setDigitalConfig(5, DriverStationEnhancedIO.tDigitalConfig.kInputPullUp);
-            ioBoard.setDigitalConfig(6, DriverStationEnhancedIO.tDigitalConfig.kInputPullUp);
-            ioBoard.setDigitalConfig(7, DriverStationEnhancedIO.tDigitalConfig.kInputPullUp);
-            ioBoard.setDigitalConfig(8, DriverStationEnhancedIO.tDigitalConfig.kInputPullUp);
-            ioBoard.setDigitalConfig(9, DriverStationEnhancedIO.tDigitalConfig.kInputPullUp);
+            for (int i = 0; i < LED_PINS.length; i++) {
+                ioBoard.setDigitalConfig(LED_PINS[i], DriverStationEnhancedIO.tDigitalConfig.kOutput);
+                ioBoard.setDigitalOutput(LED_PINS[i], true);
+            }
             
-            //AIO 1,2 read potentiometers
         } catch (EnhancedIOException ex) {
             ex.printStackTrace();
         }
     }
     
-    public ButtonBoard getButtonBoard() {
+    public static ButtonBoard getButtonBoard() {
         return buttonBoard;
     }
 
     protected void notifyListeners(int id, double newDatum) {
+        if (id < 6)
+            logInfo("ButtonBoard id: " + id + " datum " + newDatum);
         
         if (id < 6) { //button event
             ButtonEvent e = new ButtonEvent(this, id, newDatum == TRUE);
@@ -86,7 +82,7 @@ public class ButtonBoard extends Sensor {
     protected void poll() {
         for (int i = 0; i < 6; i++) {  //iterate through buttons
             //button state IDs go from 0 through 5
-            setState(i, getButtonState(i + 1) ? FALSE : TRUE);
+            setState(i, getButtonState(i + 1) ? TRUE : FALSE);
         }
         
         for (int i = 0; i < 2; i++) { //iterate through pot pins

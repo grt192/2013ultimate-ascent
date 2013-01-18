@@ -1,6 +1,7 @@
 package deploy;
 
 import controller.DriveController;
+import controller.MechController;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj.camera.AxisCamera;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import logger.GRTLogger;
 import mechanism.GRTDriveTrain;
+import sensor.ButtonBoard;
 import sensor.GRTBatterySensor;
 import sensor.GRTEncoder;
 import sensor.GRTJoystick;
@@ -91,6 +93,11 @@ public class MainRobot extends GRTRobot {
         rightEnc.enable();
         leftEnc.startPolling();
         rightEnc.startPolling();
+        
+        //ButtonBoard
+        ButtonBoard buttonBoard = ButtonBoard.getButtonBoard();
+        buttonBoard.enable();
+        buttonBoard.startPolling();
 
         GRTLogger.logInfo("Encoders initialized");
 
@@ -103,9 +110,12 @@ public class MainRobot extends GRTRobot {
         //Controllers
         DriveController dc =
                 new DriveController(dt, primary, secondary);
+        MechController mc = new MechController(primary, secondary, null, buttonBoard, null, null, null, null);
+        
         GRTLogger.logInfo("Controllers Initialized");
 
         addTeleopController(dc);
+        addTeleopController(mc);
 
         GRTLogger.logSuccess("Ready to drive.");
     }
