@@ -35,17 +35,33 @@ public class GRTEncoder extends Sensor {
      * @param pollTime how often to poll
      * @param name name of encoder
      */
+    public GRTEncoder(int channelA, int channelB, double pulseDistance,
+            int pollTime, String name) {
+        this (channelA, channelB, pulseDistance, pollTime, false, name);
+    }
+    
+    /**
+     * Instantiates an encoder on the default digital module.
+     *
+     * @param channelA digital channel for encoder channel A
+     * @param channelB digital channel for encoder channel B
+     * @param pulseDistance distance traveled for each pulse (typically 1 degree
+     * of rotation per pulse)
+     * @param pollTime how often to poll
+     * @param reversed whether or not the encoder is reversed
+     * @param name name of encoder
+     */
     public GRTEncoder(int channelA, int channelB,
-            double pulseDistance, int pollTime, String name) {
+            double pulseDistance, int pollTime, boolean reversed, String name) {
         super(name, pollTime, NUM_DATA);
-        rotaryEncoder = new Encoder(channelA, channelB);
+        rotaryEncoder = new Encoder(channelA, channelB, reversed);
         rotaryEncoder.start();
 
         encoderListeners = new Vector();
         distancePerPulse = pulseDistance;
         rotaryEncoder.setDistancePerPulse(distancePerPulse);
     }
-
+    
     /**
      * Instantiates an encoder.
      *
@@ -59,20 +75,50 @@ public class GRTEncoder extends Sensor {
      */
     public GRTEncoder(int moduleNum, int channelA, int channelB,
             double pulseDistance, int pollTime, String name) {
+        this(moduleNum, channelA, channelB,
+                pulseDistance, pollTime, false, name);
+    }
+
+    /**
+     * Instantiates an encoder.
+     *
+     * @param moduleNum number of digital module
+     * @param channelA digital channel for encoder channel A
+     * @param channelB digital channel for encoder channel B
+     * @param pulseDistance distance traveled for each pulse (typically 1 degree
+     * of rotation per pulse)
+     * @param pollTime how often to poll
+     * @param reversed whether or not the encoder is reversed
+     * @param name name of encoder
+     */
+    public GRTEncoder(int moduleNum, int channelA, int channelB,
+            double pulseDistance, int pollTime, boolean reversed, String name) {
         super(name, pollTime, NUM_DATA);
-        rotaryEncoder = new Encoder(moduleNum, channelA, moduleNum, channelB);
+        rotaryEncoder = new Encoder(moduleNum, channelA,
+                moduleNum, channelB, reversed);
         rotaryEncoder.start();
         
         encoderListeners = new Vector();
         distancePerPulse = pulseDistance;
         rotaryEncoder.setDistancePerPulse(this.distancePerPulse);
-
+    }
+    
+    public double getDistance() {
+        return rotaryEncoder.getDistance();
+    }
+    
+    public double getRate() {
+        return rotaryEncoder.getRate();
+    }
+    
+    public double getAngle() {
+        return getDistance() / distancePerPulse;
     }
 
     protected void poll() {
-        setState(KEY_DISTANCE, rotaryEncoder.getDistance());
-        setState(KEY_DEGREES, rotaryEncoder.getDistance() / distancePerPulse);
-        setState(KEY_RATE, rotaryEncoder.getRate());
+        setState(KEY_DISTANCE, getDistance());
+        setState(KEY_DEGREES, getAngle());
+        setState(KEY_RATE, getRate());
         setState(KEY_DIRECTION, rotaryEncoder.getDirection() ? TRUE : FALSE);
         setState(KEY_STOPPED, rotaryEncoder.getStopped() ? TRUE : FALSE);
     }
