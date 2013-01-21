@@ -14,6 +14,8 @@ public class TrackerController extends EventController implements VisionTrackerL
 
     private GRTVisionTracker tracker;
 
+    private static final double X_THRESHOLD = 0.05;
+
     public TrackerController(GRTVisionTracker track){
         super("Vision Tracker Autonomous Controller");
         this.tracker = track;
@@ -35,9 +37,9 @@ public class TrackerController extends EventController implements VisionTrackerL
 
     public void centroidXNormalizedChanged(VisionTrackerEvent e) {
         logInfo("Normalized centroid x: " + e.getData());
-        if (e.getData() <= -.05){
+        if (e.getData() <= -X_THRESHOLD) {
             GRTLogger.logInfo("<< left");
-        } else if(e.getData() >= .05){
+        } else if(e.getData() >= X_THRESHOLD) {
                 GRTLogger.logInfo("right >> ");
         } else {
             GRTLogger.logSuccess("Locked on!");
