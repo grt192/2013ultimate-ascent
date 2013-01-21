@@ -73,7 +73,7 @@ public class GRTVisionTracker extends Sensor {
 
 
     public GRTVisionTracker(AxisCamera cam) {
-        super("Vision Tracker", 100, NUM_DATA);
+        super("Vision Tracker", 1000, NUM_DATA);
         this.camera = cam;
         
         this.cc = new CriteriaCollection();      // create the criteria for the particle filter
