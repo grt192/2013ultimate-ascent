@@ -1,12 +1,16 @@
 package deploy;
 
 import controller.DriveController;
+import core.EventController;
+import core.GRTMacroController;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.camera.AxisCamera;
+import java.util.Vector;
 import logger.GRTLogger;
+import macro.MacroDriveTrapezoidal;
 import mechanism.GRTDriveTrain;
 import sensor.GRTBatterySensor;
 import sensor.GRTEncoder;
@@ -76,8 +80,8 @@ public class MainRobot extends GRTRobot {
         GRTLogger.logInfo("Motors initialized");
 
         // Encoders
-        GRTEncoder leftEnc = new GRTEncoder(1, 2, 1, 50, "leftEnc");
-        GRTEncoder rightEnc = new GRTEncoder(3, 4, 1, 50, "rightEnc");
+        GRTEncoder leftEnc = new GRTEncoder(1, 2, (Math.PI *3.5)/(12*360*2), 50, "leftEnc");
+        GRTEncoder rightEnc = new GRTEncoder(3, 4, (Math.PI *3.5)/(12*360*2), 50, "rightEnc");
 
         leftEnc.enable();
         rightEnc.enable();
@@ -93,6 +97,14 @@ public class MainRobot extends GRTRobot {
         GRTLogger.logInfo("Mechanisms initialized");
 
         //Controllers
+        MacroDriveTrapezoidal trap = new MacroDriveTrapezoidal(dt, -5, 10000, leftEnc, rightEnc, 2000, 2000);
+        
+        Vector macros = new Vector();
+        macros.addElement(trap);
+        EventController ac = new GRTMacroController(macros);
+        addAutonomousController(ac);
+        
+
         DriveController dc =
                 new DriveController(dt, primary, secondary);
         GRTLogger.logInfo("Controllers Initialized");
