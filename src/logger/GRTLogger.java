@@ -125,7 +125,7 @@ public final class GRTLogger {
 
     private static void log(String data, int logtype) {
         String message = elapsedTime() + " " + PREFIX[logtype] + data;
-        System.out.println(message);
+        System.out.println("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b" + message);
 
         if (fileLogging) {
             logLineToFile(message);

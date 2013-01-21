@@ -2,6 +2,7 @@ package deploy;
 
 import controller.DriveController;
 import controller.MechController;
+import core.GRTConstants;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
@@ -29,14 +30,18 @@ public class MainRobot extends GRTRobot {
      * Initializer for the robot. Calls an appropriate initialization function.
      */
     public MainRobot() {
-
-//        base2012Init();
-        base2013Init();
-
-        GRTLogger.logInfo("Big G, Little O");
-        GRTLogger.logInfo("Go Go Go!");
+        switch((int)GRTConstants.getValue("robot")){
+            case 2012:
+                GRTLogger.logInfo("Starting up 2012 Test Base");
+                base2012Init();
+                break;
+            case 2013:
+                GRTLogger.logInfo("Starting up 2013 Test Base");
+                base2013Init();
+                break;
+        }
     }
-
+    
     public void disabled() {
         GRTLogger.logInfo("Disabling robot. Halting drivetrain");
         dt.setMotorSpeeds(0.0, 0.0);
@@ -65,18 +70,18 @@ public class MainRobot extends GRTRobot {
         batterySensor.enable();
 
         //Shifter solenoids
-        Solenoid leftShifter = new Solenoid(1);
-        Solenoid rightShifter = new Solenoid(2);
+        Solenoid leftShifter = new Solenoid( (int)GRTConstants.getValue("leftSolenoid") );
+        Solenoid rightShifter = new Solenoid( (int)GRTConstants.getValue("rightSolenoid") );
 
         //Compressor
-        Compressor compressor = new Compressor(14, 1);
+        Compressor compressor = new Compressor( (int)GRTConstants.getValue("compressor") , 1);
         compressor.start();
 
         // PWM outputs
-        Victor leftDT1 = new Victor(9);
-        Victor leftDT2 = new Victor(10);
-        Victor rightDT1 = new Victor(1);
-        Victor rightDT2 = new Victor(2);
+        Victor leftDT1 = new Victor( (int)GRTConstants.getValue("leftDT1") );
+        Victor leftDT2 = new Victor( (int)GRTConstants.getValue("leftDT2") );
+        Victor rightDT1 = new Victor( (int)GRTConstants.getValue("rightDT1") );
+        Victor rightDT2 = new Victor( (int)GRTConstants.getValue("rightDT2") );
         GRTLogger.logInfo("Motors initialized");
         
         //Add to Test Mode
@@ -86,8 +91,13 @@ public class MainRobot extends GRTRobot {
         LiveWindow.addActuator("DT", "rightDT2", rightDT2);
 
         // Encoders
-        GRTEncoder leftEnc = new GRTEncoder(1, 2, 1, 50, "leftEnc");
-        GRTEncoder rightEnc = new GRTEncoder(3, 4, 1, 50, "rightEnc");
+        GRTEncoder leftEnc = new GRTEncoder( (int)GRTConstants.getValue("encoderLeftA"),
+                                             (int)GRTConstants.getValue("encoderLeftB"),
+                                             1, 50, "leftEnc");
+        GRTEncoder rightEnc = new GRTEncoder( (int)GRTConstants.getValue("encoderRightA"),
+                                              (int)GRTConstants.getValue("encoderRightB"),
+                                              1, 50, "rightEnc");
+
 
         leftEnc.enable();
         rightEnc.enable();
@@ -145,20 +155,29 @@ public class MainRobot extends GRTRobot {
 
         // PWM outputs
         //TODO check motor pins
-        Talon leftDT1 = new Talon(9);
-        Talon leftDT2 = new Talon(10);
-        Talon rightDT1 = new Talon(1);
-        Talon rightDT2 = new Talon(2);
+        Talon leftDT1 = new Talon( (int)GRTConstants.getValue("leftDT1") );
+        Talon leftDT2 = new Talon( (int)GRTConstants.getValue("leftDT2") );
+        Talon rightDT1 = new Talon( (int)GRTConstants.getValue("rightDT1") );
+        Talon rightDT2 = new Talon( (int)GRTConstants.getValue("rightDT2") );
         GRTLogger.logInfo("Motors initialized");
 
         //Mechanisms
         dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2);
         dt.setScaleFactors(1, -1, -1, 1);
-
-        AxisCamera cam = AxisCamera.getInstance();
-        cam.writeResolution(AxisCamera.ResolutionT.k640x480);
-
-        GRTLogger.logInfo("mechanisms intialized");
+        
+        
+        DriveController dc = new DriveController(dt, joy1, joy2);
+        
+        addTeleopController(dc);
+        try {
+            GRTLogger.logInfo("Big G, Litte O");
+            Thread.sleep(200);
+            GRTLogger.logInfo("Go");
+            Thread.sleep(400);
+            GRTLogger.logInfo("Go");
+            Thread.sleep(400);
+            GRTLogger.logInfo("Go!");
+        } catch(Exception e){}
     }
     
     public void test() {
