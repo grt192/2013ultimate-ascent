@@ -6,6 +6,8 @@ leftDT2,10
 rightDT1,1
 rightDT2,2
 
+compressor,14
+
 leftSolenoid,1
 rightSolenoid,2
 
