@@ -55,8 +55,8 @@ public class GRTVisionTracker extends Sensor {
     private final int Y_EDGE_LIMIT = 60;
     
     private int X_IMAGE_RES = 320;          //X Image resolution in pixels, should be 160, 320 or 640. Defaults to 320
-    private final double VIEW_ANGLE = 43.5;       //Axis 206 camera
-//    private final double VIEW_ANGLE = 48;       //Axis M1011 camera
+//    private final double VIEW_ANGLE = 43.5;       //Axis 206 camera
+    private final double VIEW_ANGLE = 48;       //Axis M1011 camera
     
     private CriteriaCollection cc;
 
@@ -73,13 +73,14 @@ public class GRTVisionTracker extends Sensor {
 
 
     public GRTVisionTracker(AxisCamera cam) {
-        super("Vision Tracker", 500, NUM_DATA);
+        super("Vision Tracker", 100, NUM_DATA);
         this.camera = cam;
         
         this.cc = new CriteriaCollection();      // create the criteria for the particle filter
         cc.addCriteria(NIVision.MeasurementType.IMAQ_MT_AREA, 500, 65535, false);
-
         X_IMAGE_RES = camera.getResolution().width;
+        
+        listeners = new Vector();
     }
 
     protected void poll() {
@@ -186,7 +187,7 @@ public class GRTVisionTracker extends Sensor {
                 */
                 
                 else {
-                    logError("particle: " + i + "is not a goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
+                    logError("particle: " + i + " is not a goal\tcenterX: " + report.center_mass_x_normalized + "\tcenterY: " + report.center_mass_y_normalized);
                 }
 //                System.out.println("rect: " + scores[i].rectangularity + "ARinner: " + scores[i].aspectRatioInner);
 //                System.out.println("ARouter: " + scores[i].aspectRatioOuter + "xEdge: " + scores[i].xEdge + "yEdge: " + scores[i].yEdge);
@@ -274,6 +275,8 @@ public class GRTVisionTracker extends Sensor {
             boolean isTarget = true;
 
             isTarget &= scores.rectangularity > RECTANGULARITY_LIMIT;
+            
+            /* Get rid of comment later. Right now, only test to see if is rectangle.
             if(outer){
                     isTarget &= scores.aspectRatioOuter > ASPECT_RATIO_LIMIT;
             } else {
@@ -281,7 +284,7 @@ public class GRTVisionTracker extends Sensor {
             }
             isTarget &= scores.xEdge > X_EDGE_LIMIT;
             isTarget &= scores.yEdge > Y_EDGE_LIMIT;
-
+            */
             return isTarget;
     }
     

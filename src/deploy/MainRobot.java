@@ -1,6 +1,8 @@
 package deploy;
 
 import controller.DriveController;
+import controller.TrackerController;
+import core.GRTConstants;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
@@ -11,11 +13,12 @@ import mechanism.GRTDriveTrain;
 import sensor.GRTBatterySensor;
 import sensor.GRTEncoder;
 import sensor.GRTJoystick;
+import sensor.GRTVisionTracker;
 
 /**
  * Constructor for the main robot. Put all robot components here.
  *
- * @author ajc
+ * @author andrew, dan, keshav, calvin, others
  */
 public class MainRobot extends GRTRobot {
 
@@ -25,9 +28,17 @@ public class MainRobot extends GRTRobot {
      * Initializer for the robot. Calls an appropriate initialization function.
      */
     public MainRobot() {
-
-//        base2012Init();
-        base2013Init();
+        GRTLogger.logInfo("Robot version: " + GRTConstants.getValue("robot"));
+        switch((int)GRTConstants.getValue("robot")){
+            case 2012:
+                GRTLogger.logInfo("Running 2012 base");
+                base2012Init();
+                break;
+            case 2013:
+                GRTLogger.logInfo("Running 2013 base");
+                base2013Init();
+                break;
+        }
 
         GRTLogger.logInfo("Big G, Little O");
         GRTLogger.logInfo("Go Go Go!");
@@ -61,24 +72,30 @@ public class MainRobot extends GRTRobot {
         batterySensor.enable();
 
         //Shifter solenoids
-        Solenoid leftShifter = new Solenoid(1);
-        Solenoid rightShifter = new Solenoid(2);
+        Solenoid leftShifter = new Solenoid( (int)GRTConstants.getValue("leftSolenoid") );
+        Solenoid rightShifter = new Solenoid( (int)GRTConstants.getValue("rightSolenoid") );
 
         //Compressor
         Compressor compressor = new Compressor(14, 1);
         compressor.start();
 
         // PWM outputs
-        Victor leftDT1 = new Victor(9);
-        Victor leftDT2 = new Victor(10);
-        Victor rightDT1 = new Victor(1);
-        Victor rightDT2 = new Victor(2);
+        Victor leftDT1 = new Victor( (int)GRTConstants.getValue("leftDT1") );
+        Victor leftDT2 = new Victor( (int)GRTConstants.getValue("leftDT2") );
+        Victor rightDT1 = new Victor( (int)GRTConstants.getValue("rightDT1") );
+        Victor rightDT2 = new Victor( (int)GRTConstants.getValue("rightDT2") );
         GRTLogger.logInfo("Motors initialized");
 
         // Encoders
-        GRTEncoder leftEnc = new GRTEncoder(1, 2, 1, 50, "leftEnc");
-        GRTEncoder rightEnc = new GRTEncoder(3, 4, 1, 50, "rightEnc");
+        GRTEncoder leftEnc = new GRTEncoder( (int)GRTConstants.getValue("encoderLeftA"), 
+                                             (int)GRTConstants.getValue("encoderLeftB"), 
+                                             1, 50, "leftEnc");
 
+        GRTEncoder rightEnc = new GRTEncoder( (int)GRTConstants.getValue("encoderRightA"), 
+                                              (int)GRTConstants.getValue("encoderRightB"),
+                                              1, 50, "rightEnc");
+
+        
         leftEnc.enable();
         rightEnc.enable();
         leftEnc.startPolling();
@@ -140,6 +157,16 @@ public class MainRobot extends GRTRobot {
         AxisCamera cam = AxisCamera.getInstance();
         cam.writeResolution(AxisCamera.ResolutionT.k640x480);
 
+        //If vision is enabled, add the Tracker autonomous controller.
+        if (GRTConstants.getValue("vision") == 1.0){
+            GRTVisionTracker tracker = new GRTVisionTracker(cam);
+            tracker.startPolling(); //Allow it to wait for enable.
+
+            TrackerController trackController = new TrackerController(tracker);
+
+            addAutonomousController(trackController);
+        }
+        
         GRTLogger.logInfo("mechanisms intialized");
     }
 }
