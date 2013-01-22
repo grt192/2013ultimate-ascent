@@ -4,6 +4,7 @@
  */
 package mechanism;
 
+import actuator.GRTSolenoid;
 import core.GRTLoggedProcess;
 
 /**
@@ -12,16 +13,21 @@ import core.GRTLoggedProcess;
  */
 public class Climber extends GRTLoggedProcess {
     
-    public Climber() { //TODO motors
-        super("Climber mech");
-    }
+    private GRTDriveTrain dt;
+    private GRTSolenoid solenoid1;
+    private GRTSolenoid solenoid2;
+    private GRTSolenoid engager;
     
-    public void popWheelie() {
-        
+    public Climber(GRTDriveTrain dt, GRTSolenoid solenoid1, GRTSolenoid solenoid2,
+            GRTSolenoid engager) { //TODO motors
+        super("Climber mech");
+        this.dt = dt;
+        this.solenoid1 = solenoid1;
+        this.solenoid2 = solenoid2;
+        this.engager = engager;
     }
     
     public void climb() {
-        
+        //TODO
     }
-    
 }

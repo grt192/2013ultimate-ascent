@@ -31,7 +31,6 @@ public class MechController extends EventController implements GRTJoystickListen
     private PickerUpper pickerUpper;
     private Shooter shooter;
     
-    private double angularVelocity;
     private double shooterPreset1;
     private double shooterPreset2;
     private double shooterPreset3;
@@ -83,11 +82,6 @@ public class MechController extends EventController implements GRTJoystickListen
     }
 
     public void YAxisMoved(JoystickEvent e) {
-        if (e.getSource() == secondaryJoy) {
-            angularVelocity = e.getData();
-             
-        }
-        shooter.setAngularSpeed(-angularVelocity);
     }
 
     public void AngleChanged(JoystickEvent e) {
@@ -117,8 +111,6 @@ public class MechController extends EventController implements GRTJoystickListen
                 case ButtonBoard.KEY_BUTTON2: shooter.setSpeed(shooterPreset2);
                     break;
                 case ButtonBoard.KEY_BUTTON3: shooter.setSpeed(shooterPreset3);
-                    break;
-                case ButtonBoard.KEY_BUTTON4: climber.popWheelie();
                     break;
                 case ButtonBoard.KEY_BUTTON5: climber.climb();
                     break;

@@ -22,7 +22,7 @@ public class PickerUpper extends GRTLoggedProcess implements SwitchListener{
     private static double ROLLER_SF = 1, RAISE_SF = 1;
     
     public PickerUpper(SpeedController rollerMotor, SpeedController raiserMotor, 
-            GRTSwitch limitUp,GRTSwitch limitDown) {
+            GRTSwitch limitUp, GRTSwitch limitDown) {
         super("PickerUpper mech");
         this.rollerMotor = rollerMotor;
         this.raiserMotor = raiserMotor;

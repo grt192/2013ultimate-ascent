@@ -17,6 +17,9 @@ public class GRTDoubleActuator {
     private boolean act1State = false;
     private boolean act2State = false;
     
+    private GRTSolenoid solenoid1 = new GRTSpikeSolenoid(true);
+    private GRTSolenoid solenoid2 = new GRTSpikeSolenoid(false);
+    
     /**
      * Creates a new GRTDoubleActuator.
      * @param channel Relay channel to which the relay is connected.
@@ -68,6 +71,22 @@ public class GRTDoubleActuator {
         updateState();
     }
     
+    /**
+     * Returns a GRTSolenoid that controls the solenoid on the M+ pin.
+     * @return equivalent GRTSolenoid
+     */
+    public GRTSolenoid getFirstSolenoid() {
+        return solenoid1;
+    }
+    
+    /**
+     * Returns a GRTSolenoid that controls the solenoid on the M- pin.
+     * @return equivalent GRTSolenoid
+     */
+    public GRTSolenoid getSecondSolenoid() {
+        return solenoid2;
+    }
+    
     private void updateState() {
         Relay.Value value;
         
@@ -88,5 +107,27 @@ public class GRTDoubleActuator {
         }
         
         relay.set(value);
+    }
+    
+    private class GRTSpikeSolenoid extends GRTSolenoid {
+        private final boolean isFirstSolenoid;
+        
+        private GRTSpikeSolenoid(boolean isFirstSolenoid) {
+            super();
+            this.isFirstSolenoid = isFirstSolenoid;
+        }
+        
+        public void set(boolean on) {
+            if (isFirstSolenoid)
+                setFirstActuatorState(on);
+            else
+                setSecondActuatorState(on);
+        }
+        
+        public boolean get() {
+            return isFirstSolenoid ? act1State : act2State;
+        }
+        
+        public void free(){};
     }
 }

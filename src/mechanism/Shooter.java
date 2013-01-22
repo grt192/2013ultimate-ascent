@@ -4,8 +4,8 @@
  */
 package mechanism;
 
+import actuator.GRTSolenoid;
 import core.GRTLoggedProcess;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -14,37 +14,51 @@ import edu.wpi.first.wpilibj.Timer;
  * @author Calvin
  */
 public class Shooter extends GRTLoggedProcess {
-    private SpeedController shooterMotor;
-    private SpeedController angleMotor;
-    private Solenoid feeder;
+    private SpeedController shooterMotor1, shooterMotor2;
+    private GRTSolenoid feeder, raiser1, raiser2;
+    private GRTSolenoid frisbeeHolder;
     
     private static final double SHOOT_TIME = 0.4; //TODO check
     
-    public Shooter(SpeedController shooterMotor, SpeedController angleMotor,
-            Solenoid feeder) {
+    public Shooter(SpeedController shooterMotor1, SpeedController shooterMotor2,
+            GRTSolenoid feeder, GRTSolenoid raiser1, GRTSolenoid raiser2,
+            GRTSolenoid holdDown) {
         super("Shooter mech");
-        this.shooterMotor = shooterMotor;
-        this.angleMotor = angleMotor;
         this.feeder = feeder;
-        //TODO
+        this.shooterMotor1 = shooterMotor1;
+        this.shooterMotor2 = shooterMotor2;
+        this.raiser1 = raiser1;
+        this.raiser2 = raiser2;
+        frisbeeHolder = holdDown;
     }
     
     public void setSpeed(double speed) {
-        //TODO
+        shooterMotor1.set(speed);
+        shooterMotor2.set(speed);
+        //TODO PID
     }
     
-   
-    public void setAngle(double angle) {
-        //TODO
+    public void lower() {
+        raiser1.set(true);
+        raiser2.set(true);
     }
     
-    public void setAngularSpeed(double speed) {
-        //TODO
+    public void raise() {
+        raiser1.set(false);
+        raiser2.set(false);
     }
     
     public void shoot() {
         feeder.set(true);
         Timer.delay(SHOOT_TIME);
         feeder.set(false);
+    }
+    
+    public void raiseHoldDown() {
+        frisbeeHolder.set(true);
+    }
+    
+    public void lowerHoldDown() {
+        frisbeeHolder.set(false);
     }
 }

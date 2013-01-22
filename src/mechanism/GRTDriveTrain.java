@@ -1,7 +1,7 @@
 package mechanism;
 
+import actuator.GRTSolenoid;
 import core.GRTLoggedProcess;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import logger.GRTLogger;
 import sensor.GRTEncoder;
@@ -24,7 +24,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     private double rightBackSF = -1;
     
     private boolean hasShifters = false;
-    private Solenoid leftShifter, rightShifter;
+    private GRTSolenoid leftShifter, rightShifter;
     
     private boolean hasEncoders = false;
     private GRTEncoder leftEncoder, rightEncoder;
@@ -57,7 +57,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
 
     public GRTDriveTrain(SpeedController leftFront, SpeedController leftBack,
             SpeedController rightFront, SpeedController rightBack,
-            Solenoid leftShifter, Solenoid rightShifter) {
+            GRTSolenoid leftShifter, GRTSolenoid rightShifter) {
 
         this(leftFront, leftBack, rightFront, rightBack,
                 leftShifter, rightShifter,
@@ -66,7 +66,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     
     public GRTDriveTrain(SpeedController leftFront, SpeedController leftBack,
             SpeedController rightFront, SpeedController rightBack,
-            Solenoid leftShifter, Solenoid rightShifter,
+            GRTSolenoid leftShifter, GRTSolenoid rightShifter,
             GRTEncoder leftEncoder, GRTEncoder rightEncoder) {
         
         super("Drivetrain");
