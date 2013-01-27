@@ -15,7 +15,7 @@ import logger.GRTLogger;
 import mechanism.Belts;
 import mechanism.Climber;
 import mechanism.GRTDriveTrain;
-import mechanism.PickerUpper;
+import mechanism.ExternalPickup;
 import mechanism.Shooter;
 import sensor.ButtonBoard;
 import sensor.GRTBatterySensor;
@@ -135,7 +135,7 @@ public class MainRobot extends GRTRobot {
         GRTSwitch limitUp = new GRTSwitch((int) GRTConstants.getValue("pickUpUpperLimit"), 50, false, "limitUp");
         GRTSwitch limitDown = new GRTSwitch((int) GRTConstants.getValue("pickUpLowerLimit"), 50, false, "limitDown");
 
-        PickerUpper youTiao = new PickerUpper(rollerMotor, raiserMotor, limitUp, limitDown);
+        ExternalPickup youTiao = new ExternalPickup(rollerMotor, raiserMotor, limitUp, limitDown);
 
         //Climber
       
@@ -153,7 +153,12 @@ public class MainRobot extends GRTRobot {
         buttonBoard.startPolling();
         
         //Mechcontroller
-        MechController mechController = new MechController(leftPrimary, rightPrimary, secondary, null, shooter, youTiao, climber, belts);
+        MechController mechController = new 
+                MechController(leftPrimary, rightPrimary, secondary, 
+                                null, shooter, youTiao, climber, belts,
+                                GRTConstants.getValue("shooterPreset1"),
+                                GRTConstants.getValue("shooterPreset2"),
+                                GRTConstants.getValue("shooterPreset3"));
 
 
         addTeleopController(mechController);

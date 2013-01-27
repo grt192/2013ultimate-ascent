@@ -1,4 +1,5 @@
-robot,2013
+#2013.1: Constants for Gunn Robotics BetaBot 2013
+robot,2013.1
 vision,0.0
 
 leftDT1,9
@@ -16,3 +17,7 @@ encoderLeftB,2
 
 encoderRightA,3
 encoderRightB,4
+
+shooterPreset1,5.0
+shooterPreset2,8.0
+shooterPreset3,1.0

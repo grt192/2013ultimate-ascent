@@ -9,7 +9,7 @@ import event.listeners.GRTJoystickListener;
 import event.listeners.PotentiometerListener;
 import mechanism.Belts;
 import mechanism.Climber;
-import mechanism.PickerUpper;
+import mechanism.ExternalPickup;
 import mechanism.Shooter;
 import sensor.ButtonBoard;
 import sensor.GRTJoystick;
@@ -28,7 +28,7 @@ public class MechController extends EventController implements GRTJoystickListen
     
     private Belts belts;
     private Climber climber;
-    private PickerUpper pickerUpper;
+    private ExternalPickup pickerUpper;
     private Shooter shooter;
     
     private double shooterPreset1;
@@ -37,8 +37,9 @@ public class MechController extends EventController implements GRTJoystickListen
     
     public MechController(GRTJoystick leftJoy, GRTJoystick rightJoy,
             GRTJoystick secondaryJoy, ButtonBoard buttonBoard,
-            Shooter shooter, PickerUpper pickerUpper,
-            Climber climber, Belts belts) {
+            Shooter shooter, ExternalPickup pickerUpper,
+            Climber climber, Belts belts,
+            double preset1, double preset2, double preset3) {
         super("Mechanism Controller");
         this.leftJoy = leftJoy;
         this.rightJoy = rightJoy;
@@ -50,6 +51,9 @@ public class MechController extends EventController implements GRTJoystickListen
         this.pickerUpper = pickerUpper;
         this.shooter = shooter;
         
+        this.shooterPreset1 = preset1;
+        this.shooterPreset2 = preset2;
+        this.shooterPreset3 = preset3;
     }
     
     protected void startListening() {

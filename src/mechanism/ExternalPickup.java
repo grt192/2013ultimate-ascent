@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package mechanism;
 
 import core.GRTLoggedProcess;
@@ -11,17 +7,17 @@ import event.listeners.SwitchListener;
 import sensor.GRTSwitch;
 
 /**
- * Mechanism code for PickerUpper
+ * Mechanism code for ExternalPickup
  * @author Sidd and Nadia
  */
-public class PickerUpper extends GRTLoggedProcess implements SwitchListener{
+public class ExternalPickup extends GRTLoggedProcess implements SwitchListener{
     private SpeedController rollerMotor;
     private SpeedController raiserMotor;
     private GRTSwitch limitUp;
     private GRTSwitch limitDown;
     private static double ROLLER_SF = 1, RAISE_SF = 1;
     
-    public PickerUpper(SpeedController rollerMotor, SpeedController raiserMotor, 
+    public ExternalPickup(SpeedController rollerMotor, SpeedController raiserMotor, 
             GRTSwitch limitUp, GRTSwitch limitDown) {
         super("PickerUpper mech");
         this.rollerMotor = rollerMotor;
