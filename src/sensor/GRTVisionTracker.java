@@ -60,7 +60,7 @@ public class GRTVisionTracker extends Sensor {
 
     private CriteriaCollection cc;
 
-    private static final double SLEEP_TIME = 1000;
+    private static final int SLEEP_TIME = 1000;
 
     private Vector listeners;   //VisionTrackerListeners
 
@@ -150,14 +150,19 @@ public class GRTVisionTracker extends Sensor {
             ColorImage image;
             image = camera.getImage();
             //image = new RGBImage("/testImage.jpg");		// get the sample image from the cRIO flash
-            BinaryImage thresholdImage = image.thresholdHSV(60, 100, 90, 255, 20, 255);   // keep only green objects
+            BinaryImage thresholdImage = image.thresholdHSV(50, 110, 90, 255, 20, 255);   // keep only green objects
             BinaryImage convexHullImage = thresholdImage.convexHull(false);          // fill in occluded rectangles
             BinaryImage filteredImage = convexHullImage.particleFilter(cc);           // filter out small particles
 
+           
+    
             //iterate through each particle and score to see if it is a target
             Scores scores[] = new Scores[filteredImage.getNumberParticles()];
             for (int i = 0; i < scores.length; i++) {
                 ParticleAnalysisReport report = filteredImage.getParticleAnalysisReport(i);
+                //System.out.println(report);
+                
+                
                 scores[i] = new Scores();
 
                 scores[i].rectangularity = scoreRectangularity(report);
@@ -173,18 +178,20 @@ public class GRTVisionTracker extends Sensor {
                     centroid_x_normalized = report.center_mass_x_normalized;
                     centroid_y_normalized = report.center_mass_y_normalized;
 
-                    distance = computeDistance(thresholdImage, report, i, false);
+                    distance = computeDistance(thresholdImage, report, i, true);
                     //                    System.out.println("particle: " + i + "is a High Goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
                     //                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, false));
 
+                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, true));
+                    
                 } 
 
-                /*
-                   else if (scoreCompare(scores[i], true)) {
+                
+                   /*else if (scoreCompare(scores[i], true)) {
                    System.out.println("particle: " + i + "is a Middle Goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, true));
                    }
-                   */
+                  */
 
                 else {
                     logError("particle: " + i + " is not a goal\tcenterX: " + report.center_mass_x_normalized + "\tcenterY: " + report.center_mass_y_normalized);
@@ -222,15 +229,28 @@ public class GRTVisionTracker extends Sensor {
      */
     double computeDistance (BinaryImage image, ParticleAnalysisReport report, int particleNumber, boolean outer) throws NIVisionException {
         double rectShort, height;
-        int targetHeight;
+        double targetHeight;
+        
 
         rectShort = NIVision.MeasureParticle(image.image, particleNumber, false, NIVision.MeasurementType.IMAQ_MT_EQUIVALENT_RECT_SHORT_SIDE);
         //using the smaller of the estimated rectangle short side and the bounding rectangle height results in better performance
         //on skewed rectangles
-        height = Math.min(report.boundingRectHeight, rectShort);
-        targetHeight = outer ? 29 : 21;
+        //height = Math.min(report.boundingRectHeight, rectShort);
+        height = report.boundingRectHeight;
+        //targetHeight = outer ? 29 : 21;
+        //changed by Yonatan Oren//
+        //need to change this back to 29/21 for for real ultimate ascent//
+        targetHeight = 9.75;
+        
+//
+//         System.out.println("rectShort: " + rectShort);
+//         System.out.println("height: " + height);
+//         System.out.println("boundingRectHeight: " + report.boundingRectHeight);
 
-        return X_IMAGE_RES * targetHeight / (height * 12 * 2 * Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
+         //changed by Yonatan Oren//
+        //return X_IMAGE_RES * targetHeight / (height * 12 * 2 * Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
+         return 480.0 * targetHeight / (height * Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
+         //4800 / 62 * tan(
     }
 
     /**

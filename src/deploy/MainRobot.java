@@ -158,14 +158,15 @@ public class MainRobot extends GRTRobot {
         cam.writeResolution(AxisCamera.ResolutionT.k640x480);
 
         //If vision is enabled, add the Tracker autonomous controller.
-        if (GRTConstants.getValue("vision") == 1.0){
+        //if (GRTConstants.getValue("vision") == 1){
             GRTVisionTracker tracker = new GRTVisionTracker(cam);
             tracker.startPolling(); //Allow it to wait for enable.
 
             TrackerController trackController = new TrackerController(tracker);
 
             addAutonomousController(trackController);
-        }
+            trackController.startPolling();
+       // }
         
         GRTLogger.logInfo("mechanisms intialized");
     }
