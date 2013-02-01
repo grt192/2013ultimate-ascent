@@ -93,6 +93,8 @@ public class MechController extends EventController implements GRTJoystickListen
 
     
     public void buttonPressed(ButtonEvent e) {
+        try{
+        logInfo("Button Pressed: " + e.getID());
         if (e.getSource() == rightJoy) {
             if (e.getButtonID() == GRTJoystick.KEY_BUTTON_3) {
                 pickerUpper.pickUp();
@@ -106,6 +108,10 @@ public class MechController extends EventController implements GRTJoystickListen
             if (e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER) {
                 pickerUpper.lower();
             }
+        }
+        
+        if (e.getButtonID() == GRTJoystick.KEY_BUTTON_7){
+            shooter.setSpeed(1.0);
         }
         
         else if (e.getSource() == buttonBoard) {
@@ -131,6 +137,10 @@ public class MechController extends EventController implements GRTJoystickListen
                     break;
             }
         }
+        }
+        catch (NullPointerException _){
+            _.printStackTrace();
+        }
     }
 
     public void buttonReleased(ButtonEvent e) {
@@ -138,6 +148,22 @@ public class MechController extends EventController implements GRTJoystickListen
             if (e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER) {
                 pickerUpper.raise();
             }
+        }
+        else if (e.getSource() == buttonBoard) {
+            switch (e.getButtonID()) {
+                case ButtonBoard.KEY_BUTTON1: shooter.setSpeed(0.0);
+                    break;
+                case ButtonBoard.KEY_BUTTON2: shooter.setSpeed(0.0);
+                    break;
+                case ButtonBoard.KEY_BUTTON3: shooter.setSpeed(0.0);
+                    break;
+                case ButtonBoard.KEY_BUTTON5: climber.climb();
+                    break;
+            }
+        }
+        
+        if (e.getButtonID() == GRTJoystick.KEY_BUTTON_7){
+            shooter.setSpeed(0.0);
         }
     }
 

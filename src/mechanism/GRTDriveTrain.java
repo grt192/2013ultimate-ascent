@@ -117,13 +117,25 @@ public class GRTDriveTrain extends GRTLoggedProcess {
      * @param rightVelocity right drivetrain velocity
      */
     public void setMotorSpeeds(double leftVelocity, double rightVelocity) {
-        logInfo("Left: " +  leftVelocity +"\tRight: " + rightVelocity);        
+        logInfo("Left: " +  leftVelocity +"\tRight: " + rightVelocity);
         
-        leftFront.set(leftVelocity * leftFrontSF * power);
-        rightFront.set(rightVelocity * rightFrontSF * power);
-        leftBack.set(leftVelocity * leftBackSF * power);
-        rightBack.set(rightVelocity * rightBackSF * power);
+//        if (Math.abs(leftVelocity) >= 0.06){
+            leftFront.set(leftVelocity * leftFrontSF * power);
+            leftBack.set(leftVelocity * leftBackSF * power);
+//        } else {
+//            logInfo("Dead zone");
+//            leftFront.set(0.0);
+//            leftBack.set(0.0);
+//        }
         
+//        if (Math.abs(rightVelocity) >= 0.06){
+            rightBack.set(rightVelocity * rightBackSF * power);
+            rightFront.set(rightVelocity * rightFrontSF * power);
+//        } else {
+//            logInfo("Dead zone");
+//            rightFront.set(0.0);
+//            rightBack.set(0.0);
+//        }
     }
         
     /**
