@@ -67,11 +67,20 @@ public class GRTSwitch extends Sensor {
         setState(STATE, isPressed() ? TRUE : FALSE);
     }
 
+    public void addListener(SwitchListener l) {
+        listeners.addElement(l);
+    }
+
+    public void removeListener(SwitchListener l) {
+        listeners.removeElement(l);
+    }
+
     protected void notifyListeners(int id, double newDatum) {
 
         SwitchEvent e = new SwitchEvent(this, newDatum);
 
-        for (Enumeration en = listeners.elements(); en.hasMoreElements();)
+        for (Enumeration en = listeners.elements(); en.hasMoreElements();) {
             ((SwitchListener) en.nextElement()).switchStateChanged(e);
+        }
     }
 }
