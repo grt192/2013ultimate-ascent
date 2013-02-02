@@ -17,7 +17,7 @@ public class ExternalPickup extends GRTLoggedProcess implements SwitchListener {
     private SpeedController raiserMotor;
     private GRTSwitch limitUp;
     private GRTSwitch limitDown;
-    private static double ROLLER_SF = -1, RAISE_SF = 1;
+    private static double ROLLER_SF = -1, RAISE_SPEED = 1, LOWER_SPEED = -.3;
 
     public ExternalPickup(SpeedController rollerMotor, SpeedController raiserMotor,
             GRTSwitch limitUp, GRTSwitch limitDown) {
@@ -34,14 +34,14 @@ public class ExternalPickup extends GRTLoggedProcess implements SwitchListener {
     public void raise() {
         //if the chalupa is already raised it will not raise further
         if (!limitUp.isPressed()) {
-            raiserMotor.set(1 * RAISE_SF);
+            raiserMotor.set(RAISE_SPEED);
         }
     }
 
     public void lower() {
         //if the chalupa is already lowered it will not lower further
         if (!limitDown.isPressed()) {
-            raiserMotor.set(-1 * RAISE_SF);
+            raiserMotor.set(LOWER_SPEED);
         }
     }
 
