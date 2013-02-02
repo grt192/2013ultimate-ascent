@@ -23,7 +23,28 @@ public class Climber extends GRTLoggedProcess {
         this.engager = engager;
     }
     
-    public void climb() {
-        //TODO
+    public void engage() {
+        engager.set(true);
+    }
+    
+    public void disengage() {
+        engager.set(false);
+    }
+    
+    public void toggleTop() {
+        solenoid1.set(!solenoid1.get());
+    }
+    
+    public void toggleBottom() {
+        solenoid2.set(!solenoid2.get());
+    }
+    
+    public void winch(double speed) {
+        dt.setMotorSpeeds(speed, speed);
+    }
+    
+    public boolean isEngaged()
+    {
+        return engager.get();
     }
 }

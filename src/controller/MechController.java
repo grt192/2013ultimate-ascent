@@ -29,6 +29,7 @@ public class MechController extends EventController implements GRTJoystickListen
     private Climber climber;
     private ExternalPickup pickerUpper;
     private Shooter shooter;
+    private DriveController dc;
     private double shooterPreset1;
     private double shooterPreset2;
     private double shooterPreset3;
@@ -37,7 +38,7 @@ public class MechController extends EventController implements GRTJoystickListen
             GRTJoystick secondaryJoy, ButtonBoard buttonBoard,
             Shooter shooter, ExternalPickup pickerUpper,
             Climber climber, Belts belts,
-            double preset1, double preset2, double preset3) {
+            double preset1, double preset2, double preset3, DriveController dc) {
         super("Mechanism Controller");
         this.leftJoy = leftJoy;
         this.rightJoy = rightJoy;
@@ -87,7 +88,14 @@ public class MechController extends EventController implements GRTJoystickListen
         if (e.getSource().equals(secondaryJoy) &&
                 secondaryJoy.getState(GRTJoystick.KEY_BUTTON_TRIGGER) ==
                 GRTJoystick.TRUE)
-            shooter.raise(e.getData());
+        {
+            shooter.adjustHeight(e.getData());
+        }
+        
+        if (e.getSource().equals(secondaryJoy) && climber.isEngaged())
+        {
+            climber.winch(e.getData());
+        }
     }
 
     public void AngleChanged(JoystickEvent e) {
@@ -123,8 +131,18 @@ public class MechController extends EventController implements GRTJoystickListen
                     case ButtonBoard.KEY_BUTTON3:
                         shooter.setSpeed(shooterPreset3);
                         break;
-//                case ButtonBoard.KEY_BUTTON5: climber.climb();
-//                    break;
+                    case ButtonBoard.KEY_BUTTON4:
+                        if(climber.isEngaged())
+                            climber.toggleBottom();
+                        break;
+                    case ButtonBoard.KEY_BUTTON5:
+                        if(climber.isEngaged())
+                        climber.toggleTop();
+                        break;
+                    case ButtonBoard.KEY_BUTTON6:
+                        climber.engage();
+                        dc.disengage();
+                        break;
                 }
             } else if (e.getSource() == secondaryJoy) {
                 switch (e.getButtonID()) {
@@ -140,7 +158,7 @@ public class MechController extends EventController implements GRTJoystickListen
                         belts.moveDown();
                         logInfo("belts move down");
                         break;
-                }
+            }
             }
         } catch (NullPointerException _) {
             _.printStackTrace();
@@ -172,7 +190,7 @@ public class MechController extends EventController implements GRTJoystickListen
                     logInfo("belts stop");
                     break;
                 case GRTJoystick.KEY_BUTTON_TRIGGER:
-                    shooter.raise(0);
+                    shooter.adjustHeight(0);
                     break;
             }
         } else if (e.getSource() == buttonBoard) {

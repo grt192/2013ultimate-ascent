@@ -69,7 +69,7 @@ public class DriveController extends EventController implements GRTJoystickListe
         } else if ( e.getSource() == right ){
             rightVelocity = e.getData();
         }
-        
+
         dt.setMotorSpeeds(leftVelocity, rightVelocity);
     }
 
@@ -93,5 +93,11 @@ public class DriveController extends EventController implements GRTJoystickListe
                 dt.shiftUp();
             }            
         }
+    }
+    
+    public void disengage()
+    {
+        dt.setMotorSpeeds(0, 0);
+        this.disable();
     }
 }
