@@ -11,21 +11,20 @@ import edu.wpi.first.wpilibj.Timer;
  */
 public class Shooter extends GRTLoggedProcess {
     private SpeedController shooterMotor1, shooterMotor2;
-    private GRTSolenoid feeder, raiser1, raiser2;
-    private GRTSolenoid frisbeeHolder;
+    private SpeedController raiser;
+    private GRTSolenoid frisbeeHolder, feeder;
     
     private static final double SHOOT_TIME = 0.4; //TODO check
     
     public Shooter(SpeedController shooterMotor1, SpeedController shooterMotor2,
-            GRTSolenoid feeder, GRTSolenoid raiser1, GRTSolenoid raiser2,
+            GRTSolenoid feeder, SpeedController raiser,
             GRTSolenoid holdDown) {
         super("Shooter mech");
         this.feeder = feeder;
         this.shooterMotor1 = shooterMotor1;
         this.shooterMotor2 = shooterMotor2;
-        this.raiser1 = raiser1;
-        this.raiser2 = raiser2;
         frisbeeHolder = holdDown;
+        this.raiser = raiser;
         
         logInfo("New Shooter");
     }
@@ -37,14 +36,8 @@ public class Shooter extends GRTLoggedProcess {
         //TODO PID
     }
     
-    public void lower() {
-        raiser1.set(true);
-        raiser2.set(true);
-    }
-    
-    public void raise() {
-        raiser1.set(false);
-        raiser2.set(false);
+    public void raise(double velocity) {
+        raiser.set(velocity);
     }
     
     public void shoot() {

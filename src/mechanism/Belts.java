@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.SpeedController;
  * @author Sidd
  */
 public class Belts extends GRTLoggedProcess{
-    private static final double SPEED = 1.0;
+    private static final double SPEED = -1.0;
     private final SpeedController beltsMotor;
     private final GRTSolenoid fingerSolenoid;
     

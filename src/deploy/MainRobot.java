@@ -1,26 +1,23 @@
 package deploy;
 
-import actuator.GRTDoubleActuator;
 import actuator.GRTSolenoid;
 import controller.DriveController;
-import core.EventController;
-import core.GRTMacroController;
 import controller.MechController;
+import core.EventController;
 import core.GRTConstants;
+import core.GRTMacroController;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.camera.AxisCamera;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import java.util.Vector;
 import logger.GRTLogger;
 import macro.MacroDriveTrapezoidal;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import logger.GRTLogger;
 import mechanism.Belts;
-import mechanism.GRTDriveTrain;
 import mechanism.ExternalPickup;
+import mechanism.GRTDriveTrain;
 import mechanism.Shooter;
 import sensor.ButtonBoard;
 import sensor.GRTBatterySensor;
@@ -96,75 +93,83 @@ public class MainRobot extends GRTRobot {
         GRTLogger.logInfo("Motors initialized");
 
         //Mechanisms
-        dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2);
-        //TODO Encoders
+        GRTEncoder leftEnc = new GRTEncoder((int) GRTConstants.getValue("encoderLeftA"),
+                (int) GRTConstants.getValue("encoderLeftB"),
+                1, 50, "leftEnc");
+        GRTEncoder rightEnc = new GRTEncoder((int) GRTConstants.getValue("encoderRightA"),
+                (int) GRTConstants.getValue("encoderRightB"),
+                1, 50, "rightEnc");
+        dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2,
+                leftEnc, rightEnc);
 
-        dt.setScaleFactors(1, -1, -1, 1);
-
+        dt.setScaleFactors(GRTConstants.getValue("leftDT1Scale"),
+                GRTConstants.getValue("leftDT2Scale"),
+                GRTConstants.getValue("rightDT1Scale"),
+                GRTConstants.getValue("rightDT2Scale"));
 
         DriveController dc = new DriveController(dt, leftPrimary, rightPrimary);
 
         addTeleopController(dc);
 
         //Compressor
-        Compressor compressor = new Compressor((int) GRTConstants.getValue("compressor"), 1);
-        compressor.start();
+        Compressor compressor = new Compressor((int) GRTConstants.getValue("compressorSwitch"),
+                (int) GRTConstants.getValue("compressorRelay"));
+//        compressor.start();
 
 //        GRTDoubleActuator doubleSolenoid = new GRTDoubleActuator((int) GRTConstants.getValue("doubleSolenoidPin"));
 
         //shooter actuators
         Talon shooter1 = new Talon((int) GRTConstants.getValue("shooter1"));
         Talon shooter2 = new Talon((int) GRTConstants.getValue("shooter2"));
-        GRTSolenoid shooterFeeder = new GRTSolenoid((int) GRTConstants.getValue("shooterFeeder"));
-//        GRTSolenoid shooterRaiser1 = new GRTSolenoid((int) GRTConstants.getValue("shooterRaiser1"));
-//        GRTSolenoid shooterRaiser2 = new GRTSolenoid((int) GRTConstants.getValue("shooterRaiser2"));
+        Victor shooterRaiser = new Victor((int) GRTConstants.getValue("shooterRaiser"));
+//        GRTSolenoid shooterFeeder = new GRTSolenoid((int) GRTConstants.getValue("shooterFeeder"));
 //        GRTSolenoid shooterHoldDown = doubleSolenoid.getFirstSolenoid();
 
-        Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder,
-                null, null, null);
+        Shooter shooter = new Shooter(shooter1, shooter2, null, shooterRaiser, null);
 
-        shooter.enable();
-        
         //Belts actuators
         Victor beltsMotor = new Victor((int) GRTConstants.getValue("belts"));
-    //    GRTSolenoid fingerSolenoid = new GRTSolenoid((int) GRTConstants.getValue("fingerSolenoid"));
+        //    GRTSolenoid fingerSolenoid = new GRTSolenoid((int) GRTConstants.getValue("fingerSolenoid"));
 
         Belts belts = new Belts(beltsMotor, null);
 
 
 
         //PickerUpper
-  
+
 
         SpeedController rollerMotor = new Victor((int) GRTConstants.getValue("rollerMotor"));
         SpeedController raiserMotor = new Victor((int) GRTConstants.getValue("raiserMotor"));
         GRTSwitch limitUp = new GRTSwitch((int) GRTConstants.getValue("pickUpUpperLimit"), 50, false, "limitUp");
+        limitUp.enable();
+        limitUp.startPolling();
         GRTSwitch limitDown = new GRTSwitch((int) GRTConstants.getValue("pickUpLowerLimit"), 50, false, "limitDown");
+        limitDown.enable();
+        limitDown.startPolling();
 
         ExternalPickup youTiao = new ExternalPickup(rollerMotor, raiserMotor, limitUp, limitDown);
 
         //Climber
-      
 
-        GRTSolenoid solenoid1 = new GRTSolenoid((int) GRTConstants.getValue("climberSolenoid1"));
-        GRTSolenoid solenoid2 = new GRTSolenoid((int) GRTConstants.getValue("climberSolenoid2"));
+
+//        GRTSolenoid solenoid1 = new GRTSolenoid((int) GRTConstants.getValue("climberSolenoid1"));
+//        GRTSolenoid solenoid2 = new GRTSolenoid((int) GRTConstants.getValue("climberSolenoid2"));
 //        GRTSolenoid engager = doubleSolenoid.getSecondSolenoid();
 
 //        Climber climber = new Climber(dt, solenoid1, solenoid2, engager);
 
-        
+
         //ButtonBoard
         ButtonBoard buttonBoard = ButtonBoard.getButtonBoard();
         buttonBoard.enable();
         buttonBoard.startPolling();
-        
+
         //Mechcontroller
-        MechController mechController = new 
-                MechController(leftPrimary, rightPrimary, secondary, 
-                                null, shooter, youTiao, null, belts,
-                                GRTConstants.getValue("shooterPreset1"),
-                                GRTConstants.getValue("shooterPreset2"),
-                                GRTConstants.getValue("shooterPreset3"));
+        MechController mechController = new MechController(leftPrimary, rightPrimary, secondary,
+                buttonBoard, shooter, youTiao, null, belts,
+                GRTConstants.getValue("shooterPreset1"),
+                GRTConstants.getValue("shooterPreset2"),
+                GRTConstants.getValue("shooterPreset3"));
 
 
         addTeleopController(mechController);
@@ -232,23 +237,23 @@ public class MainRobot extends GRTRobot {
         //Mechanisms
         dt = new GRTDriveTrain(leftDT1, leftDT2,
                 rightDT1, rightDT2);
-        
+
         GRTLogger.logInfo("Setting the scale factors!");
-        dt.setScaleFactors(GRTConstants.getValue("leftDT1Scale"), 
-                           GRTConstants.getValue("leftDT2Scale"),
-                           GRTConstants.getValue("rightDT1Scale"),
-                           GRTConstants.getValue("rightDT2Scale"));
-        
+        dt.setScaleFactors(GRTConstants.getValue("leftDT1Scale"),
+                GRTConstants.getValue("leftDT2Scale"),
+                GRTConstants.getValue("rightDT1Scale"),
+                GRTConstants.getValue("rightDT2Scale"));
+
         GRTLogger.logInfo("Mechanisms initialized");
 
         //Controllers
-        MacroDriveTrapezoidal trap = new MacroDriveTrapezoidal(dt, -5, 10000, leftEnc, rightEnc, 2000, 2000);
-        
-        Vector macros = new Vector();
-        macros.addElement(trap);
-        EventController ac = new GRTMacroController(macros);
-        addAutonomousController(ac);
-        
+//        MacroDriveTrapezoidal trap = new MacroDriveTrapezoidal(dt, -5, 10000, leftEnc, rightEnc, 2000, 2000);
+//        
+//        Vector macros = new Vector();
+//        macros.addElement(trap);
+//        EventController ac = new GRTMacroController(macros);
+//        addAutonomousController(ac);
+
 
         DriveController dc =
                 new DriveController(dt, primary, secondary);
