@@ -1,8 +1,5 @@
 package core;
 
-import event.events.SensorEvent;
-import event.listeners.SensorChangeListener;
-import java.util.Enumeration;
 import java.util.Vector;
 
 /**
@@ -19,7 +16,6 @@ public abstract class Sensor extends GRTLoggedProcess {
     public static final double FALSE = 0.0;
     public static final double ERROR = Double.NaN;
     //Instance variables
-    private final Vector stateChangeListeners;   //Collection of things that listen to this sensor
     private double[] data;
 
     /**
@@ -42,7 +38,6 @@ public abstract class Sensor extends GRTLoggedProcess {
      */
     public Sensor(String name, int sleepTime, int numData) {
         super(name, sleepTime);
-        stateChangeListeners = new Vector();
         running = true;
         data = new double[numData];
     }
@@ -57,7 +52,7 @@ public abstract class Sensor extends GRTLoggedProcess {
         double previous = data[id];
         //notify self and state change listeners if the datum has changed
         if (previous != datum) {
-            notifyStateChange(id, datum);
+            notifyListeners(id, datum);
         }
         data[id] = datum;
     }
@@ -114,30 +109,4 @@ public abstract class Sensor extends GRTLoggedProcess {
      * @param newDatum the datum's new value
      */
     protected abstract void notifyListeners(int id, double newDatum);
-
-    protected void notifyStateChange(int id, double newDatum) {
-        notifyListeners(id, newDatum);
-        SensorEvent e = new SensorEvent(this, id, newDatum);
-        for (Enumeration en = stateChangeListeners.elements(); en.hasMoreElements();) {
-            ((SensorChangeListener) en.nextElement()).sensorStateChanged(e);
-        }
-    }
-
-    /**
-     * Adds a sensor state change listener.
-     *
-     * @param l state change listener to add.
-     */
-    public void addSensorStateChangeListener(SensorChangeListener l) {
-        stateChangeListeners.addElement(l);
-    }
-
-    /**
-     * Removes a sensor state change listener.
-     *
-     * @param l state change listener to remove.
-     */
-    public void removeSensorStateChangeListener(SensorChangeListener l) {
-        stateChangeListeners.removeElement(l);
-    }
 }

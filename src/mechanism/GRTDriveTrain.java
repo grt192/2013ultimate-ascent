@@ -1,7 +1,7 @@
 package mechanism;
 
+import actuator.GRTSolenoid;
 import core.GRTLoggedProcess;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import logger.GRTLogger;
 import sensor.GRTEncoder;
@@ -24,7 +24,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     private double rightBackSF = -1;
     
     private boolean hasShifters = false;
-    private Solenoid leftShifter, rightShifter;
+    private GRTSolenoid leftShifter, rightShifter;
     
     private boolean hasEncoders = false;
     private GRTEncoder leftEncoder, rightEncoder;
@@ -57,7 +57,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
 
     public GRTDriveTrain(SpeedController leftFront, SpeedController leftBack,
             SpeedController rightFront, SpeedController rightBack,
-            Solenoid leftShifter, Solenoid rightShifter) {
+            GRTSolenoid leftShifter, GRTSolenoid rightShifter) {
 
         this(leftFront, leftBack, rightFront, rightBack,
                 leftShifter, rightShifter,
@@ -66,7 +66,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     
     public GRTDriveTrain(SpeedController leftFront, SpeedController leftBack,
             SpeedController rightFront, SpeedController rightBack,
-            Solenoid leftShifter, Solenoid rightShifter,
+            GRTSolenoid leftShifter, GRTSolenoid rightShifter,
             GRTEncoder leftEncoder, GRTEncoder rightEncoder) {
         
         super("Drivetrain");
@@ -117,13 +117,25 @@ public class GRTDriveTrain extends GRTLoggedProcess {
      * @param rightVelocity right drivetrain velocity
      */
     public void setMotorSpeeds(double leftVelocity, double rightVelocity) {
-        logInfo("Left: " +  leftVelocity +"\tRight: " + rightVelocity);        
+        logInfo("Left: " +  leftVelocity +"\tRight: " + rightVelocity);
         
-        leftFront.set(leftVelocity * leftFrontSF * power);
-        rightFront.set(rightVelocity * rightFrontSF * power);
-        leftBack.set(leftVelocity * leftBackSF * power);
-        rightBack.set(rightVelocity * rightBackSF * power);
+//        if (Math.abs(leftVelocity) >= 0.06){
+            leftFront.set(leftVelocity * leftFrontSF * power);
+            leftBack.set(leftVelocity * leftBackSF * power);
+//        } else {
+//            logInfo("Dead zone");
+//            leftFront.set(0.0);
+//            leftBack.set(0.0);
+//        }
         
+//        if (Math.abs(rightVelocity) >= 0.06){
+            rightBack.set(rightVelocity * rightBackSF * power);
+            rightFront.set(rightVelocity * rightFrontSF * power);
+//        } else {
+//            logInfo("Dead zone");
+//            rightFront.set(0.0);
+//            rightBack.set(0.0);
+//        }
     }
         
     /**

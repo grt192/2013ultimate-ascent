@@ -75,4 +75,11 @@ public class GRTGyro extends Sensor {
     public void removeListener(GyroListener l) {
         gyroListeners.removeElement(l);
     }
+    
+    /**
+     * Reset the gyro's angle back to zero.
+     */
+    public void reset(){
+        gyro.reset();
+    }
 }

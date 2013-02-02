@@ -50,9 +50,10 @@ public class Potentiometer extends Sensor {
     }
 
     /**
-     * Returns how far the potentiometer has been moved.
-     *
-     * @return value from 0 - 1
+     * Returns how far the potentiometer has been turned.
+     * 
+     * @return value from 0-1, 0 representing all the way to the left and
+     * 1 representing all the way to the right
      */
     public double getValue() {
         return channel.getVoltage() / 5.0;

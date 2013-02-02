@@ -50,8 +50,8 @@ public class MacroTurn extends GRTMacro {
      * @param gyro gyroscope to track robot movement
      * @param dt drivetrain to command
      */
-    public MacroTurn(double turnAngle, GRTGyro gyro, GRTDriveTrain dt) {
-        super("Turn Macro", 5000, 50);
+    public MacroTurn(double turnAngle, int timeout, GRTGyro gyro, GRTDriveTrain dt) {
+        super("Turn Macro", timeout, 50);
         
         this.turnAngle = turnAngle;
         this.gyro = gyro;
