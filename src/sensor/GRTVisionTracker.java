@@ -1,5 +1,6 @@
 package sensor;
 
+import core.GRTConstants;
 import core.Sensor;
 import edu.wpi.first.wpilibj.camera.AxisCamera;
 import edu.wpi.first.wpilibj.camera.AxisCameraException;
@@ -20,6 +21,7 @@ import java.util.Vector;
  * image (X,Y), as well as the distance to the target.
  * 
  * @author agd
+ * 
  */
 public class GRTVisionTracker extends Sensor {
 
@@ -51,13 +53,13 @@ public class GRTVisionTracker extends Sensor {
 
     private final int RECTANGULARITY_LIMIT = 60;
     private final int ASPECT_RATIO_LIMIT = 75;
-    private final int X_EDGE_LIMIT = 40;
-    private final int Y_EDGE_LIMIT = 60;
+    private final int X_EDGE_LIMIT = 60;
+    private final int Y_EDGE_LIMIT = 40;
 
     private int X_IMAGE_RES = 320;          //X Image resolution in pixels, should be 160, 320 or 640. Defaults to 320
     //    private final double VIEW_ANGLE = 43.5;       //Axis 206 camera
-    private final double VIEW_ANGLE = 48;       //Axis M1011 camera
-
+    private final double VIEW_ANGLE = 47;       //Axis M1011 camera
+//horz: 47 ver: 35
     private CriteriaCollection cc;
 
     private static final int SLEEP_TIME = 1000;
@@ -139,6 +141,12 @@ public class GRTVisionTracker extends Sensor {
     private void updateImages() {
 
         try {
+            GRTConstants.updateConstants();
+//            System.out.println("Current HSV Vals:");
+//            System.out.println("H: " + GRTConstants.getValue("hlow") + "-" + GRTConstants.getValue("hhigh"));
+//            System.out.println("S: " + GRTConstants.getValue("slow") + "-" + GRTConstants.getValue("shigh"));
+//            System.out.println("V: " + GRTConstants.getValue("vlow") + "-" + GRTConstants.getValue("vhigh"));
+            
             /**
              * Do the image capture with the camera and apply the algorithm
              * described above. This sample will either get images from the
@@ -150,18 +158,43 @@ public class GRTVisionTracker extends Sensor {
             ColorImage image;
             image = camera.getImage();
             //image = new RGBImage("/testImage.jpg");		// get the sample image from the cRIO flash
-            BinaryImage thresholdImage = image.thresholdHSV(50, 110, 90, 255, 20, 255);   // keep only green objects
+            BinaryImage thresholdImage = image.thresholdHSV((int) GRTConstants.getValue("hlow"), (int) GRTConstants.getValue("hhigh"), (int) GRTConstants.getValue("slow"), (int) GRTConstants.getValue("shigh"), (int) GRTConstants.getValue("vlow"), (int) GRTConstants.getValue("vhigh"));   // keep only green objects
+            //BinaryImage thresholdImage = image.thresholdHSV((int) GRTConstants.getValue("hlow"), 100, 90, 255, 20, 255);   // keep only green objects
             BinaryImage convexHullImage = thresholdImage.convexHull(false);          // fill in occluded rectangles
             BinaryImage filteredImage = convexHullImage.particleFilter(cc);           // filter out small particles
-
-           
+//
+//           thresholdImage.write("/threshold.bmp");
+//            convexHullImage.write("/convexHull.bmp");
+//            filteredImage.write("/filteredImage.bmp");
     
             //iterate through each particle and score to see if it is a target
             Scores scores[] = new Scores[filteredImage.getNumberParticles()];
+            int targetIndex = 0;
+            double targetIndexArea = 0;
+            
             for (int i = 0; i < scores.length; i++) {
                 ParticleAnalysisReport report = filteredImage.getParticleAnalysisReport(i);
+                
+                
+                
+/*
+ * 
+ * Distance optimization code by Yonatan Oren
+ * 2/2/2013
+ * 
+ */
+                
+                
+                
                 //System.out.println(report);
                 
+//                   System.out.println("boundingWidth: "+report.boundingRectWidth);
+//
+//                   System.out.println("boundingHeight: "+report.boundingRectHeight);
+//    
+//                System.out.println("Num particles: " + filteredImage.getNumberParticles());
+                
+                //System.out.println(report);
                 
                 scores[i] = new Scores();
 
@@ -170,19 +203,25 @@ public class GRTVisionTracker extends Sensor {
                 scores[i].aspectRatioInner = scoreAspectRatio(filteredImage, report, i, false);
                 scores[i].xEdge = scoreXEdge(thresholdImage, report);
                 scores[i].yEdge = scoreYEdge(thresholdImage, report);
-
-                if (scoreCompare(scores[i], false)) {
-                    centroid_x = report.center_mass_x;
-                    centroid_y = report.center_mass_y;
-
-                    centroid_x_normalized = report.center_mass_x_normalized;
-                    centroid_y_normalized = report.center_mass_y_normalized;
-
-                    distance = computeDistance(thresholdImage, report, i, true);
-                    //                    System.out.println("particle: " + i + "is a High Goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
-                    //                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, false));
-
-                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, true));
+                
+                if (scoreCompare(scores[i], false) || (report.boundingRectWidth/report.boundingRectHeight > (320/175 - 0.5) && report.boundingRectWidth/report.boundingRectHeight < (320/175 + 0.5)) ) {
+//                    centroid_x = report.center_mass_x;
+//                    centroid_y = report.center_mass_y;
+//
+//                    centroid_x_normalized = report.center_mass_x_normalized;
+//                    centroid_y_normalized = report.center_mass_y_normalized;
+//
+//                    distance = computeDistance(thresholdImage, report, i, true);
+//                    //                    System.out.println("particle: " + i + "is a High Goal  centerX: " + report.center_mass_x_normalized + "centerY: " + report.center_mass_y_normalized);
+//                    //                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, false));
+//
+//                    System.out.println("Distance: " + computeDistance(thresholdImage, report, i, true));
+                    
+                if(scores[i].xEdge * scores[i].yEdge >= targetIndexArea){
+                    targetIndex = i;
+                    targetIndexArea = scores[i].xEdge * scores[i].yEdge;
+                }
+                                  
                     
                 } 
 
@@ -199,6 +238,30 @@ public class GRTVisionTracker extends Sensor {
                 //                System.out.println("rect: " + scores[i].rectangularity + "ARinner: " + scores[i].aspectRatioInner);
                 //                System.out.println("ARouter: " + scores[i].aspectRatioOuter + "xEdge: " + scores[i].xEdge + "yEdge: " + scores[i].yEdge);
             }
+            
+            
+            ParticleAnalysisReport targetReport = filteredImage.getParticleAnalysisReport(targetIndex);
+            System.out.println(targetReport);
+            System.out.println("Particle #: " + targetIndex + " Distance: " + computeDistance(filteredImage, targetReport, targetIndex, false));
+            System.out.println("--------DISTANCE--------");
+            System.out.println(computeDistance(filteredImage, targetReport, targetIndex, false));
+            System.out.println("--------New Measurement--------");
+            targetIndexArea = 0;
+            
+            /*trial 1: 
+             * 66 * 42
+             * code: 174.23800427863011
+             * actual: 211
+             * 
+             * trial 2:
+             * 77*55
+             * code: 145.56592762518466
+             * actual: 164
+             
+             * trial 3:
+             * 84*54
+             * code: 153
+             * actual: 164
 
             /**
              * all images in Java must be freed after they are used since they
@@ -209,6 +272,8 @@ public class GRTVisionTracker extends Sensor {
             convexHullImage.free();
             thresholdImage.free();
             image.free();
+      
+            
         } catch (AxisCameraException ex) {
             ex.printStackTrace();
         } catch (NIVisionException ex) {
@@ -228,28 +293,31 @@ public class GRTVisionTracker extends Sensor {
      * @return The estimated distance to the target in Inches.
      */
     double computeDistance (BinaryImage image, ParticleAnalysisReport report, int particleNumber, boolean outer) throws NIVisionException {
-        double rectShort, height;
-        double targetHeight;
+        double rectShort, width, height;
+        double targetWidth, targetHeight;
         
 
         rectShort = NIVision.MeasureParticle(image.image, particleNumber, false, NIVision.MeasurementType.IMAQ_MT_EQUIVALENT_RECT_SHORT_SIDE);
         //using the smaller of the estimated rectangle short side and the bounding rectangle height results in better performance
         //on skewed rectangles
         //height = Math.min(report.boundingRectHeight, rectShort);
+        width = report.boundingRectWidth;
         height = report.boundingRectHeight;
         //targetHeight = outer ? 29 : 21;
         //changed by Yonatan Oren//
         //need to change this back to 29/21 for for real ultimate ascent//
+        targetWidth = 16;
         targetHeight = 9.75;
         
-//
+////
 //         System.out.println("rectShort: " + rectShort);
 //         System.out.println("height: " + height);
 //         System.out.println("boundingRectHeight: " + report.boundingRectHeight);
 
          //changed by Yonatan Oren//
         //return X_IMAGE_RES * targetHeight / (height * 12 * 2 * Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
-         return 480.0 * targetHeight / (height * Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
+         //return 240.0 * targetWidth / (width * Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
+         return 360.0 * targetHeight / (height * Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
          //4800 / 62 * tan(
     }
 
@@ -270,7 +338,10 @@ public class GRTVisionTracker extends Sensor {
 
         rectLong = NIVision.MeasureParticle(image.image, particleNumber, false, NIVision.MeasurementType.IMAQ_MT_EQUIVALENT_RECT_LONG_SIDE);
         rectShort = NIVision.MeasureParticle(image.image, particleNumber, false, NIVision.MeasurementType.IMAQ_MT_EQUIVALENT_RECT_SHORT_SIDE);
-        idealAspectRatio = outer ? (62/29) : (62/20);	//Dimensions of goal opening + 4 inches on all 4 sides for reflective tape
+        //idealAspectRatio = outer ? (62/29) : (62/20);	//Dimensions of goal opening + 4 inches on all 4 sides for reflective tape
+
+        //yonatan - change back
+        idealAspectRatio = outer ? (62/29) : (62/40);	//Dimensions of goal opening + 4 inches on all 4 sides for reflective tape
 
         //Divide width by height to measure aspect ratio
         if(report.boundingRectWidth > report.boundingRectHeight){
@@ -296,15 +367,19 @@ public class GRTVisionTracker extends Sensor {
 
         isTarget &= scores.rectangularity > RECTANGULARITY_LIMIT;
 
-        /* Get rid of comment later. Right now, only test to see if is rectangle.
+        
            if(outer){
            isTarget &= scores.aspectRatioOuter > ASPECT_RATIO_LIMIT;
+//           if(isTarget == false){System.out.println("yonatan: aspectRatioOuter !> Aspect Ratio Limit");}
            } else {
            isTarget &= scores.aspectRatioInner > ASPECT_RATIO_LIMIT;
-           }
+//           if(isTarget == false){System.out.println("yonatan: scores.aspectRatioInner > ASPECT_RATIO_LIMIT");}
+         }
            isTarget &= scores.xEdge > X_EDGE_LIMIT;
+//            if(isTarget == false){System.out.println("yonatan: scores.xEdge > X_EDGE_LIMIT");}
            isTarget &= scores.yEdge > Y_EDGE_LIMIT;
-           */
+//            if(isTarget == false){System.out.println("yonatan: scores.yEdge > Y_EDGE_LIMIT;");}
+          
         return isTarget;
     }
 

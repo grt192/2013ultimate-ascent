@@ -35,7 +35,7 @@ public class GRTConstants {
     /**
      * Reloads constants from the file, and notifies listeners.
      */
-    private static void updateConstants() {
+    public static void updateConstants() {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     ((FileConnection) Connector.open(FILE_LOC)).
