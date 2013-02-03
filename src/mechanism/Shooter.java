@@ -3,7 +3,6 @@ package mechanism;
 import actuator.GRTSolenoid;
 import core.GRTLoggedProcess;
 import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 
@@ -15,6 +14,7 @@ public class Shooter extends GRTLoggedProcess {
     private SpeedController shooterMotor1, shooterMotor2;
     private SpeedController raiser;
     private GRTSolenoid feeder;
+    private boolean shooting = false;
     
     private static final double SHOOT_TIME = 0.4; //TODO check
     
@@ -26,7 +26,7 @@ public class Shooter extends GRTLoggedProcess {
         this.shooterMotor2 = shooterMotor2;
         this.raiser = raiser;
         
-        logInfo("New Shooter");
+        logInfo("New Shooter");        
     }
     
     public void setSpeed(double speed) {
@@ -39,11 +39,17 @@ public class Shooter extends GRTLoggedProcess {
     public void adjustHeight(double velocity) {
         raiser.set(velocity);
     }
-    
+
     public void shoot() {
-        logInfo("Shooting!");
-        feeder.set(true);
-        Timer.delay(SHOOT_TIME);
-        feeder.set(false);
+        if (!shooting) {
+            shooting = true;
+            logInfo("Shooting!");
+            logInfo("Setting feeder to ture");
+            feeder.set(true);
+            Timer.delay(SHOOT_TIME);
+            logInfo("setting feeder to false");
+            feeder.set(false);
+            shooting = false;
+        }
     }
 }

@@ -118,7 +118,7 @@ public class MainRobot extends GRTRobot {
                 (int) GRTConstants.getValue("compressorRelay"));
         compressor.start();
 
-        GRTDoubleActuator doubleSolenoid = new GRTDoubleActuator((int) GRTConstants.getValue("doubleSolenoidPin"));
+//        GRTDoubleActuator doubleSolenoid = new GRTDoubleActuator((int) GRTConstants.getValue("doubleSolenoidPin"));
 
         //shooter
         Victor shooter1 = new Victor((int) GRTConstants.getValue("shooter1"));
@@ -154,11 +154,11 @@ public class MainRobot extends GRTRobot {
         //Climber
 
 
-        GRTSolenoid solenoid1 = new GRTSolenoid((int) GRTConstants.getValue("climberSolenoid1"));
-        GRTSolenoid solenoid2 = new GRTSolenoid((int) GRTConstants.getValue("climberSolenoid2"));
-        GRTSolenoid engager = doubleSolenoid.getSecondSolenoid();
+//        GRTSolenoid solenoid1 = new GRTSolenoid((int) GRTConstants.getValue("climberSolenoid1"));
+//        GRTSolenoid solenoid2 = new GRTSolenoid((int) GRTConstants.getValue("climberSolenoid2"));
+//        GRTSolenoid engager = doubleSolenoid.getSecondSolenoid();
 
-        Climber climber = new Climber(dt, solenoid1, solenoid2, engager);
+//        Climber climber = new Climber(dt, solenoid1, solenoid2, engager);
 
 
         //ButtonBoard
@@ -168,7 +168,7 @@ public class MainRobot extends GRTRobot {
 
         //Mechcontroller
         MechController mechController = new MechController(leftPrimary, rightPrimary, secondary,
-                buttonBoard, shooter, youTiao, climber, belts,
+                buttonBoard, shooter, youTiao, null, belts,
                 GRTConstants.getValue("shooterPreset1"),
                 GRTConstants.getValue("shooterPreset2"),
                 GRTConstants.getValue("shooterPreset3"), dc);

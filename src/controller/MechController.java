@@ -82,20 +82,21 @@ public class MechController extends EventController implements GRTJoystickListen
     }
 
     public void XAxisMoved(JoystickEvent e) {
+        
     }
 
     public void YAxisMoved(JoystickEvent e) {
         if (e.getSource().equals(secondaryJoy) &&
-                secondaryJoy.getState(GRTJoystick.KEY_BUTTON_TRIGGER) ==
+               secondaryJoy.getState(GRTJoystick.KEY_BUTTON_9) ==
                 GRTJoystick.TRUE)
         {
             shooter.adjustHeight(e.getData());
         }
         
-        if (e.getSource().equals(secondaryJoy) && climber.isEngaged())
-        {
-            climber.winch(e.getData());
-        }
+//        if (e.getSource().equals(secondaryJoy) && climber.isEngaged())
+//        {
+//            climber.winch(e.getData());
+//        }
     }
 
     public void AngleChanged(JoystickEvent e) {
@@ -103,24 +104,26 @@ public class MechController extends EventController implements GRTJoystickListen
 
     //commented out code is because betabot is FUBAR
     public void buttonPressed(ButtonEvent e) {
+        
         try {
             logInfo("Button Pressed: " + e.getID());
             if (e.getSource() == rightJoy) {
-                if (e.getButtonID() == GRTJoystick.KEY_BUTTON_3) {
-                    pickerUpper.pickUp();
-                } else if (e.getButtonID() == GRTJoystick.KEY_BUTTON_2) {
-                    pickerUpper.spitOut();
-                }
-            } else if (e.getSource() == leftJoy) {
-                if (e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER) {
-                    logInfo("pickerupper lower");
-                    pickerUpper.lower();
-                }
+                switch (e.getButtonID()) {
+                    case GRTJoystick.KEY_BUTTON_3: pickerUpper.pickUp();
+                        break;
+                    case GRTJoystick.KEY_BUTTON_2: pickerUpper.spitOut();
+                        break;
+                }  
             }
-
-            if (e.getButtonID() == GRTJoystick.KEY_BUTTON_7) {
-                shooter.setSpeed(1.0);
-            } else if (e.getSource() == buttonBoard) {
+            
+            else if (e.getSource() == leftJoy) {
+                switch (e.getButtonID()) {
+                    case GRTJoystick.KEY_BUTTON_TRIGGER: pickerUpper.lower();
+                        break;
+                }   
+            }
+            
+            else if (e.getSource() == buttonBoard) {
                 switch (e.getButtonID()) {
                     case ButtonBoard.KEY_BUTTON1:
                         shooter.setSpeed(shooterPreset1);
@@ -137,14 +140,16 @@ public class MechController extends EventController implements GRTJoystickListen
                         break;
                     case ButtonBoard.KEY_BUTTON5:
                         if(climber.isEngaged())
-                        climber.toggleTop();
+                           climber.toggleTop();
                         break;
                     case ButtonBoard.KEY_BUTTON6:
                         climber.engage();
                         dc.disengage();
                         break;
                 }
-            } else if (e.getSource() == secondaryJoy) {
+            }
+            
+            else if (e.getSource() == secondaryJoy) {
                 switch (e.getButtonID()) {
                     case GRTJoystick.KEY_BUTTON_TRIGGER:
                         shooter.shoot();
@@ -158,7 +163,10 @@ public class MechController extends EventController implements GRTJoystickListen
                         belts.moveDown();
                         logInfo("belts move down");
                         break;
-            }
+                    case GRTJoystick.KEY_BUTTON_7:
+                        shooter.setSpeed(0.75);
+                        break;
+                }
             }
         } catch (NullPointerException _) {
             _.printStackTrace();
@@ -167,19 +175,22 @@ public class MechController extends EventController implements GRTJoystickListen
 
     public void buttonReleased(ButtonEvent e) {
         if (e.getSource() == leftJoy) {
-            if (e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER) {
-                logInfo("pickerupper raise");
-                pickerUpper.raise();
+            switch (e.getButtonID()) {
+                case GRTJoystick.KEY_BUTTON_TRIGGER: pickerUpper.raise();
+                    break;
             }
-        } else if (e.getSource() == rightJoy) {
-            if (e.getButtonID() == GRTJoystick.KEY_BUTTON_3) {
-                logInfo("stop roller");
-                pickerUpper.stopRoller();
-            } else if (e.getButtonID() == GRTJoystick.KEY_BUTTON_2) {
-                logInfo("stop roller");
-                pickerUpper.stopRoller();
+        }
+        
+        else if (e.getSource() == rightJoy) {
+            switch (e.getButtonID()) {
+                case GRTJoystick.KEY_BUTTON_3: pickerUpper.stopRoller();
+                    break;
+                case GRTJoystick.KEY_BUTTON_2: pickerUpper.stopRoller();
+                    break;
             }
-        } else if (e.getSource() == secondaryJoy) {
+        }
+        
+        else if (e.getSource() == secondaryJoy) {
             switch (e.getButtonID()) {
                 case GRTJoystick.KEY_BUTTON_2:
                     belts.stop();
@@ -189,11 +200,13 @@ public class MechController extends EventController implements GRTJoystickListen
                     belts.stop();
                     logInfo("belts stop");
                     break;
-                case GRTJoystick.KEY_BUTTON_TRIGGER:
-                    shooter.adjustHeight(0);
+                case GRTJoystick.KEY_BUTTON_7:
+                    shooter.setSpeed(0.0);
                     break;
             }
-        } else if (e.getSource() == buttonBoard) {
+        }
+        
+        else if (e.getSource() == buttonBoard) {
             switch (e.getButtonID()) {
                 case ButtonBoard.KEY_BUTTON1:
                     shooter.setSpeed(0.0);
@@ -206,7 +219,6 @@ public class MechController extends EventController implements GRTJoystickListen
                     break;
             }
         }
-
     }
 
     public void valueChanged(PotentiometerEvent e) {
