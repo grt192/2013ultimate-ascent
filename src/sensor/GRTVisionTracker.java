@@ -25,6 +25,10 @@ import java.util.Vector;
  */
 public class GRTVisionTracker extends Sensor {
 
+    private double targetDistance;
+    private int targetDirection; // -1: right 1: left 0: locked on
+
+    
     public static final int KEY_CENTROID_X = 1;
     public static final int KEY_CENTROID_Y = 2;
     public static final int KEY_CENTROID_X_NORMALIZED = 3;
@@ -95,7 +99,7 @@ public class GRTVisionTracker extends Sensor {
         setState(KEY_CENTROID_Y, centroid_y);
         setState(KEY_CENTROID_X_NORMALIZED, centroid_x_normalized);
         setState(KEY_CENTROID_Y_NORMALIZED, centroid_y_normalized);
-        setState(KEY_CENTROID_DISTANCE, distance);
+        setState(KEY_CENTROID_DISTANCE, targetDistance);
     }
 
     protected void notifyListeners(int id, double newDatum) {
@@ -157,6 +161,8 @@ public class GRTVisionTracker extends Sensor {
              */
             ColorImage image;
             image = camera.getImage();
+            image.colorEqualize();
+            image.write("/equalized.bmp");
             //image = new RGBImage("/testImage.jpg");		// get the sample image from the cRIO flash
             BinaryImage thresholdImage = image.thresholdHSV((int) GRTConstants.getValue("hlow"), (int) GRTConstants.getValue("hhigh"), (int) GRTConstants.getValue("slow"), (int) GRTConstants.getValue("shigh"), (int) GRTConstants.getValue("vlow"), (int) GRTConstants.getValue("vhigh"));   // keep only green objects
             //BinaryImage thresholdImage = image.thresholdHSV((int) GRTConstants.getValue("hlow"), 100, 90, 255, 20, 255);   // keep only green objects
@@ -233,7 +239,7 @@ public class GRTVisionTracker extends Sensor {
                   */
 
                 else {
-                    logError("particle: " + i + " is not a goal\tcenterX: " + report.center_mass_x_normalized + "\tcenterY: " + report.center_mass_y_normalized);
+                    //logError("particle: " + i + " is not a goal\tcenterX: " + report.center_mass_x_normalized + "\tcenterY: " + report.center_mass_y_normalized);
                 }
                 //                System.out.println("rect: " + scores[i].rectangularity + "ARinner: " + scores[i].aspectRatioInner);
                 //                System.out.println("ARouter: " + scores[i].aspectRatioOuter + "xEdge: " + scores[i].xEdge + "yEdge: " + scores[i].yEdge);
@@ -241,13 +247,20 @@ public class GRTVisionTracker extends Sensor {
             
             
             ParticleAnalysisReport targetReport = filteredImage.getParticleAnalysisReport(targetIndex);
-            System.out.println(targetReport);
-            System.out.println("Particle #: " + targetIndex + " Distance: " + computeDistance(filteredImage, targetReport, targetIndex, false));
-            System.out.println("--------DISTANCE--------");
-            System.out.println(computeDistance(filteredImage, targetReport, targetIndex, false));
-            System.out.println("--------New Measurement--------");
+//            System.out.println(targetReport);
+//            System.out.println("Particle #: " + targetIndex + " Distance: " + computeDistance(filteredImage, targetReport, targetIndex, false));
+//            System.out.println("--------DISTANCE--------");
+//            System.out.println(computeDistance(filteredImage, targetReport, targetIndex, false));
+//            System.out.println("--------New Measurement--------");
             targetIndexArea = 0;
-            
+            targetDistance = computeDistance(filteredImage, targetReport, targetIndex, false);
+//            if(filteredImage.getWidth() <= targetReport.center_mass_x + 30 && filteredImage.getWidth() >= targetReport.center_mass_x - 30){
+//                targetDirection = 0;
+//            }else{
+//                targetDirection = (filteredImage.getWidth() < targetReport.center_mass_x - 30) ? 1 : -1;
+//            }
+//            
+    
             /*trial 1: 
              * 66 * 42
              * code: 174.23800427863011
