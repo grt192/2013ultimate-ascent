@@ -46,12 +46,14 @@ public class MainRobot extends GRTRobot {
                 base2012Init();
                 break;
             case 2013:
+                if ( GRTConstants.getValue("robot") == 2013.1){
+                    GRTLogger.logInfo("Starting up Beta Bot");
+                    betaInit();
+                    break;
+                }
                 GRTLogger.logInfo("Starting up 2013 Test Base");
                 base2013Init();
                 break;
-            case 2014:
-                GRTLogger.logInfo("Starting up Beta Bot");
-                betaInit();
         }
     }
 
