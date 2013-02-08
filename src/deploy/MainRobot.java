@@ -162,7 +162,7 @@ public class MainRobot extends GRTRobot {
             GRTVisionTracker tracker = new GRTVisionTracker(cam);
             tracker.startPolling(); //Allow it to wait for enable.
 
-            TrackerController trackController = new TrackerController(tracker);
+            TrackerController trackController = new TrackerController(tracker, dt);
 
             addAutonomousController(trackController);
             trackController.startPolling();

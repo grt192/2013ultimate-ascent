@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.camera.AxisCameraException;
 import edu.wpi.first.wpilibj.image.BinaryImage;
 import edu.wpi.first.wpilibj.image.ColorImage;
 import edu.wpi.first.wpilibj.image.CriteriaCollection;
+import edu.wpi.first.wpilibj.image.EllipseDescriptor;
 import edu.wpi.first.wpilibj.image.LinearAverages;
 import edu.wpi.first.wpilibj.image.NIVision;
 import edu.wpi.first.wpilibj.image.NIVisionException;
@@ -66,7 +67,7 @@ public class GRTVisionTracker extends Sensor {
 //horz: 47 ver: 35
     private CriteriaCollection cc;
 
-    private static final int SLEEP_TIME = 1000;
+    private static final int SLEEP_TIME = 14;
 
     private Vector listeners;   //VisionTrackerListeners
 
@@ -143,7 +144,7 @@ public class GRTVisionTracker extends Sensor {
     }
 
     private void updateImages() {
-
+        logInfo("Updating!");
         try {
             GRTConstants.updateConstants();
 //            System.out.println("Current HSV Vals:");
@@ -163,6 +164,7 @@ public class GRTVisionTracker extends Sensor {
             image = camera.getImage();
             image.colorEqualize();
             image.write("/equalized.bmp");
+
             //image = new RGBImage("/testImage.jpg");		// get the sample image from the cRIO flash
             BinaryImage thresholdImage = image.thresholdHSV((int) GRTConstants.getValue("hlow"), (int) GRTConstants.getValue("hhigh"), (int) GRTConstants.getValue("slow"), (int) GRTConstants.getValue("shigh"), (int) GRTConstants.getValue("vlow"), (int) GRTConstants.getValue("vhigh"));   // keep only green objects
             //BinaryImage thresholdImage = image.thresholdHSV((int) GRTConstants.getValue("hlow"), 100, 90, 255, 20, 255);   // keep only green objects
@@ -171,7 +173,7 @@ public class GRTVisionTracker extends Sensor {
 //
 //           thresholdImage.write("/threshold.bmp");
 //            convexHullImage.write("/convexHull.bmp");
-//            filteredImage.write("/filteredImage.bmp");
+            filteredImage.write("/filteredImage.bmp");
     
             //iterate through each particle and score to see if it is a target
             Scores scores[] = new Scores[filteredImage.getNumberParticles()];
@@ -245,7 +247,9 @@ public class GRTVisionTracker extends Sensor {
                 //                System.out.println("ARouter: " + scores[i].aspectRatioOuter + "xEdge: " + scores[i].xEdge + "yEdge: " + scores[i].yEdge);
             }
             
-            
+            if (targetIndex == -1){
+                return;
+            }
             ParticleAnalysisReport targetReport = filteredImage.getParticleAnalysisReport(targetIndex);
 //            System.out.println(targetReport);
 //            System.out.println("Particle #: " + targetIndex + " Distance: " + computeDistance(filteredImage, targetReport, targetIndex, false));
@@ -254,12 +258,6 @@ public class GRTVisionTracker extends Sensor {
 //            System.out.println("--------New Measurement--------");
             targetIndexArea = 0;
             targetDistance = computeDistance(filteredImage, targetReport, targetIndex, false);
-//            if(filteredImage.getWidth() <= targetReport.center_mass_x + 30 && filteredImage.getWidth() >= targetReport.center_mass_x - 30){
-//                targetDirection = 0;
-//            }else{
-//                targetDirection = (filteredImage.getWidth() < targetReport.center_mass_x - 30) ? 1 : -1;
-//            }
-//            
     
             /*trial 1: 
              * 66 * 42
