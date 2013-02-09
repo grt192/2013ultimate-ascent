@@ -26,6 +26,7 @@ public abstract class Sensor extends GRTLoggedProcess {
      */
     public Sensor(String name, int numData) {
         this(name, -1, numData);
+        logInfo("New non-threaded sensor");
     }
 
     /**
@@ -37,7 +38,9 @@ public abstract class Sensor extends GRTLoggedProcess {
      * @param numData number of pieces of data.
      */
     public Sensor(String name, int sleepTime, int numData) {
-        super(name, sleepTime);
+        super(name, -1);
+        logInfo("New non-threaded sensor as well!");
+//        super(name, sleepTime);
         running = true;
         data = new double[numData];
     }

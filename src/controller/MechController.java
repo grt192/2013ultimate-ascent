@@ -1,55 +1,64 @@
 package controller;
 
 import core.EventController;
+import core.GRTConstants;
 import event.events.ButtonEvent;
 import event.events.JoystickEvent;
 import event.events.PotentiometerEvent;
+import event.events.XboxJoystickEvent;
 import event.listeners.ButtonListener;
 import event.listeners.GRTJoystickListener;
 import event.listeners.PotentiometerListener;
+import event.listeners.XboxJoystickListener;
 import mechanism.Belts;
 import mechanism.Climber;
 import mechanism.ExternalPickup;
+import mechanism.GRTDriveTrain;
 import mechanism.Shooter;
-import sensor.ButtonBoard;
 import sensor.GRTJoystick;
+import sensor.GRTXboxJoystick;
 
 /**
  * Controller for shooter, picker-upper, internal belts, climbing
  *
- * @author Calvin
+ * @author Calvin, agd
  */
-public class MechController extends EventController implements GRTJoystickListener, PotentiometerListener, ButtonListener {
+public class MechController extends EventController implements GRTJoystickListener, XboxJoystickListener, PotentiometerListener, ButtonListener {
 
     private GRTJoystick leftJoy;
     private GRTJoystick rightJoy;
-    private GRTJoystick secondaryJoy;
-    private ButtonBoard buttonBoard;
+    private GRTXboxJoystick secondary;
     private Belts belts;
     private Climber climber;
     private ExternalPickup pickerUpper;
     private Shooter shooter;
-    private DriveController dc;
+    private GRTDriveTrain dt;
     private double shooterPreset1;
     private double shooterPreset2;
     private double shooterPreset3;
+    
+    private double turningDivider;
+    private double adjustDivider;
+
 
     public MechController(GRTJoystick leftJoy, GRTJoystick rightJoy,
-            GRTJoystick secondaryJoy, ButtonBoard buttonBoard,
+            GRTXboxJoystick secondary,
             Shooter shooter, ExternalPickup pickerUpper,
             Climber climber, Belts belts,
-            double preset1, double preset2, double preset3, DriveController dc) {
+            GRTDriveTrain dt,
+            double preset1, double preset2, double preset3) {
         super("Mechanism Controller");
         this.leftJoy = leftJoy;
         this.rightJoy = rightJoy;
-        this.secondaryJoy = secondaryJoy;
-        this.buttonBoard = buttonBoard;
+        this.secondary = secondary;
 
         this.belts = belts;
         this.climber = climber;
         this.pickerUpper = pickerUpper;
         this.shooter = shooter;
 
+        this.dt = dt;
+        
         this.shooterPreset1 = preset1;
         this.shooterPreset2 = preset2;
         this.shooterPreset3 = preset3;
@@ -62,10 +71,24 @@ public class MechController extends EventController implements GRTJoystickListen
         rightJoy.addJoystickListener(this);
         rightJoy.addButtonListener(this);
 
-        secondaryJoy.addJoystickListener(this);
-        secondaryJoy.addButtonListener(this);
-
-        buttonBoard.addButtonListener(this);
+        secondary.addJoystickListener(this);
+        secondary.addButtonListener(this);
+        
+        try {
+            turningDivider = GRTConstants.getValue("turningDivider");
+        } catch(Exception e){
+            turningDivider = 10.0;
+            logError("Could not find key  `turningDivider'  in the constants file. Maybe you should add it?");
+            logInfo("Setting turingDivider to default of " + turningDivider);
+        }
+        
+        try {
+            adjustDivider = GRTConstants.getValue("adjustDivider");
+        } catch(Exception e){
+            adjustDivider = 10.0;
+            logError("Could not find key  `adjustDivider'  in the constants file. Maybe you should add it?");
+            logInfo("Setting adjustDivider to default of " + adjustDivider);
+        }
     }
 
     protected void stopListening() {
@@ -75,28 +98,15 @@ public class MechController extends EventController implements GRTJoystickListen
         rightJoy.removeJoystickListener(this);
         rightJoy.removeButtonListener(this);
 
-        secondaryJoy.removeJoystickListener(this);
-        secondaryJoy.removeButtonListener(this);
+        secondary.removeJoystickListener(this);
+        secondary.removeButtonListener(this);
 
-        buttonBoard.removeButtonListener(this);
     }
 
     public void XAxisMoved(JoystickEvent e) {
-        
     }
 
     public void YAxisMoved(JoystickEvent e) {
-        if (e.getSource().equals(secondaryJoy) &&
-               secondaryJoy.getState(GRTJoystick.KEY_BUTTON_9) ==
-                GRTJoystick.TRUE)
-        {
-            shooter.adjustHeight(e.getData());
-        }
-        
-//        if (e.getSource().equals(secondaryJoy) && climber.isEngaged())
-//        {
-//            climber.winch(e.getData());
-//        }
     }
 
     public void AngleChanged(JoystickEvent e) {
@@ -104,7 +114,6 @@ public class MechController extends EventController implements GRTJoystickListen
 
     //commented out code is because betabot is FUBAR
     public void buttonPressed(ButtonEvent e) {
-        
         try {
             logInfo("Button Pressed: " + e.getID());
             if (e.getSource() == rightJoy) {
@@ -123,53 +132,29 @@ public class MechController extends EventController implements GRTJoystickListen
                 }   
             }
             
-            else if (e.getSource() == buttonBoard) {
-                switch (e.getButtonID()) {
-                    case ButtonBoard.KEY_BUTTON1:
-                        shooter.setSpeed(shooterPreset1);
+            else if (e.getSource() == secondary){
+                switch (e.getButtonID()){
+                    case GRTXboxJoystick.KEY_BUTTON_X:
+                        logInfo("X: Angle adjustment #1 will be here.");
                         break;
-                    case ButtonBoard.KEY_BUTTON2:
-                        shooter.setSpeed(shooterPreset2);
+                    case GRTXboxJoystick.KEY_BUTTON_A:
+                        logInfo("A: Angle adjustment #2 will be here.");
                         break;
-                    case ButtonBoard.KEY_BUTTON3:
-                        shooter.setSpeed(shooterPreset3);
+                    case GRTXboxJoystick.KEY_BUTTON_B:
+                        logInfo("B: Angle adjustment #3 will be here.");
                         break;
-                    case ButtonBoard.KEY_BUTTON4:
-                        if(climber.isEngaged())
-                            climber.toggleBottom();
-                        break;
-                    case ButtonBoard.KEY_BUTTON5:
-                        if(climber.isEngaged())
-                           climber.toggleTop();
-                        break;
-                    case ButtonBoard.KEY_BUTTON6:
-                        climber.engage();
-                        dc.disengage();
-                        break;
-                }
-            }
-            
-            else if (e.getSource() == secondaryJoy) {
-                switch (e.getButtonID()) {
-                    case GRTJoystick.KEY_BUTTON_TRIGGER:
-                        shooter.shoot();
-                        logInfo("shoot shooter");
-                        break;
-                    case GRTJoystick.KEY_BUTTON_2:
+                    case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
                         belts.moveUp();
-                        logInfo("belts move up");
                         break;
-                    case GRTJoystick.KEY_BUTTON_3:
-                        belts.moveDown();
-                        logInfo("belts move down");
-                        break;
-                    case GRTJoystick.KEY_BUTTON_7:
-                        shooter.setSpeed(0.75);
+                
+                    case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
+                        shooter.setSpeed(0.5);
                         break;
                 }
             }
-        } catch (NullPointerException _) {
-            _.printStackTrace();
+        } catch (NullPointerException ex) {
+            logError("Null pointer encountered when trying to categorize button events");
+            ex.printStackTrace();
         }
     }
 
@@ -190,38 +175,40 @@ public class MechController extends EventController implements GRTJoystickListen
             }
         }
         
-        else if (e.getSource() == secondaryJoy) {
-            switch (e.getButtonID()) {
-                case GRTJoystick.KEY_BUTTON_2:
-                    belts.stop();
-                    logInfo("belts stop");
-                    break;
-                case GRTJoystick.KEY_BUTTON_3:
-                    belts.stop();
-                    logInfo("belts stop");
-                    break;
-                case GRTJoystick.KEY_BUTTON_7:
-                    shooter.setSpeed(0.0);
-                    break;
-            }
-        }
-        
-        else if (e.getSource() == buttonBoard) {
-            switch (e.getButtonID()) {
-                case ButtonBoard.KEY_BUTTON1:
-                    shooter.setSpeed(0.0);
-                    break;
-                case ButtonBoard.KEY_BUTTON2:
-                    shooter.setSpeed(0.0);
-                    break;
-                case ButtonBoard.KEY_BUTTON3:
-                    shooter.setSpeed(0.0);
-                    break;
-            }
+        else if (e.getSource() == secondary) {
+            
         }
     }
 
     public void valueChanged(PotentiometerEvent e) {
         //TODO set trim for auto tracking
+    }
+
+    public void leftXAxisMoved(XboxJoystickEvent e) {
+        //Use Xbox left axis to make fine adjustments to the robot's directional heading.
+        if (e.getSource() == secondary){
+            dt.setMotorSpeeds(-e.getData() / 10.0 , e.getData() / 10.0);
+        }
+    }
+
+    public void leftYAxisMoved(XboxJoystickEvent e) {
+    }
+
+    public void leftAngleChanged(XboxJoystickEvent e) {
+    }
+
+    public void rightXAxisMoved(XboxJoystickEvent e) {
+    }
+
+    public void rightYAxisMoved(XboxJoystickEvent e) {
+        if (e.getSource() == secondary){
+            shooter.adjustHeight(e.getData() / adjustDivider);
+        }
+    }
+
+    public void padMoved(XboxJoystickEvent e) {
+    }
+
+    public void triggerMoved(XboxJoystickEvent e) {
     }
 }

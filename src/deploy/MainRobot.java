@@ -7,6 +7,7 @@ import controller.MechController;
 import core.EventController;
 import core.GRTConstants;
 import core.GRTMacroController;
+import core.SensorPoller;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
@@ -20,12 +21,12 @@ import mechanism.Belts;
 import mechanism.ExternalPickup;
 import mechanism.GRTDriveTrain;
 import mechanism.Shooter;
-import sensor.ButtonBoard;
 import sensor.GRTBatterySensor;
 import sensor.GRTEncoder;
 import sensor.GRTJoystick;
 import sensor.GRTSwitch;
 import mechanism.Climber;
+import sensor.GRTXboxJoystick;
 
 /**
  * Constructor for the main robot. Put all robot components here.
@@ -40,21 +41,23 @@ public class MainRobot extends GRTRobot {
      * Initializer for the robot. Calls an appropriate initialization function.
      */
     public MainRobot() {
-        switch ((int) GRTConstants.getValue("robot")) {
-            case 2012:
-                GRTLogger.logInfo("Starting up 2012 Test Base");
-                base2012Init();
-                break;
-            case 2013:
-                if ( GRTConstants.getValue("robot") == 2013.1){
-                    GRTLogger.logInfo("Starting up Beta Bot");
-                    betaInit();
-                    break;
-                }
-                GRTLogger.logInfo("Starting up 2013 Test Base");
-                base2013Init();
-                break;
+        
+        System.out.println("Robot being instantiated");
+        
+        double robot = GRTConstants.getValue("robot");
+        if (robot == 2012.0){
+            GRTLogger.logInfo("Starting up 2012 Test Base");
+            base2012Init();
         }
+        if (robot == 2013.0){
+            GRTLogger.logInfo("Starting up 2013 Test Base");
+            base2013Init();
+        }
+        if (robot == 2013.1){
+            GRTLogger.logInfo("Starting up 2013 BetaBot");
+            betaInit();
+        }
+        
     }
 
     public void disabled() {
@@ -67,15 +70,17 @@ public class MainRobot extends GRTRobot {
      */
     private void betaInit() {
 
+        
         GRTJoystick leftPrimary = new GRTJoystick(1, 12, "left primary joy");
         GRTJoystick rightPrimary = new GRTJoystick(2, 12, "right primary joy");
-        GRTJoystick secondary = new GRTJoystick(3, 12, "secondary joy");
+        GRTXboxJoystick secondary = new GRTXboxJoystick(3, 12, "xbox mech joy");
         leftPrimary.enable();
         rightPrimary.enable();
         secondary.enable();
         leftPrimary.startPolling();
         rightPrimary.startPolling();
         secondary.startPolling();
+        
 
         GRTLogger.logInfo("Joysticks initialized");
 
@@ -83,7 +88,7 @@ public class MainRobot extends GRTRobot {
         GRTBatterySensor batterySensor = new GRTBatterySensor(10, "battery");
         batterySensor.startPolling();
         batterySensor.enable();
-
+        
         //Shifter solenoids
 //        GRTSolenoid leftShifter = new GRTSolenoid((int) GRTConstants.getValue("leftSolenoid"));
 //        GRTSolenoid rightShifter = new GRTSolenoid((int) GRTConstants.getValue("rightSolenoid"));
@@ -103,6 +108,8 @@ public class MainRobot extends GRTRobot {
         GRTEncoder rightEnc = new GRTEncoder((int) GRTConstants.getValue("encoderRightA"),
                 (int) GRTConstants.getValue("encoderRightB"),
                 1, 50, "rightEnc");
+        
+        
         dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2,
                 leftEnc, rightEnc);
 
@@ -164,19 +171,35 @@ public class MainRobot extends GRTRobot {
 
 
         //ButtonBoard
-        ButtonBoard buttonBoard = ButtonBoard.getButtonBoard();
-        buttonBoard.enable();
-        buttonBoard.startPolling();
+//        ButtonBoard buttonBoard = ButtonBoard.getButtonBoard();
+//        buttonBoard.enable();
+//        buttonBoard.startPolling();
 
         //Mechcontroller
         MechController mechController = new MechController(leftPrimary, rightPrimary, secondary,
-                buttonBoard, shooter, youTiao, null, belts,
+                shooter, youTiao, null, belts, dt,
                 GRTConstants.getValue("shooterPreset1"),
                 GRTConstants.getValue("shooterPreset2"),
-                GRTConstants.getValue("shooterPreset3"), dc);
+                GRTConstants.getValue("shooterPreset3"));
 
 
         addTeleopController(mechController);
+        
+        SensorPoller sp = new SensorPoller();
+
+        sp.addSensor(leftPrimary);
+        sp.addSensor(rightPrimary);
+        sp.addSensor(secondary);
+        
+        sp.addSensor(batterySensor);
+        
+        sp.addSensor(leftEnc);
+        sp.addSensor(rightEnc);
+        
+        sp.addSensor(limitUp);
+        sp.addSensor(limitDown);
+
+        sp.start();
     }
 
     /**
