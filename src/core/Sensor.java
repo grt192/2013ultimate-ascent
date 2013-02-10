@@ -83,29 +83,6 @@ public abstract class Sensor extends GRTLoggedProcess {
     }
 
     /**
-     * Enables listening. Sensors need not listen to events, however.
-     */
-    protected void startListening() {
-    }
-
-    /**
-     * Disables listening. Sensors need not listen to events, however.
-     */
-    protected void stopListening() {
-    }
-
-    public void enable() {
-        //enable() always works because a Sensor is always running
-        super.enable();
-        startListening();
-    }
-
-    public void disable() {
-        super.disable();
-        stopListening();
-    }
-
-    /**
      * Calls the listener events based on what has changed
      *
      * @param id the key of the data that changed

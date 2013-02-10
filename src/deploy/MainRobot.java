@@ -1,12 +1,9 @@
 package deploy;
 
 import actuator.GRTSolenoid;
-import actuator.GRTDoubleActuator;
 import controller.DriveController;
 import controller.MechController;
-import core.EventController;
 import core.GRTConstants;
-import core.GRTMacroController;
 import core.SensorPoller;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -14,9 +11,7 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import java.util.Vector;
 import logger.GRTLogger;
-import macro.MacroDriveTrapezoidal;
 import mechanism.Belts;
 import mechanism.ExternalPickup;
 import mechanism.GRTDriveTrain;
@@ -25,7 +20,6 @@ import sensor.GRTBatterySensor;
 import sensor.GRTEncoder;
 import sensor.GRTJoystick;
 import sensor.GRTSwitch;
-import mechanism.Climber;
 import sensor.GRTXboxJoystick;
 
 /**
@@ -74,9 +68,6 @@ public class MainRobot extends GRTRobot {
         GRTJoystick leftPrimary = new GRTJoystick(1, 12, "left primary joy");
         GRTJoystick rightPrimary = new GRTJoystick(2, 12, "right primary joy");
         GRTXboxJoystick secondary = new GRTXboxJoystick(3, 12, "xbox mech joy");
-        leftPrimary.enable();
-        rightPrimary.enable();
-        secondary.enable();
         leftPrimary.startPolling();
         rightPrimary.startPolling();
         secondary.startPolling();
@@ -87,7 +78,6 @@ public class MainRobot extends GRTRobot {
         //Battery Sensor
         GRTBatterySensor batterySensor = new GRTBatterySensor(10, "battery");
         batterySensor.startPolling();
-        batterySensor.enable();
         
         //Shifter solenoids
 //        GRTSolenoid leftShifter = new GRTSolenoid((int) GRTConstants.getValue("leftSolenoid"));
@@ -152,10 +142,8 @@ public class MainRobot extends GRTRobot {
         SpeedController rollerMotor = new Victor((int) GRTConstants.getValue("rollerMotor"));
         SpeedController raiserMotor = new Victor((int) GRTConstants.getValue("raiserMotor"));
         GRTSwitch limitUp = new GRTSwitch((int) GRTConstants.getValue("pickUpUpperLimit"), 50, false, "limitUp");
-        limitUp.enable();
         limitUp.startPolling();
         GRTSwitch limitDown = new GRTSwitch((int) GRTConstants.getValue("pickUpLowerLimit"), 50, false, "limitDown");
-        limitDown.enable();
         limitDown.startPolling();
 
         ExternalPickup youTiao = new ExternalPickup(rollerMotor, raiserMotor, limitUp, limitDown);
@@ -199,7 +187,7 @@ public class MainRobot extends GRTRobot {
         sp.addSensor(limitUp);
         sp.addSensor(limitDown);
 
-        sp.start();
+        sp.startPolling();
     }
 
     /**
@@ -215,14 +203,11 @@ public class MainRobot extends GRTRobot {
                 new GRTJoystick(2, 12, "secondary");
         primary.startPolling();
         secondary.startPolling();
-        primary.enable();
-        secondary.enable();
         GRTLogger.logInfo("Joysticks initialized");
 
         //Battery Sensor
         GRTBatterySensor batterySensor = new GRTBatterySensor(10, "battery");
         batterySensor.startPolling();
-        batterySensor.enable();
 
         //Shifter solenoids
         //GRTSolenoid leftShifter = new GRTSolenoid((int) GRTConstants.getValue("leftSolenoid"));
@@ -301,17 +286,14 @@ public class MainRobot extends GRTRobot {
         //Battery Sensor
         GRTBatterySensor batterySensor = new GRTBatterySensor(10, "battery");
         batterySensor.startPolling();
-        batterySensor.enable();
 
         //Driver station components
         GRTJoystick joy1 = new GRTJoystick(1, 25, "Joystick");
         GRTJoystick joy2 = new GRTJoystick(2, 25, "Joystick");
 
         joy1.startPolling();
-        joy1.enable();
 
         joy2.startPolling();
-        joy2.enable();
 
         GRTLogger.logInfo("Joysticks initialized");
 
