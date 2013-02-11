@@ -42,11 +42,10 @@ public class GRTJoystick extends Sensor {
      *
      * @param channel usb channel (on driver station) that the joystick is
      * plugged in to
-     * @param pollTime how often to poll the joystick
      * @param name name of joystick
      */
-    public GRTJoystick(int channel, int pollTime, String name) {
-        super(name, pollTime, NUM_DATA);
+    public GRTJoystick(int channel, String name) {
+        super(name, NUM_DATA);
         
         joystick = new Joystick(channel);
         joystickListeners = new Vector();

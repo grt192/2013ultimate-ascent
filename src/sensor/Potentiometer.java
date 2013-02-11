@@ -23,11 +23,10 @@ public class Potentiometer extends Sensor {
      * Instantiates a new potentiometer on the default analog channel.
      *
      * @param channel channel on analog module potentiometer is connected to
-     * @param pollTime how often to poll the sensor
      * @param name name of potentiometer
      */
-    public Potentiometer(int channel, int pollTime, String name) {
-        super(name, pollTime, NUM_DATA);
+    public Potentiometer(int channel, String name) {
+        super(name, NUM_DATA);
         this.channel = new AnalogChannel(channel);
     }
 
@@ -36,12 +35,11 @@ public class Potentiometer extends Sensor {
      *
      * @param moduleNum analog module number
      * @param channel channel on analog module potentiometer is connected to
-     * @param pollTime how often to poll the sensor
      * @param name name of potentiometer
      */
     public Potentiometer(int moduleNum, int channel,
-            int pollTime, String name) {
-        super(name, pollTime, NUM_DATA);
+            String name) {
+        super(name, NUM_DATA);
         this.channel = new AnalogChannel(channel);
     }
 

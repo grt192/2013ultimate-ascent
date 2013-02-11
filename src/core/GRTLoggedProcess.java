@@ -4,13 +4,11 @@ import logger.GRTLogger;
 
 /**
  * A GRTLoggedProcess is a controllable process. It can be initiated/terminated.
+ * When a GRTLoggedProcess is constructed, it is not run.
  *
- * When a GRTLoggedProcess is constructed, it is neither run nor enabled.
- *
- * Logging is done to the singleton GRTLogger.
+ * Logging is done to the static GRTLogger.
  *
  * @author ajc
- *
  */
 public abstract class GRTLoggedProcess {
 

@@ -36,8 +36,8 @@ public class GRTEncoder extends Sensor {
      * @param name name of encoder
      */
     public GRTEncoder(int channelA, int channelB, double pulseDistance,
-            int pollTime, String name) {
-        this (channelA, channelB, pulseDistance, pollTime, false, name);
+            String name) {
+        this (channelA, channelB, pulseDistance, false, name);
     }
     
     /**
@@ -52,8 +52,8 @@ public class GRTEncoder extends Sensor {
      * @param name name of encoder
      */
     public GRTEncoder(int channelA, int channelB,
-            double pulseDistance, int pollTime, boolean reversed, String name) {
-        super(name, pollTime, NUM_DATA);
+            double pulseDistance, boolean reversed, String name) {
+        super(name, NUM_DATA);
         rotaryEncoder = new Encoder(channelA, channelB, reversed);
         rotaryEncoder.start();
 
@@ -74,9 +74,9 @@ public class GRTEncoder extends Sensor {
      * @param name name of encoder
      */
     public GRTEncoder(int moduleNum, int channelA, int channelB,
-            double pulseDistance, int pollTime, String name) {
+            double pulseDistance, String name) {
         this(moduleNum, channelA, channelB,
-                pulseDistance, pollTime, false, name);
+                pulseDistance, false, name);
     }
 
     /**
@@ -92,8 +92,8 @@ public class GRTEncoder extends Sensor {
      * @param name name of encoder
      */
     public GRTEncoder(int moduleNum, int channelA, int channelB,
-            double pulseDistance, int pollTime, boolean reversed, String name) {
-        super(name, pollTime, NUM_DATA);
+            double pulseDistance, boolean reversed, String name) {
+        super(name, NUM_DATA);
         rotaryEncoder = new Encoder(moduleNum, channelA,
                 moduleNum, channelB, reversed);
         rotaryEncoder.start();

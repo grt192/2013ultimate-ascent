@@ -1,11 +1,13 @@
 package core;
 
-import java.util.Vector;
-
 /**
  * A sensor sends numeric sensor event data. They only send data when running.
  * Sensors can either receive data through events, or by polling. It
  * additionally stores the state of variables and performs state change checks.
+ * 
+ * For performance reasons, sensors do not poll on their own. Instead, sensors
+ * may be fed to a SensorPoller to have the SensorPoller poll the sensors
+ * instead.
  *
  * @author ajc
  */
@@ -19,28 +21,15 @@ public abstract class Sensor extends GRTLoggedProcess {
     private double[] data;
 
     /**
-     * Constructs a sensor that doesn't poll.
-     *
-     * @param name name of sensor.
-     * @param numData number of pieces of data.
-     */
-    public Sensor(String name, int numData) {
-        this(name, -1, numData);
-        logInfo("New non-threaded sensor");
-    }
-
-    /**
-     * Construct a polling sensor. Subclasses need to start themselves--make a
-     * call to startPolling();
+     * Construct a sensor.
      *
      * @param name name of the sensor.
      * @param sleepTime time between polls [ms].
      * @param numData number of pieces of data.
      */
-    public Sensor(String name, int sleepTime, int numData) {
+    public Sensor(String name, int numData) {
         super(name, -1);
         logInfo("New non-threaded sensor as well!");
-//        super(name, sleepTime);
         running = true;
         data = new double[numData];
     }

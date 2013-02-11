@@ -27,13 +27,12 @@ public class GRTSwitch extends Sensor {
      *
      * @param moduleNum DIO module number that switch is connected to
      * @param channel channel on IO module switch is connected to
-     * @param pollTime how often to poll the switch
      * @param reversed true if switch pulls input high, false otherwise
      * @param name name of switch
      */
     public GRTSwitch(int moduleNum, int channel,
-            int pollTime, boolean reversed, String name) {
-        super(name, pollTime, NUM_DATA);
+            boolean reversed, String name) {
+        super(name, NUM_DATA);
         in = new DigitalInput(moduleNum, channel);
         this.reversed = reversed;
         listeners = new Vector();
@@ -43,12 +42,11 @@ public class GRTSwitch extends Sensor {
      * Instantiates a new GRTSwitch on the default digital module.
      *
      * @param channel channel on IO module switch is connected to
-     * @param pollTime how often to poll the switch
      * @param reversed true if switch pulls input high, false otherwise
      * @param name name of switch
      */
-    public GRTSwitch(int channel, int pollTime, boolean reversed, String name) {
-        super(name, pollTime, NUM_DATA);
+    public GRTSwitch(int channel, boolean reversed, String name) {
+        super(name, NUM_DATA);
         in = new DigitalInput(channel);
         this.reversed = reversed;
         listeners = new Vector();

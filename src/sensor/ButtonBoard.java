@@ -40,7 +40,7 @@ public class ButtonBoard extends Sensor {
     private static final ButtonBoard buttonBoard = new ButtonBoard();
     
     private ButtonBoard() {
-        super("Button Board", 12, 8);
+        super("Button Board", 8);
         
         try {
             for (int i = 0; i < BUTTON_PINS.length; i++)

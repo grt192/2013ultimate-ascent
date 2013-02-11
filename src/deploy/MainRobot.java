@@ -64,20 +64,20 @@ public class MainRobot extends GRTRobot {
      */
     private void betaInit() {
 
+        SensorPoller sp = new SensorPoller();
         
-        GRTJoystick leftPrimary = new GRTJoystick(1, 12, "left primary joy");
-        GRTJoystick rightPrimary = new GRTJoystick(2, 12, "right primary joy");
-        GRTXboxJoystick secondary = new GRTXboxJoystick(3, 12, "xbox mech joy");
-        leftPrimary.startPolling();
-        rightPrimary.startPolling();
-        secondary.startPolling();
-        
+        GRTJoystick leftPrimary = new GRTJoystick(1, "left primary joy");
+        GRTJoystick rightPrimary = new GRTJoystick(2, "right primary joy");
+        GRTXboxJoystick secondary = new GRTXboxJoystick(3, "xbox mech joy");
+        sp.addSensor(leftPrimary);
+        sp.addSensor(rightPrimary);
+        sp.addSensor(secondary);
 
         GRTLogger.logInfo("Joysticks initialized");
 
         //Battery Sensor
-        GRTBatterySensor batterySensor = new GRTBatterySensor(10, "battery");
-        batterySensor.startPolling();
+        GRTBatterySensor batterySensor = new GRTBatterySensor("battery");
+        sp.addSensor(batterySensor);
         
         //Shifter solenoids
 //        GRTSolenoid leftShifter = new GRTSolenoid((int) GRTConstants.getValue("leftSolenoid"));
@@ -98,6 +98,8 @@ public class MainRobot extends GRTRobot {
         GRTEncoder rightEnc = new GRTEncoder((int) GRTConstants.getValue("encoderRightA"),
                 (int) GRTConstants.getValue("encoderRightB"),
                 1, 50, "rightEnc");
+        sp.addSensor(leftEnc);
+        sp.addSensor(rightEnc);
         
         
         dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2,
@@ -142,9 +144,9 @@ public class MainRobot extends GRTRobot {
         SpeedController rollerMotor = new Victor((int) GRTConstants.getValue("rollerMotor"));
         SpeedController raiserMotor = new Victor((int) GRTConstants.getValue("raiserMotor"));
         GRTSwitch limitUp = new GRTSwitch((int) GRTConstants.getValue("pickUpUpperLimit"), 50, false, "limitUp");
-        limitUp.startPolling();
         GRTSwitch limitDown = new GRTSwitch((int) GRTConstants.getValue("pickUpLowerLimit"), 50, false, "limitDown");
-        limitDown.startPolling();
+        sp.addSensor(limitUp);
+        sp.addSensor(limitDown);
 
         ExternalPickup youTiao = new ExternalPickup(rollerMotor, raiserMotor, limitUp, limitDown);
 
@@ -164,23 +166,7 @@ public class MainRobot extends GRTRobot {
                 GRTConstants.getValue("shooterPreset2"),
                 GRTConstants.getValue("shooterPreset3"));
 
-
         addTeleopController(mechController);
-        
-        SensorPoller sp = new SensorPoller();
-
-        sp.addSensor(leftPrimary);
-        sp.addSensor(rightPrimary);
-        sp.addSensor(secondary);
-        
-        sp.addSensor(batterySensor);
-        
-        sp.addSensor(leftEnc);
-        sp.addSensor(rightEnc);
-        
-        sp.addSensor(limitUp);
-        sp.addSensor(limitDown);
-
         sp.startPolling();
     }
 
@@ -190,18 +176,20 @@ public class MainRobot extends GRTRobot {
     private void base2013Init() {
 
         GRTLogger.logInfo("Base 2013: GRTFramework starting up.");
+        SensorPoller sp = new SensorPoller();
 
         //Driver station components
-        GRTJoystick primary = new GRTJoystick(1, 12, "primary");
+        GRTJoystick primary = new GRTJoystick(1, "primary");
         GRTJoystick secondary =
-                new GRTJoystick(2, 12, "secondary");
-        primary.startPolling();
-        secondary.startPolling();
+                new GRTJoystick(2, "secondary");
+        sp.addSensor(primary);
+        sp.addSensor(secondary);
+ 
         GRTLogger.logInfo("Joysticks initialized");
 
         //Battery Sensor
-        GRTBatterySensor batterySensor = new GRTBatterySensor(10, "battery");
-        batterySensor.startPolling();
+        GRTBatterySensor batterySensor = new GRTBatterySensor("battery");
+        sp.addSensor(batterySensor);
 
         //Shifter solenoids
         //GRTSolenoid leftShifter = new GRTSolenoid((int) GRTConstants.getValue("leftSolenoid"));
@@ -231,12 +219,8 @@ public class MainRobot extends GRTRobot {
 //        GRTEncoder rightEnc = new GRTEncoder((int) GRTConstants.getValue("encoderRightA"),
 //                (int) GRTConstants.getValue("encoderRightB"),
 //                1, 50, "rightEnc");
-
-//        leftEnc.enable();
-//        rightEnc.enable();
-//        leftEnc.startPolling();
-//        rightEnc.startPolling();
-
+//        sp.addSensor(leftEnc);
+//        sp.addSensor(rightEnc);
 
         GRTLogger.logInfo("Encoders initialized");
 
@@ -267,6 +251,7 @@ public class MainRobot extends GRTRobot {
         GRTLogger.logInfo("Controllers Initialized");
 
         addTeleopController(dc);
+        sp.startPolling();
 
         GRTLogger.logSuccess("Ready to drive.");
     }
@@ -276,19 +261,18 @@ public class MainRobot extends GRTRobot {
      */
     private void base2012Init() {
         GRTLogger.logInfo("2012 Base: GRTFramework starting up.");
+        SensorPoller sp = new SensorPoller();
 
         //Battery Sensor
-        GRTBatterySensor batterySensor = new GRTBatterySensor(10, "battery");
-        batterySensor.startPolling();
+        GRTBatterySensor batterySensor = new GRTBatterySensor("battery");
+        sp.addSensor(batterySensor);
 
         //Driver station components
-        GRTJoystick joy1 = new GRTJoystick(1, 25, "Joystick");
-        GRTJoystick joy2 = new GRTJoystick(2, 25, "Joystick");
-
-        joy1.startPolling();
-
-        joy2.startPolling();
-
+        GRTJoystick joy1 = new GRTJoystick(1, "Joystick");
+        GRTJoystick joy2 = new GRTJoystick(2, "Joystick");
+        sp.addSensor(joy1);
+        sp.addSensor(joy2);
+        
         GRTLogger.logInfo("Joysticks initialized");
 
         // PWM outputs
@@ -307,6 +291,7 @@ public class MainRobot extends GRTRobot {
         DriveController dc = new DriveController(dt, joy1, joy2);
 
         addTeleopController(dc);
+        sp.startPolling();
 
         GRTLogger.logInfo("Big G, Litte O");
         Timer.delay(.2);

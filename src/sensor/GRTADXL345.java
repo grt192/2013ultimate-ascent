@@ -27,11 +27,10 @@ public class GRTADXL345 extends Sensor {
      *
      * @param moduleNum number of digital module the accelerometer is connected
      * to
-     * @param pollTime how often to poll the sensor
      * @param name name of sensor
      */
-    public GRTADXL345(int moduleNum, int pollTime, String name) {
-        super(name, pollTime, NUM_DATA);
+    public GRTADXL345(int moduleNum, String name) {
+        super(name, NUM_DATA);
         accelerometer = new ADXL345_I2C(moduleNum,
                 ADXL345_I2C.DataFormat_Range.k2G);
 

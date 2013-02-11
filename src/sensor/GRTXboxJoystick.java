@@ -1,11 +1,10 @@
 package sensor;
 
 import core.Sensor;
-import core.Sensor;
 import edu.wpi.first.wpilibj.Joystick;
 import event.events.ButtonEvent;
-import event.listeners.ButtonListener;
 import event.events.XboxJoystickEvent;
+import event.listeners.ButtonListener;
 import event.listeners.XboxJoystickListener;
 import java.util.Vector;
 
@@ -46,8 +45,8 @@ public class GRTXboxJoystick extends Sensor {
     private final Vector buttonListeners;
     private final Vector joystickListeners;
 
-    public GRTXboxJoystick(int channel, int pollTime, String name) {
-        super(name, pollTime, NUM_DATA);
+    public GRTXboxJoystick(int channel, String name) {
+        super(name, NUM_DATA);
         joystick = new Joystick(channel);
 
         buttonListeners = new Vector();

@@ -10,6 +10,8 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 /**
+ * A GRTMacro specifies code to complete one discrete motion (ie. Turn a
+ * specified angle, drive a specific distance). Most useful for autonomous mode.
  *
  * @author andrew, keshav
  */
@@ -28,9 +30,7 @@ public abstract class GRTMacro extends GRTLoggedProcess {
     private static final int NOTIFY_TIMEDOUT = 2;
 
     /**
-     * A GRTMacro specifies code to complete one discrete motion (ie. Turn a
-     * specified angle, drive a specific distance). Most useful for autonomous
-     * mode
+     * Creates a new macro.
      *
      * @param name Name of macro
      * @param timeout Time in ms after which macro will automatically stop
@@ -43,7 +43,7 @@ public abstract class GRTMacro extends GRTLoggedProcess {
         this.pollTime = pollTime;
         macroListeners = new Vector();
     }
-    
+
     /**
      * A GRTMacro specifies code to complete one discrete motion (ie. Turn a
      * specified angle, drive a specific distance). Most useful for autonomous
@@ -58,15 +58,14 @@ public abstract class GRTMacro extends GRTLoggedProcess {
     }
 
     /**
-     * Executes the macro.
-     * If it has not been started, it initializes the macro and
-     * repeatedly calls perform() until the macro has completed execution,
+     * Executes the macro. If it has not been started, it initializes the macro
+     * and repeatedly calls perform() until the macro has completed execution,
      * then calls die().
      */
     public void execute() {
         if (!hasStarted) {
             hasStarted = true;
-            
+
             initialize();
             notifyListeners(NOTIFY_INITIALIZE);
             this.startTime = System.currentTimeMillis();
@@ -78,7 +77,7 @@ public abstract class GRTMacro extends GRTLoggedProcess {
                     notifyListeners(NOTIFY_TIMEDOUT);
                     return;
                 }
-                
+
                 perform();
 
                 try {
