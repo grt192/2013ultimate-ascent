@@ -41,6 +41,7 @@ public class MechController extends EventController implements GRTJoystickListen
     private double turningDivider;
     private double adjustDivider;
 
+    private boolean leftShoulderHeld = false, leftTriggerHeld = false;  //Variables useful for collection logic.
 
     public MechController(GRTJoystick leftJoy, GRTJoystick rightJoy,
             GRTXboxJoystick secondary,
@@ -78,7 +79,7 @@ public class MechController extends EventController implements GRTJoystickListen
         try {
             turningDivider = GRTConstants.getValue("turningDivider");
         } catch(Exception e){
-            turningDivider = 10.0;
+            turningDivider = 2.0;
             logError("Could not find key  `turningDivider'  in the constants file. Maybe you should add it?");
             logInfo("Setting turingDivider to default of " + turningDivider);
         }
@@ -148,6 +149,7 @@ public class MechController extends EventController implements GRTJoystickListen
                         shooter.setSpeed(shooterPreset3);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
+                        leftShoulderHeld = true;
                         belts.moveUp();
                         break;
                 
@@ -195,7 +197,12 @@ public class MechController extends EventController implements GRTJoystickListen
                     shooter.setSpeed(0.0);
                     break;
                 case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
-                    belts.stop();
+                    leftShoulderHeld = false;
+                    if (!leftShoulderHeld && !leftTriggerHeld){
+                        belts.stop();
+                    } else {
+                        belts.moveDown();
+                    }
                     break;
                 case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
                     logInfo("Right shoulder released!");
@@ -210,8 +217,10 @@ public class MechController extends EventController implements GRTJoystickListen
 
     public void leftXAxisMoved(XboxJoystickEvent e) {
         //Use Xbox left axis to make fine adjustments to the robot's directional heading.
+        logInfo("Left x axis moved!");
         if (e.getSource() == secondary){
-            dt.setMotorSpeeds(-e.getData() / 10.0 , e.getData() / 10.0);
+            logInfo("Slowly turning dt's");
+            dt.setMotorSpeeds(-e.getData() / turningDivider , e.getData() / turningDivider );
         }
     }
 
@@ -237,9 +246,15 @@ public class MechController extends EventController implements GRTJoystickListen
     public void triggerMoved(XboxJoystickEvent e) {
         if (e.getSource() == secondary){
             if (e.getData() > 0.0){
+                leftTriggerHeld = true;
                 belts.moveDown();
             } else if (e.getData() == 0.0){
-                belts.stop();
+                leftTriggerHeld = false;
+                if (!leftTriggerHeld && !leftShoulderHeld){
+                    belts.stop();
+                } else {
+                    belts.moveUp();
+                }
             }
         }
     }

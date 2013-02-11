@@ -1,7 +1,7 @@
 #2013.1: Constants for Gunn Robotics BetaBot 2013
 robot,2013.1
 vision,0.0
-consoleOutput,0.0
+consoleOutput,1.0
 ##Drive Trains
 #Victor Ports
 leftDT1,9
@@ -31,8 +31,10 @@ shooter2,2
 shooterRaiser,6
 shooterFeeder,7
 
-shooterPreset1,1.0
-shooterPreset2,1.0
+shooterTime,0.4
+
+shooterPreset1,0.2
+shooterPreset2,5.0
 shooterPreset3,1.0
 
 ##Pick up
@@ -45,3 +47,6 @@ pickUpLowerLimit,2
 
 ##Belts motor
 belts,7
+
+#Misc.
+turningDivider,2.0
