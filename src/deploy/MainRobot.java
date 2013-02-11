@@ -126,7 +126,7 @@ public class MainRobot extends GRTRobot {
         GRTSolenoid shooterFeeder = new GRTSolenoid((int) GRTConstants.getValue("shooterFeeder"));
 //        GRTSolenoid shooterHoldDown = doubleSolenoid.getFirstSolenoid();
 
-        Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder, shooterRaiser);
+        Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder, GRTConstants.getValue("shooterTime"), shooterRaiser);
 
         //Belts
         Victor beltsMotor = new Victor((int) GRTConstants.getValue("belts"));
@@ -156,12 +156,6 @@ public class MainRobot extends GRTRobot {
 //        GRTSolenoid engager = doubleSolenoid.getSecondSolenoid();
 
 //        Climber climber = new Climber(dt, solenoid1, solenoid2, engager);
-
-
-        //ButtonBoard
-//        ButtonBoard buttonBoard = ButtonBoard.getButtonBoard();
-//        buttonBoard.enable();
-//        buttonBoard.startPolling();
 
         //Mechcontroller
         MechController mechController = new MechController(leftPrimary, rightPrimary, secondary,

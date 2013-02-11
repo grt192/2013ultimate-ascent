@@ -16,15 +16,17 @@ public class Shooter extends GRTLoggedProcess {
     private GRTSolenoid feeder;
     private boolean shooting = false;
     
-    private static final double SHOOT_TIME = 0.4; //TODO check
+    private double shootTime = 0.0; //TODO check
     
     public Shooter(Victor shooterMotor1, Victor shooterMotor2,
-            GRTSolenoid feeder, Victor raiser) {
+            GRTSolenoid feeder, double shootTime, Victor raiser) {
         super("Shooter mech");
         this.feeder = feeder;
         this.shooterMotor1 = shooterMotor1;
         this.shooterMotor2 = shooterMotor2;
         this.raiser = raiser;
+        
+        this.shootTime = shootTime;
         
         logInfo("New Shooter");        
     }
@@ -39,14 +41,14 @@ public class Shooter extends GRTLoggedProcess {
     public void adjustHeight(double velocity) {
         raiser.set(velocity);
     }
-
+    
     public void shoot() {
         if (!shooting) {
             shooting = true;
             logInfo("Shooting!");
             logInfo("Setting feeder to ture");
             feeder.set(true);
-            Timer.delay(SHOOT_TIME);
+            Timer.delay(shootTime);
             logInfo("setting feeder to false");
             feeder.set(false);
             shooting = false;

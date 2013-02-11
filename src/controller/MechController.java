@@ -33,10 +33,11 @@ public class MechController extends EventController implements GRTJoystickListen
     private ExternalPickup pickerUpper;
     private Shooter shooter;
     private GRTDriveTrain dt;
+    
     private double shooterPreset1;
     private double shooterPreset2;
     private double shooterPreset3;
-    
+        
     private double turningDivider;
     private double adjustDivider;
 
@@ -135,20 +136,24 @@ public class MechController extends EventController implements GRTJoystickListen
             else if (e.getSource() == secondary){
                 switch (e.getButtonID()){
                     case GRTXboxJoystick.KEY_BUTTON_X:
-                        logInfo("X: Angle adjustment #1 will be here.");
+                        logError("X: Angle adjustment #1 will be here.");
+                        shooter.setSpeed(shooterPreset1);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_A:
-                        logInfo("A: Angle adjustment #2 will be here.");
+                        logError("A: Angle adjustment #2 will be here.");
+                        shooter.setSpeed(shooterPreset2);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_B:
-                        logInfo("B: Angle adjustment #3 will be here.");
+                        logError("B: Angle adjustment #3 will be here.");
+                        shooter.setSpeed(shooterPreset3);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
                         belts.moveUp();
                         break;
                 
                     case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
-                        shooter.setSpeed(0.5);
+                        logInfo("Right shoulder preseed, shooting!");
+                        shooter.shoot();
                         break;
                 }
             }
@@ -161,22 +166,41 @@ public class MechController extends EventController implements GRTJoystickListen
     public void buttonReleased(ButtonEvent e) {
         if (e.getSource() == leftJoy) {
             switch (e.getButtonID()) {
-                case GRTJoystick.KEY_BUTTON_TRIGGER: pickerUpper.raise();
+                case GRTJoystick.KEY_BUTTON_TRIGGER:
+                    pickerUpper.raise();
                     break;
             }
         }
         
         else if (e.getSource() == rightJoy) {
             switch (e.getButtonID()) {
-                case GRTJoystick.KEY_BUTTON_3: pickerUpper.stopRoller();
+                case GRTJoystick.KEY_BUTTON_3: 
+                    pickerUpper.stopRoller();
                     break;
-                case GRTJoystick.KEY_BUTTON_2: pickerUpper.stopRoller();
+                case GRTJoystick.KEY_BUTTON_2: 
+                    pickerUpper.stopRoller();
                     break;
             }
         }
         
         else if (e.getSource() == secondary) {
-            
+            switch (e.getButtonID()) {
+                case GRTXboxJoystick.KEY_BUTTON_X:
+                        shooter.setSpeed(0.0);
+                        break;
+                case GRTXboxJoystick.KEY_BUTTON_A:
+                    shooter.setSpeed(0.0);
+                    break;
+                case GRTXboxJoystick.KEY_BUTTON_B:
+                    shooter.setSpeed(0.0);
+                    break;
+                case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
+                    belts.stop();
+                    break;
+                case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
+                    logInfo("Right shoulder released!");
+                    break;
+            }
         }
     }
 
@@ -202,6 +226,7 @@ public class MechController extends EventController implements GRTJoystickListen
 
     public void rightYAxisMoved(XboxJoystickEvent e) {
         if (e.getSource() == secondary){
+            logInfo("Adjusting luna height.");
             shooter.adjustHeight(e.getData() / adjustDivider);
         }
     }
@@ -210,5 +235,12 @@ public class MechController extends EventController implements GRTJoystickListen
     }
 
     public void triggerMoved(XboxJoystickEvent e) {
+        if (e.getSource() == secondary){
+            if (e.getData() > 0.0){
+                belts.moveDown();
+            } else if (e.getData() == 0.0){
+                belts.stop();
+            }
+        }
     }
 }
