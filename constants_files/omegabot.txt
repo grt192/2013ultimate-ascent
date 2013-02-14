@@ -1,0 +1,57 @@
+#Preliminary Omega Bot Constants.
+
+##Drivetrain motors
+leftDT1,1
+leftDT2,2
+rightDT1,3
+rightDT2,4
+##Drivetrain solenoids
+leftShifter,1
+rightShifter,2
+##Drivetrain sensors
+encoderLeftA,1
+encoderLeftB,2
+encoderRightA,3
+encoderRightB,4
+##DT scalefactors
+leftDT1Scale,1.0
+leftDT2Scale,1.0
+rightDT1Scale,-1.0
+rightDT2SCale,-1.0
+
+##Compressor
+compressorSwitch,14
+compressorRelay,1
+
+##Shooter actuators
+shooter1,9
+shooter2,10
+shooterRaiser,5
+shooterFeeder,3
+##Shooter sensors
+shooterEncoderA,5
+shooterEncoderB,6
+shooterEncoderPulseDistance,0.000694444444
+shooterPotentiometer,1
+##Shooter PID Constants ________PLACEHOLDERS_______
+shooterRaiserP,1.0
+shooterRaiserI,0.0
+shooterRaiserD,0.0
+raiserTolerance,2.0
+flywheelP,1.0
+flywheelI,1.0
+flywheelD,1.0
+flywheelTolerance,5.0
+##shooter constants
+raiserZeroV,0.0
+raiserPotRange,120
+
+##Belt motor
+belts,6
+
+##Pickup motors
+rollerMotor,7
+raiserMotor,8
+##Pickup sensors
+pickUpUpperLimit,7
+pickUpLowerLimit,8

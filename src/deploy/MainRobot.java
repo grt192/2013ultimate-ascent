@@ -21,6 +21,7 @@ import sensor.GRTEncoder;
 import sensor.GRTJoystick;
 import sensor.GRTSwitch;
 import sensor.GRTXboxJoystick;
+import sensor.Potentiometer;
 
 /**
  * Constructor for the main robot. Put all robot components here.
@@ -49,7 +50,7 @@ public class MainRobot extends GRTRobot {
         }
         if (robot == 2013.1){
             GRTLogger.logInfo("Starting up 2013 BetaBot");
-            betaInit();
+            omegaInit();
         }
         
     }
@@ -60,9 +61,9 @@ public class MainRobot extends GRTRobot {
     }
 
     /**
-     * Initializer for beta bot.
+     * Initializer for omega bot.
      */
-    private void betaInit() {
+    private void omegaInit() {
 
         SensorPoller sp = new SensorPoller();
         
@@ -101,8 +102,12 @@ public class MainRobot extends GRTRobot {
         sp.addSensor(leftEnc);
         sp.addSensor(rightEnc);
         
+        GRTSolenoid leftShifter = new GRTSolenoid((int) GRTConstants.getValue("leftShifter"));
+        GRTSolenoid rightShifter = new GRTSolenoid((int) GRTConstants.getValue("rightShifter"));
         
-        dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2,
+        
+        
+        dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2, leftShifter, rightShifter,
                 leftEnc, rightEnc);
 
         dt.setScaleFactors(GRTConstants.getValue("leftDT1Scale"),
@@ -119,22 +124,24 @@ public class MainRobot extends GRTRobot {
                 (int) GRTConstants.getValue("compressorRelay"));
         compressor.start();
 
-//        GRTDoubleActuator doubleSolenoid = new GRTDoubleActuator((int) GRTConstants.getValue("doubleSolenoidPin"));
-
         //shooter
         Victor shooter1 = new Victor((int) GRTConstants.getValue("shooter1"));
         Victor shooter2 = new Victor((int) GRTConstants.getValue("shooter2"));
         Victor shooterRaiser = new Victor((int) GRTConstants.getValue("shooterRaiser"));
         GRTSolenoid shooterFeeder = new GRTSolenoid((int) GRTConstants.getValue("shooterFeeder"));
-//        GRTSolenoid shooterHoldDown = doubleSolenoid.getFirstSolenoid();
 
-        Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder, GRTConstants.getValue("shooterTime"), shooterRaiser);
+        GRTEncoder shooterEncoder = new GRTEncoder((int) GRTConstants.getValue("shooterEncoderA"),
+                (int) GRTConstants.getValue("shooterEncoderB"), (int) GRTConstants.getValue("shooterEncoderPulseDistance"), "shooterFlywheelEncoder");
+        Potentiometer shooterPot = new Potentiometer((int) GRTConstants.getValue("shooterPotentiometer"),
+                "shooter potentiometer");
+        Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder,
+                shooterRaiser, shooterEncoder, shooterPot);
 
         //Belts
         Victor beltsMotor = new Victor((int) GRTConstants.getValue("belts"));
-        //    GRTSolenoid fingerSolenoid = new GRTSolenoid((int) GRTConstants.getValue("fingerSolenoid"));
+        GRTSolenoid fingerSolenoid = new GRTSolenoid((int) GRTConstants.getValue("fingerSolenoid"));
 
-        Belts belts = new Belts(beltsMotor, null);
+        Belts belts = new Belts(beltsMotor, fingerSolenoid);
 
 
 
