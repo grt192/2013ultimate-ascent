@@ -39,17 +39,21 @@ public class MainRobot extends GRTRobot {
         
         System.out.println("Robot being instantiated");
         
+        if (GRTConstants.getValue("consoleOutput") == 0.0){
+            GRTLogger.disableLogging();
+        }
+        
         double robot = GRTConstants.getValue("robot");
         if (robot == 2012.0){
-            GRTLogger.logInfo("Starting up 2012 Test Base");
+            System.out.println("Starting up 2012 Test Base");
             base2012Init();
         }
         if (robot == 2013.0){
-            GRTLogger.logInfo("Starting up 2013 Test Base");
+            System.out.println("Starting up 2013 Test Base");
             base2013Init();
         }
         if (robot == 2013.1){
-            GRTLogger.logInfo("Starting up 2013 BetaBot");
+            System.out.println("Starting up 2013 BetaBot");
             omegaInit();
         }
         
@@ -139,9 +143,8 @@ public class MainRobot extends GRTRobot {
 
         //Belts
         Victor beltsMotor = new Victor((int) GRTConstants.getValue("belts"));
-        GRTSolenoid fingerSolenoid = new GRTSolenoid((int) GRTConstants.getValue("fingerSolenoid"));
 
-        Belts belts = new Belts(beltsMotor, fingerSolenoid);
+        Belts belts = new Belts(beltsMotor);
 
 
 
@@ -242,19 +245,8 @@ public class MainRobot extends GRTRobot {
                 GRTConstants.getValue("rightDT2Scale"));
 
         GRTLogger.logInfo("Mechanisms initialized");
-
-        //Controllers
-//        MacroDriveTrapezoidal trap = new MacroDriveTrapezoidal(dt, -5, 10000, leftEnc, rightEnc, 2000, 2000);
-//        
-//        Vector macros = new Vector();
-//        macros.addElement(trap);
-//        EventController ac = new GRTMacroController(macros);
-//        addAutonomousController(ac);
-
-
-        DriveController dc =
-                new DriveController(dt, primary, secondary);
-
+        
+        DriveController dc = new DriveController(dt, primary, secondary);
         GRTLogger.logInfo("Controllers Initialized");
 
         addTeleopController(dc);

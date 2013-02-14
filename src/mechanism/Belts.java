@@ -11,12 +11,10 @@ import edu.wpi.first.wpilibj.SpeedController;
 public class Belts extends GRTLoggedProcess{
     private static final double SPEED = -1.0;
     private final SpeedController beltsMotor;
-    private final GRTSolenoid fingerSolenoid;
     
-    public Belts(SpeedController beltsMotor, GRTSolenoid fingerSolenoid) {
+    public Belts(SpeedController beltsMotor) {
         super("Belts mech");
         this.beltsMotor = beltsMotor;
-        this.fingerSolenoid = fingerSolenoid;
     }
     
     public void moveUp() {
@@ -29,13 +27,5 @@ public class Belts extends GRTLoggedProcess{
     
     public void stop() {
         beltsMotor.set(0);
-    }
-    
-    public void raiseFinger() {
-        fingerSolenoid.set(false);
-    }
-    
-    public void lowerFinger() {
-        fingerSolenoid.set(true);
-    }
+    }   
 }
