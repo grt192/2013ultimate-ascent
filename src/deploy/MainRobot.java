@@ -144,10 +144,10 @@ public class MainRobot extends GRTRobot {
 
         // PWM outputs
         //TODO check motor pins
-        Talon leftDT1 = new Talon(9);
-        Talon leftDT2 = new Talon(10);
-        Talon rightDT1 = new Talon(1);
-        Talon rightDT2 = new Talon(2);
+        Talon leftDT1 = new Talon((int)GRTConstants.getValue("leftDT1"));
+        Talon leftDT2 = new Talon((int)GRTConstants.getValue("leftDT2"));
+        Talon rightDT1 = new Talon((int)GRTConstants.getValue("rightDT1"));
+        Talon rightDT2 = new Talon((int)GRTConstants.getValue("rightDT2"));
         GRTLogger.logInfo("Motors initialized");
 
         //Mechanisms
