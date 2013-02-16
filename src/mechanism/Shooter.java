@@ -119,8 +119,8 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
      * @param speed speed of flywheel, in RPM
      */
     public void setSpeed(double speed) {
-        raiserController.setSetpoint(speed);
-        raiserController.enable();
+        flywheelController.setSetpoint(speed);
+        flywheelController.enable();
     }
 
     /**
