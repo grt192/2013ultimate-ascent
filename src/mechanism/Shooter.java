@@ -174,6 +174,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
      * Extends luna.
      */
     public void shoot() {
+        logInfo("Shooting!");
         feeder.set(true);
     }
 
@@ -181,6 +182,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
      * Retracts luna.
      */
     public void unShoot() {
+        logInfo("Unshooting!");
         feeder.set(false);
     }
 

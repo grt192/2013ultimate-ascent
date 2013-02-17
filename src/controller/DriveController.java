@@ -65,7 +65,6 @@ public class DriveController extends EventController implements GRTJoystickListe
     }
 
     public void YAxisMoved(JoystickEvent e) {
-        logInfo("Setting speeds!");
         if ( e.getSource() == left ){
             leftVelocity = e.getData();
         } else if ( e.getSource() == right ){

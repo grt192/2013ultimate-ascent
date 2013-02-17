@@ -17,7 +17,7 @@ public class ExternalPickup extends GRTLoggedProcess implements SwitchListener {
     private SpeedController raiserMotor;
     private GRTSwitch limitUp;
     private GRTSwitch limitDown;
-    private static double ROLLER_SF = -1, RAISE_SPEED = 1, LOWER_SPEED = -.3;
+    private static double ROLLER_SF = -1, RAISE_SPEED = 0.2, LOWER_SPEED = .2;
 
     public ExternalPickup(SpeedController rollerMotor, SpeedController raiserMotor,
             GRTSwitch limitUp, GRTSwitch limitDown) {
