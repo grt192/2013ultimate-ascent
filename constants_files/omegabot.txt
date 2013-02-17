@@ -1,4 +1,7 @@
 #Preliminary Omega Bot Constants.
+robot,2013.2
+
+consoleOutput,1.0
 
 ##Drivetrain motors
 leftDT1,3
@@ -9,18 +12,18 @@ rightDT2,2
 leftShifter,1
 rightShifter,2
 ##Drivetrain sensors
-encoderLeftA,1
-encoderLeftB,2
-encoderRightA,3
-encoderRightB,4
+encoderLeftA,11
+encoderLeftB,12
+encoderRightA,13
+encoderRightB,14
 ##DT scalefactors
 leftDT1Scale,1.0
 leftDT2Scale,1.0
 rightDT1Scale,-1.0
-rightDT2SCale,-1.0
+rightDT2Scale,-1.0
 
 ##Compressor
-compressorSwitch,14
+compressorSwitch,1
 compressorRelay,1
 
 ##Shooter actuators
@@ -34,6 +37,12 @@ shooterEncoderB,6
 shooterEncoderPulseDistance,0.000694444444
 shooterPotentiometer,1
 ##Shooter PID Constants ________PLACEHOLDERS_______
+
+shooterPreset1,0.2
+shooterPreset2,0.5
+shooterPreset3,1.0
+
+
 shooterRaiserP,1.0
 shooterRaiserI,0.0
 shooterRaiserD,0.0

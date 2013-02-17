@@ -3,6 +3,7 @@ package mechanism;
 import actuator.GRTSolenoid;
 import core.GRTLoggedProcess;
 import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 /**
  * Mechanism code for the Belts past the flipper. (i.e not PickUp Belts)
@@ -32,10 +33,10 @@ public class Belts extends GRTLoggedProcess{
     }   
 
     public void extendShovel() {
-        shovelLifter.set(true);
+//        shovelLifter.set(true);
     }
 
     public void retractShovel() {
-        shovelLifter.set(false);
+//        shovelLifter.set(false);
     }
 }

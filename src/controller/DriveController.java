@@ -45,6 +45,7 @@ public class DriveController extends EventController implements GRTJoystickListe
     }
 
     protected void startListening() {
+        logInfo("Start listening to joys");
         left.addJoystickListener(this);
         left.addButtonListener(this);
         
@@ -64,6 +65,7 @@ public class DriveController extends EventController implements GRTJoystickListe
     }
 
     public void YAxisMoved(JoystickEvent e) {
+        logInfo("Setting speeds!");
         if ( e.getSource() == left ){
             leftVelocity = e.getData();
         } else if ( e.getSource() == right ){
