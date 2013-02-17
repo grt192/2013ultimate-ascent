@@ -33,11 +33,11 @@ public class MechController extends EventController implements GRTJoystickListen
     private ExternalPickup pickerUpper;
     private Shooter shooter;
     private GRTDriveTrain dt;
-    
+
     private double shooterPreset1;
     private double shooterPreset2;
     private double shooterPreset3;
-        
+
     private double turningDivider;
     private double adjustDivider;
 
@@ -60,7 +60,7 @@ public class MechController extends EventController implements GRTJoystickListen
         this.shooter = shooter;
 
         this.dt = dt;
-        
+
         this.shooterPreset1 = preset1;
         this.shooterPreset2 = preset2;
         this.shooterPreset3 = preset3;
@@ -75,7 +75,7 @@ public class MechController extends EventController implements GRTJoystickListen
 
         secondary.addJoystickListener(this);
         secondary.addButtonListener(this);
-        
+
         try {
             turningDivider = GRTConstants.getValue("turningDivider");
         } catch(Exception e){
@@ -83,7 +83,7 @@ public class MechController extends EventController implements GRTJoystickListen
             logError("Could not find key  `turningDivider'  in the constants file. Maybe you should add it?");
             logInfo("Setting turingDivider to default of " + turningDivider);
         }
-        
+
         try {
             adjustDivider = GRTConstants.getValue("adjustDivider");
         } catch(Exception e){
@@ -121,19 +121,19 @@ public class MechController extends EventController implements GRTJoystickListen
             if (e.getSource() == rightJoy) {
                 switch (e.getButtonID()) {
                     case GRTJoystick.KEY_BUTTON_3: pickerUpper.pickUp();
-                        break;
+                                                   break;
                     case GRTJoystick.KEY_BUTTON_2: pickerUpper.spitOut();
-                        break;
+                                                   break;
                 }  
             }
-            
+
             else if (e.getSource() == leftJoy) {
                 switch (e.getButtonID()) {
                     case GRTJoystick.KEY_BUTTON_TRIGGER: pickerUpper.lower();
-                        break;
+                                                         break;
                 }   
             }
-            
+
             else if (e.getSource() == secondary){
                 switch (e.getButtonID()){
                     case GRTXboxJoystick.KEY_BUTTON_X:
@@ -152,7 +152,7 @@ public class MechController extends EventController implements GRTJoystickListen
                         leftShoulderHeld = true;
                         belts.moveUp();
                         break;
-                
+
                     case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
                         logInfo("Right shoulder preseed, shooting!");
                         shooter.shoot();
@@ -173,7 +173,7 @@ public class MechController extends EventController implements GRTJoystickListen
                     break;
             }
         }
-        
+
         else if (e.getSource() == rightJoy) {
             switch (e.getButtonID()) {
                 case GRTJoystick.KEY_BUTTON_3: 
@@ -184,12 +184,12 @@ public class MechController extends EventController implements GRTJoystickListen
                     break;
             }
         }
-        
+
         else if (e.getSource() == secondary) {
             switch (e.getButtonID()) {
                 case GRTXboxJoystick.KEY_BUTTON_X:
-                        shooter.setSpeed(0.0);
-                        break;
+                    shooter.setSpeed(0.0);
+                    break;
                 case GRTXboxJoystick.KEY_BUTTON_A:
                     shooter.setSpeed(0.0);
                     break;
@@ -206,6 +206,7 @@ public class MechController extends EventController implements GRTJoystickListen
                     break;
                 case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
                     logInfo("Right shoulder released!");
+                    shooter.unShoot();
                     break;
             }
         }

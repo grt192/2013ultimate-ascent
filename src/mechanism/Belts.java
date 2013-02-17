@@ -11,10 +11,12 @@ import edu.wpi.first.wpilibj.SpeedController;
 public class Belts extends GRTLoggedProcess{
     private static final double SPEED = -1.0;
     private final SpeedController beltsMotor;
+    private final GRTSolenoid shovelLifter;
     
-    public Belts(SpeedController beltsMotor) {
+    public Belts(SpeedController beltsMotor, GRTSolenoid shovelLifter) {
         super("Belts mech");
         this.beltsMotor = beltsMotor;
+        this.shovelLifter = shovelLifter;
     }
     
     public void moveUp() {
@@ -28,4 +30,12 @@ public class Belts extends GRTLoggedProcess{
     public void stop() {
         beltsMotor.set(0);
     }   
+
+    public void extendShovel() {
+        shovelLifter.set(true);
+    }
+
+    public void retractShovel( {
+        shovelLifter.set(false);
+    }
 }
