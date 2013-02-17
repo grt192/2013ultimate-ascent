@@ -143,7 +143,7 @@ public class MainRobot extends GRTRobot {
 
         //Belts
         Victor beltsMotor = new Victor(getPinID("belts"));
-        GRTSolenoid shovelLifter = new GRTSolenoid(getPinID("shovelLifter");
+        GRTSolenoid shovelLifter = new GRTSolenoid(getPinID("shovelLifter"));
 
         Belts belts = new Belts(beltsMotor, shovelLifter);
 
