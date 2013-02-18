@@ -113,9 +113,10 @@ public class MainRobot extends GRTRobot {
         addTeleopController(dc);
 
         //Compressor
-        Compressor compressor = new Compressor(getPinID("compressorSwitch"),
-                getPinID("compressorRelay"));
+        System.out.println("compressorSwitch = " + getPinID("compressorSwitch"));
+        Compressor compressor = new Compressor(1,1);        //They should be the same...HACK
         compressor.start();
+        System.out.println("pressure switch="+compressor.getPressureSwitchValue());
 
         //shooter
         Victor shooter1 = new Victor(getPinID("shooter1"));
@@ -131,16 +132,18 @@ public class MainRobot extends GRTRobot {
                 shooterRaiser, shooterEncoder, shooterPot);
 
         //Belts
+        System.out.println("belts = " + getPinID("belts"));
+        System.out.println("shovelLifter = " + getPinID("shovelLifter"));
+        System.out.println("rollerMotor = " + getPinID("rollerMotor"));
+        System.out.println("raiserMotor = " + getPinID("raiserMotor"));
+        
         Victor beltsMotor = new Victor(getPinID("belts"));
         GRTSolenoid shovelLifter = new GRTSolenoid(getPinID("shovelLifter"));
 
         Belts belts = new Belts(beltsMotor, shovelLifter);
 
 
-
         //PickerUpper
-
-
         SpeedController rollerMotor = new Victor(getPinID("rollerMotor"));
         SpeedController raiserMotor = new Victor(getPinID("raiserMotor"));
         GRTSwitch limitUp = new GRTSwitch(getPinID("pickUpUpperLimit"), false, "limitUp");

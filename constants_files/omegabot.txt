@@ -1,7 +1,7 @@
 #Preliminary Omega Bot Constants.
 robot,2013.2
 
-consoleOutput,1.0
+consoleOutput,0.0
 
 ##Drivetrain motors
 leftDT1,3
@@ -17,10 +17,10 @@ encoderLeftB,12
 encoderRightA,13
 encoderRightB,14
 ##DT scalefactors
-leftDT1Scale,1.0
-leftDT2Scale,1.0
-rightDT1Scale,-1.0
-rightDT2Scale,-1.0
+leftDT1Scale,-1.0
+leftDT2Scale,-1.0
+rightDT1Scale,1.0
+rightDT2Scale,1.0
 
 ##Compressor
 compressorSwitch,1
@@ -54,6 +54,11 @@ flywheelTolerance,5.0
 ##shooter constants
 raiserZeroV,0.0
 raiserPotRange,120
+
+#Raise/lower speed
+pickUpRaiseSpeed,-0.5
+pickUpLowerSpeed,0.2
+
 
 ##Belt motor
 belts,6

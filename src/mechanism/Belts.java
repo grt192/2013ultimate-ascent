@@ -21,14 +21,17 @@ public class Belts extends GRTLoggedProcess{
     }
     
     public void moveUp() {
+        logInfo("Belts moving up!");
         beltsMotor.set(SPEED);
     }
     
     public void moveDown() {
+        logInfo("Belts moving down!");
         beltsMotor.set(-SPEED);
     }
     
     public void stop() {
+        logInfo("Belts stopping!");
         beltsMotor.set(0);
     }   
 

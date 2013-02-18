@@ -153,15 +153,15 @@ public class MechController extends EventController implements GRTJoystickListen
                 switch (e.getButtonID()){
                     case GRTXboxJoystick.KEY_BUTTON_X:
                         logError("X: Angle adjustment #1 will be here.");
-                        shooter.setSpeed(shooterPreset1);
+                        shooter.setFlywheelOutput(shooterPreset1);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_A:
                         logError("A: Angle adjustment #2 will be here.");
-                        shooter.setSpeed(shooterPreset2);
+                        shooter.setFlywheelOutput(shooterPreset2);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_B:
                         logError("B: Angle adjustment #3 will be here.");
-                        shooter.setSpeed(shooterPreset3);
+                        shooter.setFlywheelOutput(shooterPreset3);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
                         leftShoulderHeld = true;
@@ -206,13 +206,15 @@ public class MechController extends EventController implements GRTJoystickListen
         else if (e.getSource() == secondary) {
             switch (e.getButtonID()) {
                 case GRTXboxJoystick.KEY_BUTTON_X:
-                    shooter.setSpeed(0.0);
+                    shooter.setFlywheelOutput(0.0);
                     break;
                 case GRTXboxJoystick.KEY_BUTTON_A:
-                    shooter.setSpeed(0.0);
+                    logInfo("Stopping shooter");
+                    shooter.setFlywheelOutput(0.0);
                     break;
                 case GRTXboxJoystick.KEY_BUTTON_B:
-                    shooter.setSpeed(0.0);
+                    logInfo("Stopping shooter");
+                    shooter.setFlywheelOutput(0.0);
                     break;
                 case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
                     leftShoulderHeld = false;
@@ -231,7 +233,7 @@ public class MechController extends EventController implements GRTJoystickListen
     }
 
     public void valueChanged(PotentiometerEvent e) {
-        //TODO set trim for auto tracking
+        logInfo("potentiometer value changed: " + e.getData());
     }
 
     public void leftXAxisMoved(XboxJoystickEvent e) {
@@ -254,7 +256,7 @@ public class MechController extends EventController implements GRTJoystickListen
 
     public void rightYAxisMoved(XboxJoystickEvent e) {
         if (e.getSource() == secondary){
-            logInfo("Adjusting luna height.");
+            logInfo("Adjusting luna height by " + (e.getData() / adjustDivider));
             shooter.adjustHeight(e.getData() / adjustDivider);
         }
     }
