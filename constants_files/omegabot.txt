@@ -12,10 +12,10 @@ rightDT2,2
 leftShifter,6
 rightShifter,5
 ##Drivetrain sensors
+encoderRightA,9
+encoderRightB,10
 encoderLeftA,11
 encoderLeftB,12
-encoderRightA,13
-encoderRightB,14
 ##DT scalefactors
 leftDT1Scale,-1.0
 leftDT2Scale,-1.0
@@ -32,8 +32,8 @@ shooter2,10
 shooterRaiser,8
 shooterFeeder,8
 ##Shooter sensors
-shooterEncoderA,5
-shooterEncoderB,6
+shooterEncoderA,13
+shooterEncoderB,14
 shooterEncoderPulseDistance,0.000694444444
 shooterPotentiometer,1
 ##Shooter PID Constants ________PLACEHOLDERS_______
@@ -64,7 +64,7 @@ pickUpLowerSpeed,0.2
 
 ##Belt motor
 belts,6
-shovelLifter,4
+shovelLifter,7
 
 ##Pickup motors
 rollerMotor,5

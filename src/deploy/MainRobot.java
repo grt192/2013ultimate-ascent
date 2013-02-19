@@ -113,10 +113,9 @@ public class MainRobot extends GRTRobot {
         addTeleopController(dc);
 
         //Compressor
-        System.out.println("compressorSwitch = " + getPinID("compressorSwitch"));
-        Compressor compressor = new Compressor(1,1);        //They should be the same...HACK
+        Compressor compressor = new Compressor(getPinID("compressorSwitch"),
+                getPinID("compressorRelay"));
         compressor.start();
-        System.out.println("pressure switch="+compressor.getPressureSwitchValue());
 
         //shooter
         Talon shooter1 = new Talon(getPinID("shooter1"));

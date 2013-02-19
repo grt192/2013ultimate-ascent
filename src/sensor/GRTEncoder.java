@@ -123,8 +123,6 @@ public class GRTEncoder extends Sensor {
         setState(KEY_RATE, getRate());
         setState(KEY_DIRECTION, rotaryEncoder.getDirection() ? TRUE : FALSE);
         setState(KEY_STOPPED, rotaryEncoder.getStopped() ? TRUE : FALSE);
-        
-        System.out.println("enc rate = " + rotaryEncoder.getRate() / distancePerPulse / 60);
     }
 
     protected void notifyListeners(int id, double newDatum) {
