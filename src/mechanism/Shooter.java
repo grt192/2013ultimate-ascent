@@ -65,7 +65,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
      * @param flywheelEncoder
      * @param raiserPot
      */
-    public Shooter(Victor shooterMotor1, Victor shooterMotor2,
+    public Shooter(SpeedController shooterMotor1, SpeedController shooterMotor2,
             GRTSolenoid feeder, Victor raiser, GRTEncoder flywheelEncoder,
             Potentiometer raiserPot) {
         super("Shooter mech");
@@ -130,11 +130,12 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
      */
     public void adjustHeight(double velocity) {
         raiserController.disable();
-        double currentAngle = getShooterAngle();
-        if ((velocity >= 0 && currentAngle < MAX_ANGLE)
-                || (velocity < 0 && currentAngle > 0)) {
-            raiser.set(velocity);
-        }
+        raiser.set(velocity);
+////        double currentAngle = getShooterAngle();
+////        if ((velocity >= 0 && currentAngle < MAX_ANGLE)
+////                || (velocity < 0 && currentAngle > 0)) {
+////            raiser.set(velocity);
+//        }
     }
 
     /**

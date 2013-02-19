@@ -231,11 +231,7 @@ public class MechController extends EventController implements GRTJoystickListen
             }
         }
     }
-
-    public void valueChanged(PotentiometerEvent e) {
-        logInfo("potentiometer value changed: " + e.getData());
-    }
-
+    
     public void leftXAxisMoved(XboxJoystickEvent e) {
         //Use Xbox left axis to make fine adjustments to the robot's directional heading.
         logInfo("Left x axis moved!");
@@ -256,8 +252,12 @@ public class MechController extends EventController implements GRTJoystickListen
 
     public void rightYAxisMoved(XboxJoystickEvent e) {
         if (e.getSource() == secondary){
-            logInfo("Adjusting luna height by " + (e.getData() / adjustDivider));
-            shooter.adjustHeight(e.getData() / adjustDivider);
+            System.out.println("Adjusting luna height by " + (e.getData() / adjustDivider));
+            if (e.getData() >= 0){
+                shooter.adjustHeight(e.getData() / GRTConstants.getValue("adjustDividerUp"));
+            } else {
+                shooter.adjustHeight(e.getData());
+            }
         }
     }
 
@@ -279,4 +279,9 @@ public class MechController extends EventController implements GRTJoystickListen
             }
         }
     }
+    
+    public void valueChanged(PotentiometerEvent e) {
+        logInfo("potentiometer value changed: " + e.getData());
+    }
+
 }

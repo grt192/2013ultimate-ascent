@@ -91,8 +91,8 @@ public class MainRobot extends GRTRobot {
         GRTEncoder rightEnc = new GRTEncoder(getPinID("encoderRightA"),
                 getPinID("encoderRightB"),
                 50, "rightEnc");
-        sp.addSensor(leftEnc);
-        sp.addSensor(rightEnc);
+//        sp.addSensor(leftEnc);
+//        sp.addSensor(rightEnc);
         
         GRTSolenoid leftShifter = new GRTSolenoid(getPinID("leftShifter"));
         GRTSolenoid rightShifter = new GRTSolenoid(getPinID("rightShifter"));
@@ -119,18 +119,21 @@ public class MainRobot extends GRTRobot {
         System.out.println("pressure switch="+compressor.getPressureSwitchValue());
 
         //shooter
-        Victor shooter1 = new Victor(getPinID("shooter1"));
-        Victor shooter2 = new Victor(getPinID("shooter2"));
+        Talon shooter1 = new Talon(getPinID("shooter1"));
+        Talon shooter2 = new Talon(getPinID("shooter2"));
         Victor shooterRaiser = new Victor(getPinID("shooterRaiser"));
         GRTSolenoid shooterFeeder = new GRTSolenoid(getPinID("shooterFeeder"));
-
+        
         GRTEncoder shooterEncoder = new GRTEncoder(getPinID("shooterEncoderA"),
-                getPinID("shooterEncoderB"), getPinID("shooterEncoderPulseDistance"), "shooterFlywheelEncoder");
+                getPinID("shooterEncoderB"), GRTConstants.getValue("shooterEncoderPulseDistance"), "shooterFlywheelEncoder");
         Potentiometer shooterPot = new Potentiometer(getPinID("shooterPotentiometer"),
                 "shooter potentiometer");
         Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder,
                 shooterRaiser, shooterEncoder, shooterPot);
 
+        sp.addSensor(shooterEncoder);
+        sp.addSensor(shooterPot);
+        
         //Belts
         System.out.println("belts = " + getPinID("belts"));
         System.out.println("shovelLifter = " + getPinID("shovelLifter"));

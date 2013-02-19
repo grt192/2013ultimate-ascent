@@ -1,6 +1,7 @@
 package sensor;
 
 import core.Sensor;
+import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import event.events.EncoderEvent;
 import event.listeners.EncoderListener;
@@ -54,7 +55,8 @@ public class GRTEncoder extends Sensor {
     public GRTEncoder(int channelA, int channelB,
             double pulseDistance, boolean reversed, String name) {
         super(name, NUM_DATA);
-        rotaryEncoder = new Encoder(channelA, channelB, reversed);
+        rotaryEncoder = new Encoder(channelA, channelB, reversed,
+                CounterBase.EncodingType.k1X);
         rotaryEncoder.start();
 
         encoderListeners = new Vector();
@@ -121,6 +123,8 @@ public class GRTEncoder extends Sensor {
         setState(KEY_RATE, getRate());
         setState(KEY_DIRECTION, rotaryEncoder.getDirection() ? TRUE : FALSE);
         setState(KEY_STOPPED, rotaryEncoder.getStopped() ? TRUE : FALSE);
+        
+        System.out.println("enc rate = " + rotaryEncoder.getRate() / distancePerPulse / 60);
     }
 
     protected void notifyListeners(int id, double newDatum) {
