@@ -123,6 +123,7 @@ public class MechController extends EventController implements GRTJoystickListen
                     case GRTJoystick.KEY_BUTTON_3: 
                         pickerUpper.pickUp();
                         belts.moveUp();
+                        belts.extendShovel();
                         break;
                     case GRTJoystick.KEY_BUTTON_2: 
                         pickerUpper.spitOut();
@@ -191,7 +192,8 @@ public class MechController extends EventController implements GRTJoystickListen
 
         else if (e.getSource() == rightJoy) {
             switch (e.getButtonID()) {
-                case GRTJoystick.KEY_BUTTON_3: 
+                case GRTJoystick.KEY_BUTTON_3:
+                    belts.retractShovel();
                 case GRTJoystick.KEY_BUTTON_2: 
                     pickerUpper.stopRoller();
                     belts.stop();
@@ -236,7 +238,7 @@ public class MechController extends EventController implements GRTJoystickListen
         //Use Xbox left axis to make fine adjustments to the robot's directional heading.
         logInfo("Left x axis moved!");
         if (e.getSource() == secondary){
-            logInfo("Slowly turning dt's");
+            System.out.println("Slowly turning dt's");
             dt.setMotorSpeeds(-e.getData() / turningDivider , e.getData() / turningDivider );
         }
     }

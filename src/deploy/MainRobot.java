@@ -41,6 +41,10 @@ public class MainRobot extends GRTRobot {
             GRTLogger.disableLogging();
         }
         
+        if (GRTConstants.getValue("fileLogging") == 0.0){
+            GRTLogger.disableFileLogging();
+        }
+        
         double robot = GRTConstants.getValue("robot");
         if (robot == 2013.2){
             System.out.println("Starting up 2013 OmegaBot");

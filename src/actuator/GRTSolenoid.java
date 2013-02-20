@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.tables.ITableListener;
  * 
  * @author Calvin
  */
-public class GRTSolenoid implements LiveWindowSendable {
+public class GRTSolenoid {
     
     private Solenoid solenoid;
     
@@ -67,64 +67,5 @@ public class GRTSolenoid implements LiveWindowSendable {
     public void free() {
         if (solenoid != null)
             solenoid.free();
-    }
-    
-    //Live window code, copied verbatim from WPILibJ.
-    
-    /*
-     * Live Window code, only does anything if live window is activated.
-     */
-    public String getSmartDashboardType(){
-        return "Solenoid";
-    }
-    private ITable m_table;
-    private ITableListener m_table_listener;
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void initTable(ITable subtable) {
-        m_table = subtable;
-        updateTable();
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public ITable getTable(){
-        return m_table;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void updateTable() {
-        if (m_table != null) {
-            m_table.putBoolean("Value", get());
-        }
-    }
-    
-
-    /**
-     * {@inheritDoc}
-     */
-    public void startLiveWindowMode() {
-        set(false); // Stop for safety
-        m_table_listener = new ITableListener() {
-            public void valueChanged(ITable itable, String key, Object value, boolean bln) {
-                System.out.println(key+": "+value);
-                set(((Boolean) value).booleanValue());
-            }
-        };
-        m_table.addTableListener("Value", m_table_listener, true);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void stopLiveWindowMode() {
-        set(false); // Stop for safety
-        // TODO: Broken, should only remove the listener from "Value" only.
-        m_table.removeTableListener(m_table_listener);
     }
 }
