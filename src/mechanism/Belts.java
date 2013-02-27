@@ -36,10 +36,10 @@ public class Belts extends GRTLoggedProcess{
     }   
 
     public void extendShovel() {
-        shovelLifter.set(true);
+        shovelLifter.set(false);
     }
 
     public void retractShovel() {
-        shovelLifter.set(false);
+        shovelLifter.set(true);
     }
 }

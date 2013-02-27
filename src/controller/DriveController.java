@@ -80,6 +80,8 @@ public class DriveController extends EventController implements GRTJoystickListe
     public void buttonPressed(ButtonEvent e) {
         
         if ( e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER ){
+            System.out.println("Trigger pressed.");
+            System.out.println("\tShifting DT's down");
             dt.shiftDown();           
             triggersPressed++;
         }
@@ -88,9 +90,11 @@ public class DriveController extends EventController implements GRTJoystickListe
     public void buttonReleased(ButtonEvent e) {
         if ( e.getButtonID() == GRTJoystick.KEY_BUTTON_TRIGGER ){
             triggersPressed--;
-            
+            System.out.println("Trigger released.");
+
             //If neither trigger is still being held, then it's safe to shift back up.
             if (triggersPressed <= 0){
+                System.out.println("\tShifting DT's up");
                 dt.shiftUp();
             }            
         }

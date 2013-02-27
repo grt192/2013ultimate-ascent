@@ -7,8 +7,9 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.Victor;
+import event.events.EncoderEvent;
 import event.events.PotentiometerEvent;
+import event.listeners.EncoderListener;
 import event.listeners.PotentiometerListener;
 import sensor.GRTEncoder;
 import sensor.Potentiometer;
@@ -18,7 +19,7 @@ import sensor.Potentiometer;
  *
  * @author Calvin
  */
-public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
+public class Shooter extends GRTLoggedProcess implements PotentiometerListener, EncoderListener {
 
     private SpeedController shooterMotor1, shooterMotor2;
     private SpeedController raiser;
@@ -53,7 +54,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
      * The angular range of the potentiometer.
      */
     private static final double POT_RANGE = GRTConstants.getValue("raiserPotRange");
-    private static final double MAX_ANGLE = 40;
+    private static final double MAX_ANGLE = 47.0;
 
     /**
      * Creates a new shooter.
@@ -66,7 +67,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
      * @param raiserPot
      */
     public Shooter(SpeedController shooterMotor1, SpeedController shooterMotor2,
-            GRTSolenoid feeder, Victor raiser, GRTEncoder flywheelEncoder,
+            GRTSolenoid feeder, SpeedController raiser, GRTEncoder flywheelEncoder,
             Potentiometer raiserPot) {
         super("Shooter mech");
         this.feeder = feeder;
@@ -86,7 +87,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
         raiserController.setOutputRange(-1, 1);
         raiserController.setAbsoluteTolerance(RAISER_TOLERANCE);
 
-        logInfo("New Shooter");
+        System.out.println("New Shooter");
         raiserPot.addListener(this);
     }
 
@@ -101,13 +102,18 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
         shooterMotor1.set(speed);
         shooterMotor2.set(speed);
     }
+    
+    //PID sources. This is the input gain that is read in by the controller, and is used to scale the output gains according to your PID function.
     private PIDSource flywheelSource = new PIDSource() {
         public double pidGet() {
             return flywheelEncoder.getRate();
         }
     };
+    
+    //Function that is called with the PID output gain. Here, it is being applied to the shooter motor speeds.
     private PIDOutput flywheelOutput = new PIDOutput() {
         public void pidWrite(double d) {
+            System.out.println("Motor output: " + ((int) (d * 1000))/1000.0 + " Shooter RPM: " + (int) flywheelEncoder.getRate() + "  Desired: " + flywheelController.getSetpoint());
             shooterMotor1.set(d);
             shooterMotor2.set(d);
         }
@@ -119,6 +125,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
      * @param speed speed of flywheel, in RPM
      */
     public void setSpeed(double speed) {
+        System.out.println("PID settting flywheel speed to " + speed);
         flywheelController.setSetpoint(speed);
         flywheelController.enable();
     }
@@ -130,7 +137,13 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
      */
     public void adjustHeight(double velocity) {
         raiserController.disable();
-        raiser.set(velocity);
+        
+        if (Math.abs(velocity) < 0.1){
+            raiser.set(0.0);
+        } else {
+            raiser.set(-velocity);
+        }
+        logInfo("adjusting shooter by " +velocity);
 ////        double currentAngle = getShooterAngle();
 ////        if ((velocity >= 0 && currentAngle < MAX_ANGLE)
 ////                || (velocity < 0 && currentAngle > 0)) {
@@ -161,6 +174,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
      * @param angle angle of shooter, from 0 to {@value #MAX_ANGLE}
      */
     public void setAngle(double angle) {
+        logInfo("Setting Angle to " + angle);
         if (angle < 0) {
             angle = 0;
         } else if (angle > MAX_ANGLE) {
@@ -188,9 +202,28 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener {
     }
 
     public void valueChanged(PotentiometerEvent e) {
+        logInfo(""+getShooterAngle());
         if ((getShooterAngle() < 0 && raiser.get() < 0)
-                || (getShooterAngle() > MAX_ANGLE && raiser.get() > 0)) {
+                || (getShooterAngle() > MAX_ANGLE)) {
             raiser.set(0);
+            System.out.println("shooter angle = " + e.getData());
         }
+    }
+
+    public void rotationStarted(EncoderEvent e) {
+        logInfo("Rotation beginning");
+    }
+
+    public void degreeChanged(EncoderEvent e) {
+    }
+
+    public void distanceChanged(EncoderEvent e) {
+    }
+
+    public void rotationStopped(EncoderEvent e) {
+    }
+
+    public void rateChanged(EncoderEvent e) {
+        logInfo("Current shooter RPMs: " + e.getData());
     }
 }

@@ -41,10 +41,6 @@ public class MainRobot extends GRTRobot {
             GRTLogger.disableLogging();
         }
         
-        if (GRTConstants.getValue("fileLogging") == 0.0){
-            GRTLogger.disableFileLogging();
-        }
-        
         double robot = GRTConstants.getValue("robot");
         if (robot == 2013.2){
             System.out.println("Starting up 2013 OmegaBot");
@@ -117,14 +113,15 @@ public class MainRobot extends GRTRobot {
         addTeleopController(dc);
 
         //Compressor
-        Compressor compressor = new Compressor(getPinID("compressorSwitch"),
-                getPinID("compressorRelay"));
+        System.out.println("compressorSwitch = " + getPinID("compressorSwitch"));
+        Compressor compressor = new Compressor(1,1);        //They should be the same...HACK
         compressor.start();
+        System.out.println("pressure switch="+compressor.getPressureSwitchValue());
 
         //shooter
         Talon shooter1 = new Talon(getPinID("shooter1"));
         Talon shooter2 = new Talon(getPinID("shooter2"));
-        Victor shooterRaiser = new Victor(getPinID("shooterRaiser"));
+        Talon shooterRaiser = new Talon(getPinID("shooterRaiser"));
         GRTSolenoid shooterFeeder = new GRTSolenoid(getPinID("shooterFeeder"));
         
         GRTEncoder shooterEncoder = new GRTEncoder(getPinID("shooterEncoderA"),
@@ -167,6 +164,9 @@ public class MainRobot extends GRTRobot {
                 GRTConstants.getValue("shooterPreset3"));
 
         addTeleopController(mechController);
+        
+        Potentiometer p = new Potentiometer(3, "Shooter Pot");
+        sp.addSensor(p);
         sp.startPolling();
     }
 

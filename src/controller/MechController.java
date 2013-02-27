@@ -40,6 +40,7 @@ public class MechController extends EventController implements GRTJoystickListen
 
     private double turningDivider;
     private double adjustDivider;
+    private double storedAngle;
 
     private boolean leftShoulderHeld = false, leftTriggerHeld = false;  //Variables useful for collection logic.
 
@@ -173,6 +174,13 @@ public class MechController extends EventController implements GRTJoystickListen
                         logInfo("Right shoulder preseed, shooting!");
                         shooter.shoot();
                         break;
+                    case GRTXboxJoystick.KEY_BUTTON_BACK:
+                        logInfo("Storing angle.");
+                        shooter.getShooterAngle();
+                        break;
+                    case GRTXboxJoystick.KEY_BUTTON_START:
+                        logInfo("Going to stored angle: " + storedAngle);
+                        shooter.setAngle(storedAngle);
                 }
             }
         } catch (NullPointerException ex) {
@@ -254,12 +262,7 @@ public class MechController extends EventController implements GRTJoystickListen
 
     public void rightYAxisMoved(XboxJoystickEvent e) {
         if (e.getSource() == secondary){
-            System.out.println("Adjusting luna height by " + (e.getData() / adjustDivider));
-            if (e.getData() >= 0){
-                shooter.adjustHeight(e.getData() / GRTConstants.getValue("adjustDividerUp"));
-            } else {
-                shooter.adjustHeight(e.getData());
-            }
+            shooter.adjustHeight(-e.getData());
         }
     }
 

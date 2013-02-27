@@ -21,7 +21,10 @@ public class GRTEncoder extends Sensor {
     public static final int KEY_DEGREES = 1;
     public static final int KEY_DIRECTION = 2;
     public static final int KEY_STOPPED = 3;
-    public static final int KEY_RATE = 4;
+    public static final int KEY_RPM = 4;
+    
+    private long lastTimePolled = 0;
+    private int lastCount = 0;
     
     public static final int NUM_DATA = 5;
     private Vector encoderListeners;
@@ -55,8 +58,10 @@ public class GRTEncoder extends Sensor {
     public GRTEncoder(int channelA, int channelB,
             double pulseDistance, boolean reversed, String name) {
         super(name, NUM_DATA);
+        
+        //Create new encoder that does 1x encoding, as opposed to 4x.
         rotaryEncoder = new Encoder(channelA, channelB, reversed,
-                CounterBase.EncodingType.k1X);
+                CounterBase.EncodingType.k1X);  
         rotaryEncoder.start();
 
         encoderListeners = new Vector();
@@ -110,19 +115,43 @@ public class GRTEncoder extends Sensor {
     }
     
     public double getRate() {
-        return rotaryEncoder.getRate();
+        return getState(KEY_RPM);
     }
     
     public double getAngle() {
         return getDistance() / distancePerPulse;
     }
 
-    protected void poll() {
+    protected void poll() {        
         setState(KEY_DISTANCE, getDistance());
         setState(KEY_DEGREES, getAngle());
-        setState(KEY_RATE, getRate());
+        setState(KEY_RPM, calcRPM());
         setState(KEY_DIRECTION, rotaryEncoder.getDirection() ? TRUE : FALSE);
         setState(KEY_STOPPED, rotaryEncoder.getStopped() ? TRUE : FALSE);
+    }
+    
+    private double calcRPM(){
+        
+        if (lastTimePolled == 0){
+            lastTimePolled = System.currentTimeMillis();
+            lastCount = rotaryEncoder.get();
+            
+            return 0.0;
+        }
+        
+        long now = System.currentTimeMillis();
+        
+        double dt = now - lastTimePolled;
+        lastTimePolled = now;
+        
+        int newCount = rotaryEncoder.get();
+        int dCount = newCount - lastCount;
+        
+        lastCount = newCount;
+        
+        double rpms = (dCount / dt) * (1000 * 60) / 360.0;
+        
+        return rpms;
     }
 
     protected void notifyListeners(int id, double newDatum) {
@@ -139,7 +168,7 @@ public class GRTEncoder extends Sensor {
                         hasMoreElements();)
                     ((EncoderListener) en.nextElement()).distanceChanged(e);
                 break;
-            case KEY_RATE:
+            case KEY_RPM:
                 for (Enumeration en = encoderListeners.elements(); en.
                         hasMoreElements();)
                     ((EncoderListener) en.nextElement()).rateChanged(e);
