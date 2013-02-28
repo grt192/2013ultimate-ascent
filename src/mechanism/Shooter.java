@@ -144,19 +144,20 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
             raiser.set(-velocity);
         }
         logInfo("adjusting shooter by " +velocity);
-////        double currentAngle = getShooterAngle();
-////        if ((velocity >= 0 && currentAngle < MAX_ANGLE)
-////                || (velocity < 0 && currentAngle > 0)) {
-////            raiser.set(velocity);
-//        }
+        double currentAngle = getShooterAngle();
+        if ((velocity >= 0 && currentAngle < MAX_ANGLE)
+                || (velocity < 0 && currentAngle > 0)) {
+            raiser.set(velocity);
+        }
     }
 
     /**
      * Gets the current shooter angle.
      */
-    public double getShooterAngle() {
-        return (raiserPot.getValue() - ZERO_V) * POT_RANGE;
+    public int getShooterAngle() {
+        return (int) ((ZERO_V - raiserPot.getValue()) * POT_RANGE);
     }
+    
     private PIDSource raiserSource = new PIDSource() {
         public double pidGet() {
             return getShooterAngle();
@@ -202,11 +203,11 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     }
 
     public void valueChanged(PotentiometerEvent e) {
-        logInfo(""+getShooterAngle());
-        if ((getShooterAngle() < 0 && raiser.get() < 0)
-                || (getShooterAngle() > MAX_ANGLE)) {
+        System.out.println(getShooterAngle());
+        if ((getShooterAngle() <= 0 && raiser.get() < 0)
+                || (getShooterAngle() >= MAX_ANGLE && raiser.get() > 0)) {
             raiser.set(0);
-            System.out.println("shooter angle = " + e.getData());
+            System.out.println("shooter angle = " + getShooterAngle());
         }
     }
 
