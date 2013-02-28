@@ -33,6 +33,8 @@ public class MechController extends EventController implements GRTJoystickListen
     private ExternalPickup pickerUpper;
     private Shooter shooter;
     private GRTDriveTrain dt;
+    
+    private double shootingSpeed = GRTConstants.getValue("shootingRPMS");
 
     private double shooterPreset1;
     private double shooterPreset2;
@@ -41,7 +43,7 @@ public class MechController extends EventController implements GRTJoystickListen
     private double turningDivider;
     private double adjustDivider;
     private double storedAngle;
-
+    
     private boolean leftShoulderHeld = false, leftTriggerHeld = false;  //Variables useful for collection logic.
 
     public MechController(GRTJoystick leftJoy, GRTJoystick rightJoy,
@@ -103,6 +105,11 @@ public class MechController extends EventController implements GRTJoystickListen
 
         secondary.removeJoystickListener(this);
         secondary.removeButtonListener(this);
+        
+        
+        //Set the flywheel controller back to zero on disable. Helps prevent the I term from accumulating to quickly
+        System.out.println("Setting flywheel to zero");
+        shooter.setFlywheelOutput(0.0);
 
     }
 
@@ -155,19 +162,18 @@ public class MechController extends EventController implements GRTJoystickListen
                 switch (e.getButtonID()){
                     case GRTXboxJoystick.KEY_BUTTON_X:
                         logError("X: Angle adjustment #1 will be here.");
-                        shooter.setFlywheelOutput(shooterPreset1);
+//                        shooter.setFlywheelOutput(shooterPreset1);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_A:
                         logError("A: Angle adjustment #2 will be here.");
-                        shooter.setFlywheelOutput(shooterPreset2);
+//                        shooter.setFlywheelOutput(shooterPreset2);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_B:
                         logError("B: Angle adjustment #3 will be here.");
-                        shooter.setFlywheelOutput(shooterPreset3);
+//                        shooter.setFlywheelOutput(shooterPreset3);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
-                        leftShoulderHeld = true;
-                        belts.moveUp();
+                        shooter.setSpeed(shootingSpeed);
                         break;
 
                     case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
@@ -176,7 +182,7 @@ public class MechController extends EventController implements GRTJoystickListen
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_BACK:
                         logInfo("Storing angle.");
-                        shooter.getShooterAngle();
+                        storedAngle = shooter.getShooterAngle();
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_START:
                         logInfo("Going to stored angle: " + storedAngle);
@@ -195,6 +201,7 @@ public class MechController extends EventController implements GRTJoystickListen
                 case GRTJoystick.KEY_BUTTON_TRIGGER:
                     //pickerUpper.raise();
                     break;
+                case GRTJoystick.KEY_BUTTON_4:
             }
         }
 
@@ -227,12 +234,8 @@ public class MechController extends EventController implements GRTJoystickListen
                     shooter.setFlywheelOutput(0.0);
                     break;
                 case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
-                    leftShoulderHeld = false;
-                    if (!leftShoulderHeld && !leftTriggerHeld){
-                        belts.stop();
-                    } else {
-                        belts.moveDown();
-                    }
+                    shooter.setSpeed(0.0);
+                    shooter.setFlywheelOutput(0.0);
                     break;
                 case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
                     logInfo("Right shoulder released!");
@@ -271,22 +274,22 @@ public class MechController extends EventController implements GRTJoystickListen
 
     public void triggerMoved(XboxJoystickEvent e) {
         if (e.getSource() == secondary){
-            if (e.getData() > 0.0){
-                leftTriggerHeld = true;
+            if (Math.abs(e.getData()) <= 0.1){
+                belts.stop();
+            }
+            
+            else if (e.getData() > 0.0){
                 belts.moveDown();
-            } else if (e.getData() == 0.0){
-                leftTriggerHeld = false;
-                if (!leftTriggerHeld && !leftShoulderHeld){
-                    belts.stop();
-                } else {
-                    belts.moveUp();
-                }
+            }
+            
+            else {
+                belts.moveUp();
             }
         }
     }
     
     public void valueChanged(PotentiometerEvent e) {
-        logInfo("potentiometer value changed: " + e.getData());
+        System.out.println("potentiometer value changed: " + e.getData());
     }
 
 }
