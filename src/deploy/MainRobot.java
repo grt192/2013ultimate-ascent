@@ -128,8 +128,12 @@ public class MainRobot extends GRTRobot {
                 getPinID("shooterEncoderB"), GRTConstants.getValue("shooterEncoderPulseDistance"), "shooterFlywheelEncoder");
         Potentiometer shooterPot = new Potentiometer(getPinID("shooterPotentiometer"),
                 "shooter potentiometer");
+        
+        GRTSwitch lowerShooterLimit = new GRTSwitch(getPinID("shooterLowerLimit"),
+                false, "lowerShooterLimit");
+        
         Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder,
-                shooterRaiser, shooterEncoder, shooterPot);
+                shooterRaiser, shooterEncoder, shooterPot, lowerShooterLimit);
 
         sp.addSensor(shooterEncoder);
         sp.addSensor(shooterPot);
