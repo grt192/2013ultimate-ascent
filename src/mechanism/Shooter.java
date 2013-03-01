@@ -9,9 +9,12 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.SpeedController;
 import event.events.EncoderEvent;
 import event.events.PotentiometerEvent;
+import event.events.SwitchEvent;
 import event.listeners.EncoderListener;
 import event.listeners.PotentiometerListener;
+import event.listeners.SwitchListener;
 import sensor.GRTEncoder;
+import sensor.GRTSwitch;
 import sensor.Potentiometer;
 
 /**
@@ -19,7 +22,7 @@ import sensor.Potentiometer;
  *
  * @author Calvin
  */
-public class Shooter extends GRTLoggedProcess implements PotentiometerListener, EncoderListener {
+public class Shooter extends GRTLoggedProcess implements PotentiometerListener, EncoderListener, SwitchListener {
 
     private SpeedController shooterMotor1, shooterMotor2;
     private SpeedController raiser;
@@ -28,6 +31,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     private Potentiometer raiserPot;
     private PIDController raiserController;
     private PIDController flywheelController;
+    private boolean lowerSwitchPressed=false;
     /**
      * PID Constants for the raiser. RAISER_TOLERANCE is the absolute error
      * allowed in the raiser angle (in degrees).
@@ -55,6 +59,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
      */
     private static final double POT_RANGE = GRTConstants.getValue("raiserPotRange");
     private static final double MAX_ANGLE = 47.0;
+    private final GRTSwitch lowerLimit;
 
     /**
      * Creates a new shooter.
@@ -68,7 +73,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
      */
     public Shooter(SpeedController shooterMotor1, SpeedController shooterMotor2,
             GRTSolenoid feeder, SpeedController raiser, GRTEncoder flywheelEncoder,
-            Potentiometer raiserPot) {
+            Potentiometer raiserPot, GRTSwitch lowerLimit) {
         super("Shooter mech");
         this.feeder = feeder;
         this.shooterMotor1 = shooterMotor1;
@@ -76,7 +81,8 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         this.raiser = raiser;
         this.flywheelEncoder = flywheelEncoder;
         this.raiserPot = raiserPot;
-
+        this.lowerLimit = lowerLimit;
+        
         flywheelController = new PIDController(FLYWHEEL_P, FLYWHEEL_I, FLYWHEEL_D,
                 flywheelSource, flywheelOutput);
         flywheelController.setOutputRange(0, 1);
@@ -86,8 +92,10 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
                 raiserSource, raiserOutput);
         raiserController.setOutputRange(-1, 1);
         raiserController.setAbsoluteTolerance(RAISER_TOLERANCE);
-
+        
+        
         System.out.println("New Shooter");
+        lowerLimit.addListener(this);
         raiserPot.addListener(this);
     }
 
@@ -133,10 +141,11 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     /**
      * Sets the speed of the raiser motor.
      *
-     * @param velocity motor output from -1 to 1
+     * @param velocity motor output from -1 to 1. A neg. number lowers the shooter.
      */
     public void adjustHeight(double velocity) {
         raiserController.disable();
+        if (velocity > 0 && lowerSwitchPressed) { return; }
         
         if (Math.abs(velocity) < 0.1){
             raiser.set(0.0);
@@ -226,5 +235,12 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
 
     public void rateChanged(EncoderEvent e) {
         logInfo("Current shooter RPMs: " + e.getData());
+    }
+
+    public void switchStateChanged(SwitchEvent e) {
+        lowerSwitchPressed=e.getState();
+        if (lowerSwitchPressed){
+            adjustHeight(0);
+        }
     }
 }
