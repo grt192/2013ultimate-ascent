@@ -144,19 +144,16 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
      * @param velocity motor output from -1 to 1. A neg. number lowers the shooter.
      */
     public void adjustHeight(double velocity) {
-        raiserController.disable();
-        if (velocity > 0 && lowerSwitchPressed) { return; }
         
-        if (Math.abs(velocity) < 0.1){
-            raiser.set(0.0);
-        } else {
-            raiser.set(-velocity);
-        }
-        logInfo("adjusting shooter by " +velocity);
+        raiserController.disable();
+        if (velocity < 0 && lowerSwitchPressed) { return; }
+
+        logInfo("adjusting shooter by " + velocity);
         double currentAngle = getShooterAngle();
-        if ((velocity >= 0 && currentAngle < MAX_ANGLE)
-                || (velocity < 0 && currentAngle > 0)) {
-            raiser.set(velocity);
+        if ((velocity > 0 && currentAngle <= MAX_ANGLE)
+                || (velocity < 0 && currentAngle >= 0)
+                || (velocity == 0)) {
+            raiser.set(-velocity);
         }
     }
 
@@ -216,7 +213,6 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         if ((getShooterAngle() <= 0 && raiser.get() < 0)
                 || (getShooterAngle() >= MAX_ANGLE && raiser.get() > 0)) {
             raiser.set(0);
-            System.out.println("shooter angle = " + getShooterAngle());
         }
     }
 
@@ -240,7 +236,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     public void switchStateChanged(SwitchEvent e) {
         lowerSwitchPressed=e.getState();
         if (lowerSwitchPressed){
-            adjustHeight(0);
+            raiser.set(0);
         }
     }
 }
