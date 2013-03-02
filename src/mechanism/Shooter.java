@@ -147,13 +147,15 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         
         raiserController.disable();
         if (velocity < 0 && lowerSwitchPressed) { return; }
+        
+        System.out.println("angle" + getShooterAngle());
 
         logInfo("adjusting shooter by " + velocity);
         double currentAngle = getShooterAngle();
         if ((velocity > 0 && currentAngle <= MAX_ANGLE)
                 || (velocity < 0 && currentAngle >= 0)
                 || (velocity == 0)) {
-            raiser.set(-velocity);
+            raiser.set(velocity);
         }
     }
 
@@ -196,8 +198,13 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
      * Extends luna.
      */
     public void shoot() {
-        logInfo("Shooting!");
-        feeder.set(true);
+        if(flywheelController.getSetpoint() == 0)
+        {
+            logInfo("Harsha done fucked up.");
+        } else {
+            logInfo("Here it comes! Firing frisbee.");
+            feeder.set(true);
+        }
     }
 
     /**
@@ -210,8 +217,9 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
 
     public void valueChanged(PotentiometerEvent e) {
         System.out.println(getShooterAngle());
-        if ((getShooterAngle() <= 0 && raiser.get() < 0)
-                || (getShooterAngle() >= MAX_ANGLE && raiser.get() > 0)) {
+        double currentSpeed = raiser.get();
+        if ((getShooterAngle() <= 0 && currentSpeed < 0)
+                || (getShooterAngle() >= MAX_ANGLE && currentSpeed > 0)) {
             raiser.set(0);
         }
     }
@@ -234,8 +242,8 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     }
 
     public void switchStateChanged(SwitchEvent e) {
-        lowerSwitchPressed=e.getState();
-        if (lowerSwitchPressed){
+        lowerSwitchPressed = e.getState();
+        if (lowerSwitchPressed && raiser.get() < 0){
             raiser.set(0);
         }
     }
