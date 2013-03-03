@@ -58,8 +58,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
      * The angular range of the potentiometer.
      */
     private static final double POT_RANGE = GRTConstants.getValue("raiserPotRange");
-    private static final double MAX_ANGLE = 47.0;
-    private final GRTSwitch lowerLimit;
+    private static final double MAX_ANGLE = GRTConstants.getValue("maxRaiserAngle");
 
     /**
      * Creates a new shooter.
@@ -81,7 +80,6 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         this.raiser = raiser;
         this.flywheelEncoder = flywheelEncoder;
         this.raiserPot = raiserPot;
-        this.lowerLimit = lowerLimit;
         
         flywheelController = new PIDController(FLYWHEEL_P, FLYWHEEL_I, FLYWHEEL_D,
                 flywheelSource, flywheelOutput);
@@ -106,7 +104,6 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
      */
     public void setFlywheelOutput(double speed) {
         flywheelController.disable();
-        logInfo("Setting speed:" + speed);
         shooterMotor1.set(speed);
         shooterMotor2.set(speed);
     }
@@ -148,8 +145,6 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         raiserController.disable();
         if (velocity < 0 && lowerSwitchPressed) { return; }
         
-        System.out.println("angle" + getShooterAngle());
-
         logInfo("adjusting shooter by " + velocity);
         double currentAngle = getShooterAngle();
         if ((velocity > 0 && currentAngle <= MAX_ANGLE)
@@ -216,7 +211,6 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     }
 
     public void valueChanged(PotentiometerEvent e) {
-        System.out.println(getShooterAngle());
         double currentSpeed = raiser.get();
         if ((getShooterAngle() <= 0 && currentSpeed < 0)
                 || (getShooterAngle() >= MAX_ANGLE && currentSpeed > 0)) {
@@ -238,7 +232,6 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     }
 
     public void rateChanged(EncoderEvent e) {
-        logInfo("Current shooter RPMs: " + e.getData());
     }
 
     public void switchStateChanged(SwitchEvent e) {

@@ -108,7 +108,6 @@ public class MechController extends EventController implements GRTJoystickListen
         
         
         //Set the flywheel controller back to zero on disable. Helps prevent the I term from accumulating to quickly
-        System.out.println("Setting flywheel to zero");
         shooter.setFlywheelOutput(0.0);
 
     }
@@ -125,7 +124,6 @@ public class MechController extends EventController implements GRTJoystickListen
     //commented out code is because betabot is FUBAR
     public void buttonPressed(ButtonEvent e) {
         try {
-            logInfo("Button Pressed: " + e.getID());
             if (e.getSource() == rightJoy) {
                 switch (e.getButtonID()) {
                     case GRTJoystick.KEY_BUTTON_3: 
@@ -177,12 +175,13 @@ public class MechController extends EventController implements GRTJoystickListen
                         break;
 
                     case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
-                        logInfo("Right shoulder preseed, shooting!");
                         shooter.shoot();
+                        System.out.println(shooter.getShooterAngle());
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_BACK:
                         logInfo("Storing angle.");
                         storedAngle = shooter.getShooterAngle();
+                        System.out.println(storedAngle);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_START:
                         logInfo("Going to stored angle: " + storedAngle);
@@ -226,11 +225,9 @@ public class MechController extends EventController implements GRTJoystickListen
                     shooter.setFlywheelOutput(0.0);
                     break;
                 case GRTXboxJoystick.KEY_BUTTON_A:
-                    logInfo("Stopping shooter");
                     shooter.setFlywheelOutput(0.0);
                     break;
                 case GRTXboxJoystick.KEY_BUTTON_B:
-                    logInfo("Stopping shooter");
                     shooter.setFlywheelOutput(0.0);
                     break;
                 case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
@@ -238,7 +235,6 @@ public class MechController extends EventController implements GRTJoystickListen
                     shooter.setFlywheelOutput(0.0);
                     break;
                 case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
-                    logInfo("Right shoulder released!");
                     shooter.unShoot();
                     break;
             }
@@ -247,7 +243,6 @@ public class MechController extends EventController implements GRTJoystickListen
     
     public void leftXAxisMoved(XboxJoystickEvent e) {
         //Use Xbox left axis to make fine adjustments to the robot's directional heading.
-        logInfo("Left x axis moved!");
         if (e.getSource() == secondary){
             System.out.println("Slowly turning dt's");
             dt.setMotorSpeeds(-e.getData() / turningDivider , e.getData() / turningDivider );
