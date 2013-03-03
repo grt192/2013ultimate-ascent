@@ -36,7 +36,6 @@ public class GRTEncoder extends Sensor {
      * @param channelB digital channel for encoder channel B
      * @param pulseDistance distance traveled for each pulse (typically 1 degree
      * of rotation per pulse)
-     * @param pollTime how often to poll
      * @param name name of encoder
      */
     public GRTEncoder(int channelA, int channelB, double pulseDistance,
@@ -51,7 +50,6 @@ public class GRTEncoder extends Sensor {
      * @param channelB digital channel for encoder channel B
      * @param pulseDistance distance traveled for each pulse (typically 1 degree
      * of rotation per pulse)
-     * @param pollTime how often to poll
      * @param reversed whether or not the encoder is reversed
      * @param name name of encoder
      */

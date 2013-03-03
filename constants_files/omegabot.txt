@@ -21,6 +21,13 @@ leftDT1Scale,-1.0
 leftDT2Scale,-1.0
 rightDT1Scale,1.0
 rightDT2Scale,1.0
+##DT Speed Regulation constants
+DTLeftP, 0.001
+DTLeftI, 0.001
+DTLeftD, 0.0
+DTRightP, 0.001
+DTRightI, 0.001
+DTRightD, 0.0
 
 ##Compressor
 compressorSwitch,1

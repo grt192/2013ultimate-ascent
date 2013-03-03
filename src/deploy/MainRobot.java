@@ -87,12 +87,12 @@ public class MainRobot extends GRTRobot {
         //Mechanisms
         GRTEncoder leftEnc = new GRTEncoder(getPinID("encoderLeftA"),
                 getPinID("encoderLeftB"),
-                50, "leftEnc");
+                50, true, "leftEnc");
         GRTEncoder rightEnc = new GRTEncoder(getPinID("encoderRightA"),
                 getPinID("encoderRightB"),
-                50, "rightEnc");
-//        sp.addSensor(leftEnc);
-//        sp.addSensor(rightEnc);
+                50, false, "rightEnc");
+        sp.addSensor(leftEnc);
+        sp.addSensor(rightEnc);
         
         GRTSolenoid leftShifter = new GRTSolenoid(getPinID("leftShifter"));
         GRTSolenoid rightShifter = new GRTSolenoid(getPinID("rightShifter"));
