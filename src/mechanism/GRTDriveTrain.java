@@ -175,16 +175,10 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     }
     
     public GRTEncoder getLeftEncoder(){
-        if(hasEncoders){
-            return leftEncoder;
-        }
-        return null;
+        return rightEncoder;
     }
     
     public GRTEncoder getRightEncoder(){
-        if(hasEncoders){
-            return rightEncoder;
-        }
-        return null;
+        return rightEncoder;
     }
 }

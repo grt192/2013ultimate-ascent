@@ -1,8 +1,8 @@
-#Preliminary Omega Bot Constants.
+##Preliminary Omega Bot Constants.
 robot,2013.2
 
-consoleOutput,0.0
-
+consoleOutput,0
+fileLogging,0
 ##Drivetrain motors
 leftDT1,3
 leftDT2,4
@@ -12,10 +12,10 @@ rightDT2,2
 leftShifter,6
 rightShifter,5
 ##Drivetrain sensors
-encoderRightA,9
-encoderRightB,10
 encoderLeftA,11
 encoderLeftB,12
+encoderRightA,5
+encoderRightB,6
 ##DT scalefactors
 leftDT1Scale,-1.0
 leftDT2Scale,-1.0
@@ -27,35 +27,40 @@ compressorSwitch,1
 compressorRelay,1
 
 ##Shooter actuators
+shootingRPMS, 5000.0
+autoShooterHeight1, 32
 shooter1,9
 shooter2,10
 shooterRaiser,8
 shooterFeeder,8
 ##Shooter sensors
+shooterLowerLimit,2
 shooterEncoderA,13
 shooterEncoderB,14
-shooterEncoderPulseDistance,0.000694444444
-shooterPotentiometer,1
+shooterEncoderPulseDistance,0.016667
+shooterPotentiometer,2
 ##Shooter PID Constants ________PLACEHOLDERS_______
+raiserZeroV, 0.14
+raiserPotRange,300
 
-shooterPreset1,0.2
+shooterPreset1,0.07
 shooterPreset2,0.5
 shooterPreset3,1.0
 
 adjustDividerUp,2.0
-adjustDividerDown,1.0
+adjustDividerDown,-1.0
 
 shooterRaiserP,1.0
 shooterRaiserI,0.0
 shooterRaiserD,0.0
 raiserTolerance,2.0
-flywheelP,1.0
-flywheelI,1.0
-flywheelD,1.0
+flywheelP,0.0001
+flywheelI,0.0001
+flywheelD,0.0
 flywheelTolerance,5.0
 ##shooter constants
-raiserZeroV,0.0
-raiserPotRange,120
+raiserZeroV,0.244
+raiserPotRange,300
 
 #Raise/lower speed
 pickUpRaiseSpeed,-0.5
@@ -72,4 +77,3 @@ raiserMotor,7
 ##Pickup sensors
 pickUpUpperLimit,7
 pickUpLowerLimit,8
-
