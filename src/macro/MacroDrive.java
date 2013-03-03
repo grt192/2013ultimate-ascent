@@ -75,13 +75,12 @@ public class MacroDrive extends GRTMacro {
      * @param distance distance to travel in m (assumes travel in straight line)
      * @param timeout time in ms
      */
-    public MacroDrive(GRTDriveTrain dt, double distance, int timeout,
-            GRTEncoder leftEncoder, GRTEncoder rightEncoder) {
+    public MacroDrive(GRTDriveTrain dt, double distance, int timeout) {
         super("Drive Macro", timeout);
         this.dt = dt;
         this.distance = distance;
-        this.leftEncoder = leftEncoder;
-        this.rightEncoder = rightEncoder;
+        this.leftEncoder = dt.getLeftEncoder();
+        this.rightEncoder = dt.getRightEncoder();
     }
 
     protected void initialize() {        
