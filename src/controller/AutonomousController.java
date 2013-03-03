@@ -6,16 +6,14 @@ package controller;
 
 import core.EventController;
 import core.GRTConstants;
-import event.events.ButtonEvent;
-import event.events.PotentiometerEvent;
-import event.listeners.ButtonListener;
-import event.listeners.PotentiometerListener;
 import macro.MacroDrive;
+import macro.MacroTurn;
 import mechanism.Belts;
 import mechanism.Climber;
 import mechanism.ExternalPickup;
 import mechanism.GRTDriveTrain;
 import mechanism.Shooter;
+import sensor.GRTGyro;
 
 /**
  *
@@ -29,9 +27,9 @@ public class AutonomousController extends EventController
     private Climber climber;
     private Belts belts;
     private Shooter shooter;
+    private GRTGyro gyro;
     
-    public AutonomousController(Shooter shooter, ExternalPickup pickerUpper,
-            Climber climber, Belts belts, GRTDriveTrain dt)
+    public AutonomousController(GRTGyro gyro, Shooter shooter, ExternalPickup pickerUpper, Belts belts, GRTDriveTrain dt)
     {
         super("Autonomous Controller");
         this.dt = dt;
@@ -39,6 +37,7 @@ public class AutonomousController extends EventController
         this.climber = climber;
         this.belts = belts;
         this.shooter = shooter;
+        this.gyro = gyro;
     }
     
     public void startListening()
@@ -53,16 +52,29 @@ public class AutonomousController extends EventController
     
     public void start()
     {
-        shooter.setAngle(GRTConstants.getValue("autoShooterHeight1"));
-        shooter.shoot();
-        try{
-        Thread.sleep(500);
-        } catch (InterruptedException e){
-            System.out.println("The shooter sleeping got interrupted. This"
-                    + "shouldn't be a thing. ");
+        shoot(GRTConstants.getValue("autoShooterAngle1"));
+        MacroDrive drive = new MacroDrive(dt, GRTConstants.getValue("autoDistance1"), 5000);
+        
+        
+        MacroTurn turn = new MacroTurn(dt, gyro, GRTConstants.getValue("autoAngle1"), 5000);
+    }
+    
+    private void shoot(double angle)
+    {
+        shooter.setAngle(angle);
+        
+        for(int i = 0; i < 5; i++)
+        {
+            shooter.shoot();
+            try{
+                Thread.sleep(500);
+                shooter.unShoot();
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                System.out.println("Thread can't sleep. Thread should be able"
+                        + "to sleep.");
+            }
         }
-        shooter.unShoot();
-        MacroDrive drive = new MacroDrive(dt, GRTConstants.getValue("autoDistance1"), GRTConstants.getValue("autoTimeout1"));
     }
     
 }

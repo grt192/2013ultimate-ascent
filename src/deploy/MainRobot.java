@@ -1,6 +1,7 @@
 package deploy;
 
 import actuator.GRTSolenoid;
+import controller.AutonomousController;
 import controller.DriveController;
 import controller.MechController;
 import core.GRTConstants;
@@ -11,11 +12,13 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 import logger.GRTLogger;
 import mechanism.Belts;
+import mechanism.Climber;
 import mechanism.ExternalPickup;
 import mechanism.GRTDriveTrain;
 import mechanism.Shooter;
 import sensor.GRTBatterySensor;
 import sensor.GRTEncoder;
+import sensor.GRTGyro;
 import sensor.GRTJoystick;
 import sensor.GRTSwitch;
 import sensor.GRTXboxJoystick;
@@ -171,6 +174,14 @@ public class MainRobot extends GRTRobot {
         
         Potentiometer p = new Potentiometer(3, "Shooter Pot");
         sp.addSensor(p);
+        
+        //Autonomous initializing
+        GRTGyro gyro = new GRTGyro(1, "Turning Gyro");
+        sp.addSensor(gyro);
+        
+        AutonomousController controller = new AutonomousController(gyro, shooter, youTiao, belts, dt);
+        addAutonomousController(controller);
+        
         sp.startPolling();
     }
 
