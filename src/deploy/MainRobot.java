@@ -172,8 +172,8 @@ public class MainRobot extends GRTRobot {
 
         addTeleopController(mechController);
         
-        Potentiometer p = new Potentiometer(3, "Shooter Pot");
-        sp.addSensor(p);
+//        Potentiometer p = new Potentiometer(3, "Shooter Pot");
+//        sp.addSensor(p);
         
         //Autonomous initializing
         GRTGyro gyro = new GRTGyro(1, "Turning Gyro");

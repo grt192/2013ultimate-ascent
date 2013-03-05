@@ -42,37 +42,39 @@ public class AutonomousController extends EventController
     
     public void startListening()
     {
-        
+        //Nothing to listen to.
+        start();
     }
 
     public void stopListening()
     {
-        
+        //Equivalently, nothing to stop listening to.
+        shooter.setSpeed(0.0);
+        shooter.setFlywheelOutput(0.0);
     }
     
     public void start()
     {
+        shooter.setSpeed(GRTConstants.getValue("shootingRPMS"));
         shoot(GRTConstants.getValue("autoShooterAngle1"));
-        MacroDrive drive = new MacroDrive(dt, GRTConstants.getValue("autoDistance1"), 5000);
-        
-        
-        MacroTurn turn = new MacroTurn(dt, gyro, GRTConstants.getValue("autoAngle1"), 5000);
+//        MacroDrive drive = new MacroDrive(dt, GRTConstants.getValue("autoDistance1"), 5000);
+//        MacroTurn turn = new MacroTurn(dt, gyro, GRTConstants.getValue("autoAngle1"), 5000);
     }
     
     private void shoot(double angle)
     {
         shooter.setAngle(angle);
-        
+        try {Thread.sleep(1000);} catch(Exception _){}
         for(int i = 0; i < 5; i++)
         {
+            System.out.println("Shooting A frisbee autonomously!");
             shooter.shoot();
             try{
                 Thread.sleep(500);
                 shooter.unShoot();
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                System.out.println("Thread can't sleep. Thread should be able"
-                        + "to sleep.");
+                logError("Thread can't sleep. Thread should be able to sleep.");
             }
         }
     }
