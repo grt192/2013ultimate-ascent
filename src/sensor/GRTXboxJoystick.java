@@ -106,6 +106,7 @@ public class GRTXboxJoystick extends Sensor {
                     break;
                 }
                 case KEY_RIGHT_Y: {
+                    e = new XboxJoystickEvent(this, id, -newDatum); //account for xbox being fucking weird
                     for (int i = 0; i < joystickListeners.size(); i++) {
                         ((XboxJoystickListener) joystickListeners.elementAt(i)).rightYAxisMoved(e);
                     }

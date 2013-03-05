@@ -260,7 +260,7 @@ public class MechController extends EventController implements GRTJoystickListen
 
     public void rightYAxisMoved(XboxJoystickEvent e) {
         if (e.getSource() == secondary){
-            shooter.adjustHeight(-e.getData());
+            shooter.adjustHeight(e.getData());
         }
     }
 
