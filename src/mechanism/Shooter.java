@@ -143,7 +143,9 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     public void adjustHeight(double velocity) {
         
         raiserController.disable();
-        if (velocity < 0 && lowerSwitchPressed) { return; }
+        if (velocity < 0 && lowerSwitchPressed) { 
+		System.out.println("not lowering due to lowLimitSwitch pressed.");
+		return; }
         
         logInfo("adjusting shooter by " + velocity);
         double currentAngle = getShooterAngle();
@@ -151,7 +153,9 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
                 || (velocity < 0 && currentAngle >= 0)
                 || (velocity == 0)) {
             raiser.set(velocity);
-        }
+        } else {
+		System.out.println("Did not set velo. req velo="+velocity+", currentAngle="+currentAngle);
+	}
     }
 
     /**
@@ -215,6 +219,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         if ((getShooterAngle() <= 0 && currentSpeed < 0)
                 || (getShooterAngle() >= MAX_ANGLE && currentSpeed > 0)) {
             raiser.set(0);
+	    System.out.println("stopping due to potchange");
         }
     }
 
@@ -238,6 +243,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         lowerSwitchPressed = e.getState();
         if (lowerSwitchPressed && raiser.get() < 0){
             raiser.set(0);
+	    System.out.println("stopping due to limitswitch");
         }
     }
 }
