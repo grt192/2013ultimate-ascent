@@ -149,7 +149,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         
         logInfo("adjusting shooter by " + velocity);
         double currentAngle = getShooterAngle();
-        if ((velocity > 0 )//&& currentAngle <= MAX_ANGLE)
+        if ((velocity > 0 && currentAngle <= MAX_ANGLE)
                 || (velocity < 0 && currentAngle >= 0)
                 || (velocity == 0)) {
             raiser.set(velocity);
@@ -217,7 +217,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     public void valueChanged(PotentiometerEvent e) {
         double currentSpeed = raiser.get();
         if ((getShooterAngle() <= 0 && currentSpeed < 0)
-                ){//|| (getShooterAngle() >= MAX_ANGLE && currentSpeed > 0)) {
+                || (getShooterAngle() >= MAX_ANGLE && currentSpeed > 0)) {
             raiser.set(0);
 	    System.out.println("stopping due to potchange");
         }
