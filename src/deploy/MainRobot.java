@@ -166,9 +166,9 @@ public class MainRobot extends GRTRobot {
         //Mechcontroller
         MechController mechController = new MechController(leftPrimary, rightPrimary, secondary,
                 shooter, youTiao, null, belts, dt,
-                GRTConstants.getValue("shooterPreset1"),
-                GRTConstants.getValue("shooterPreset2"),
-                GRTConstants.getValue("shooterPreset3"));
+                GRTConstants.getValue("shooterPresetX"),
+                GRTConstants.getValue("shooterPresetY"),
+                GRTConstants.getValue("shooterPresetB"));
 
         addTeleopController(mechController);
         
