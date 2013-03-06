@@ -26,11 +26,14 @@ public class MacroDrive extends GRTMacro {
     
     private PIDController leftDTController;
     private PIDController rightDTController;
+    private PIDController straightController;
     private GRTEncoder leftEncoder;
     private GRTEncoder rightEncoder;
     
     private double leftSpeed;
     private double rightSpeed;
+    private double leftSF = 1;
+    private double rightSF = 1;
     
     private static final double LP = 0.4;
     private static final double LI = 0.0;
@@ -38,6 +41,9 @@ public class MacroDrive extends GRTMacro {
     private static final double RP = 0.4;
     private static final double RI = 0.0;
     private static final double RD = 0.0;
+    private static final double CP = 0.4;
+    private static final double CI = 0.0;
+    private static final double CD = 0.0;
     
     private static final int POLL_TIME = 12;
     private static final double TOLERANCE = 4; //TODO
@@ -68,6 +74,24 @@ public class MacroDrive extends GRTMacro {
         }
     };
 
+    private PIDSource straightSource = new PIDSource() {
+		public double pidGet() {
+			return leftEncoder.getRate() - rightEncoder.getRate();
+		} //give a postive value if left is moving too fast
+    };
+
+    private PIDOutput straightOutput = new PIDOutput() {
+        public void pidWrite(double output) {
+			if (output > 0) { //if left is too fast, pidGet will correct with negative number
+			leftSF = 1+output; //leftSF is now low 
+			rightSF = 1;
+	    } else {
+			rightSF = 1-output;
+			leftSF = 1;
+	    }
+        }
+    };
+
     /*
      * Creates a new Driving Macro
      * 
@@ -92,14 +116,18 @@ public class MacroDrive extends GRTMacro {
         leftDTController = new PIDController(LP, LI, LD, leftSource, leftOutput, POLL_TIME);
         rightDTController = new PIDController(RP, RI, RD, rightSource, rightOutput, POLL_TIME);
         
+        straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
+
         leftDTController.setAbsoluteTolerance(TOLERANCE);
         rightDTController.setAbsoluteTolerance(TOLERANCE);
         
         leftDTController.setSetpoint(distance);
         rightDTController.setSetpoint(distance);
-        
+        straightController.setSetpoint(0);
+
         leftDTController.setOutputRange(-1.0, 1.0);
         rightDTController.setOutputRange(-1.0, 1.0);
+		straightController.setOutputRange(-1.0, 1.0);
         
     }
 
