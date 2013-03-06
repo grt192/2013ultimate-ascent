@@ -51,7 +51,7 @@ public class MechController extends EventController implements GRTJoystickListen
             Shooter shooter, ExternalPickup pickerUpper,
             Climber climber, Belts belts,
             GRTDriveTrain dt,
-            double preset1, double preset2, double preset3) {
+            double presetX, double presetY, double presetB) {
         super("Mechanism Controller");
         this.leftJoy = leftJoy;
         this.rightJoy = rightJoy;
@@ -64,9 +64,9 @@ public class MechController extends EventController implements GRTJoystickListen
 
         this.dt = dt;
 
-        this.shooterPreset1 = preset1;
-        this.shooterPreset2 = preset2;
-        this.shooterPreset3 = preset3;
+        this.shooterPresetX = presetX;
+        this.shooterPresetY = presetY;
+        this.shooterPresetB = presetB;
     }
 
     protected void startListening() {
@@ -159,16 +159,16 @@ public class MechController extends EventController implements GRTJoystickListen
             else if (e.getSource() == secondary){
                 switch (e.getButtonID()){
                     case GRTXboxJoystick.KEY_BUTTON_X:
-                        logError("X: Angle adjustment #1 will be here.");
-//                        shooter.setFlywheelOutput(shooterPreset1);
+                        logError("X: Angle adjustment #X will be here.");
+                        shooter.setAngle(shooterPresetX);
                         break;
-                    case GRTXboxJoystick.KEY_BUTTON_A:
-                        logError("A: Angle adjustment #2 will be here.");
-//                        shooter.setFlywheelOutput(shooterPreset2);
+                    case GRTXboxJoystick.KEY_BUTTON_Y:
+                        logError("A: Angle adjustment #Y will be here.");
+                        shooter.setAngle(shooterPresetY);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_B:
                         logError("B: Angle adjustment #3 will be here.");
-//                        shooter.setFlywheelOutput(shooterPreset3);
+                        shooter.setAngle(shooterPresetB);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
                         shooter.setSpeed(shootingSpeed);
