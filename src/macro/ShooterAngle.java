@@ -29,12 +29,8 @@ public class ShooterAngle extends GRTMacro {
     }
 
     protected void perform() {
-       try {
-            Thread.sleep(2000);      
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
-        hasCompletedExecution = true;        
+        if (Math.abs(shooter.getShooterAngle() - angle) < 2)
+            hasCompletedExecution = true;        
     }
 
     public void die() {

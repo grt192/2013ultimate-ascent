@@ -5,6 +5,7 @@
 package macro;
 
 import core.GRTMacro;
+import edu.wpi.first.wpilibj.Timer;
 import mechanism.Shooter;
 
 /**
@@ -28,19 +29,16 @@ public class ShooterSpeed extends GRTMacro {
     }
 
     protected void perform() {
-        shooter.setSpeed(speed);
-        try {
-            Thread.sleep(1000);      
-            hasCompletedExecution = true;
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
+        //in the future, instead of delaying, check to see if speed is correct
+        Timer.delay(2000);
+        hasCompletedExecution = true;
     }
 
     public void die() {        
     }
 
     protected void initialize() {
+        shooter.setSpeed(speed);
     }
 
 }
