@@ -5,12 +5,15 @@ import controller.AutonomousController;
 import controller.DriveController;
 import controller.MechController;
 import core.GRTConstants;
+import core.GRTMacroController;
 import core.SensorPoller;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
+import java.util.Vector;
 import logger.GRTLogger;
+import macro.*;
 import mechanism.Belts;
 import mechanism.Climber;
 import mechanism.ExternalPickup;
@@ -166,9 +169,9 @@ public class MainRobot extends GRTRobot {
         //Mechcontroller
         MechController mechController = new MechController(leftPrimary, rightPrimary, secondary,
                 shooter, youTiao, null, belts, dt,
-                GRTConstants.getValue("shooterPreset1"),
-                GRTConstants.getValue("shooterPreset2"),
-                GRTConstants.getValue("shooterPreset3"));
+                GRTConstants.getValue("shooterPresetX"),
+                GRTConstants.getValue("shooterPresetY"),
+                GRTConstants.getValue("shooterPresetB"));
 
         addTeleopController(mechController);
         
@@ -179,8 +182,24 @@ public class MainRobot extends GRTRobot {
         GRTGyro gyro = new GRTGyro(1, "Turning Gyro");
         sp.addSensor(gyro);
         
-        AutonomousController controller = new AutonomousController(gyro, shooter, youTiao, belts, dt);
-        addAutonomousController(controller);
+//        AutonomousController controller = new AutonomousController(gyro, shooter, youTiao, belts, dt);
+//        addAutonomousController(controller);
+        
+        // Macro version of autonomous
+        Vector macros = new Vector();
+        macros.addElement(new ShooterSpeed(GRTConstants.getValue("shootingRPMS"), shooter, 2000));
+        macros.addElement(new ShooterAngle((int)GRTConstants.getValue("autoShooterAngle1"), shooter, 1000));
+        macros.addElement(new Shoot(shooter, 1000));
+        macros.addElement(new Shoot(shooter, 1000));
+        macros.addElement(new Shoot(shooter, 1000));
+        macros.addElement(new Shoot(shooter, 1000));
+        macros.addElement(new Shoot(shooter, 1000));
+        macros.addElement(new Shoot(shooter, 1000));
+        macros.addElement(new ShooterAngle(0, shooter, 1000));
+        macros.addElement(new ShooterSpeed(0, shooter, 2000));
+      
+ 	GRTMacroController macroController = new GRTMacroController(macros); 
+        addAutonomousController(macroController);
         
         sp.startPolling();
     }

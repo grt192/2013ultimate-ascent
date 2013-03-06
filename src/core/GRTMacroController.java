@@ -31,7 +31,6 @@ public class GRTMacroController extends EventController implements MacroListener
             GRTMacro m = (GRTMacro) en.nextElement();
             m.reset();
             m.addListener(this);
-            
         }
         
         ((GRTMacro) macros.elementAt(currentIndex)).execute();

@@ -118,7 +118,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     //Function that is called with the PID output gain. Here, it is being applied to the shooter motor speeds.
     private PIDOutput flywheelOutput = new PIDOutput() {
         public void pidWrite(double d) {
-            System.out.println("Motor output: " + ((int) (d * 1000))/1000.0 + " Shooter RPM: " + (int) flywheelEncoder.getRate() + "  Desired: " + flywheelController.getSetpoint());
+//            System.out.println("Motor output: " + ((int) (d * 1000))/1000.0 + " Shooter RPM: " + (int) flywheelEncoder.getRate() + "  Desired: " + flywheelController.getSetpoint());
             shooterMotor1.set(d);
             shooterMotor2.set(d);
         }
