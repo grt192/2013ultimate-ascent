@@ -88,11 +88,9 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
 
         raiserController = new PIDController(RAISER_P, RAISER_I, RAISER_D,
                 raiserSource, raiserOutput);
-        raiserController.setOutputRange(-1, 1);
+        raiserController.setOutputRange(-1, 1);        
         raiserController.setAbsoluteTolerance(RAISER_TOLERANCE);
         
-        
-        System.out.println("New Shooter");
         lowerLimit.addListener(this);
         raiserPot.addListener(this);
     }
@@ -118,7 +116,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     //Function that is called with the PID output gain. Here, it is being applied to the shooter motor speeds.
     private PIDOutput flywheelOutput = new PIDOutput() {
         public void pidWrite(double d) {
-//            System.out.println("Motor output: " + ((int) (d * 1000))/1000.0 + " Shooter RPM: " + (int) flywheelEncoder.getRate() + "  Desired: " + flywheelController.getSetpoint());
+            System.out.println("Motor output: " + ((int) (d * 1000))/1000.0 + " Shooter RPM: " + (int) flywheelEncoder.getRate() + "  Desired: " + flywheelController.getSetpoint());
             shooterMotor1.set(d);
             shooterMotor2.set(d);
         }
@@ -157,6 +155,14 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
 		System.out.println("Did not set velo. req velo="+velocity+", currentAngle="+currentAngle);
 	}
     }
+    
+    public boolean isSpunUp() {
+        return flywheelController.onTarget();
+    }
+    
+    public boolean isCorrectAngle() {
+        return raiserController.onTarget();
+    }
 
     /**
      * Gets the current shooter angle.
@@ -172,6 +178,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     };
     private PIDOutput raiserOutput = new PIDOutput() {
         public void pidWrite(double d) {
+            System.out.println("Motor output: " + ((int) (d * 1000))/1000.0 + " Raiser angle: " + (int) getShooterAngle() + "  Desired: " + raiserController.getSetpoint());
             raiser.set(d);
         }
     };

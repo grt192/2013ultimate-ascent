@@ -1,7 +1,6 @@
 package deploy;
 
 import actuator.GRTSolenoid;
-import controller.AutonomousController;
 import controller.DriveController;
 import controller.MechController;
 import core.GRTConstants;
@@ -15,7 +14,6 @@ import java.util.Vector;
 import logger.GRTLogger;
 import macro.*;
 import mechanism.Belts;
-import mechanism.Climber;
 import mechanism.ExternalPickup;
 import mechanism.GRTDriveTrain;
 import mechanism.Shooter;

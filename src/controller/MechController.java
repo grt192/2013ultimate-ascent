@@ -36,9 +36,9 @@ public class MechController extends EventController implements GRTJoystickListen
     
     private double shootingSpeed = GRTConstants.getValue("shootingRPMS");
 
-    private double shooterPreset1;
-    private double shooterPreset2;
-    private double shooterPreset3;
+    private double shooterPresetX;
+    private double shooterPresetY;
+    private double shooterPresetB;
 
     private double turningDivider;
     private double adjustDivider;
