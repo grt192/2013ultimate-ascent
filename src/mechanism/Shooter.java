@@ -3,6 +3,7 @@ package mechanism;
 import actuator.GRTSolenoid;
 import core.GRTConstants;
 import core.GRTLoggedProcess;
+import edu.wpi.first.wpilibj.DriverStationLCD;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
@@ -32,6 +33,8 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     private PIDController raiserController;
     private PIDController flywheelController;
     private boolean lowerSwitchPressed = false;
+    private static final int NUM_ONTARGET = 8;
+    private int numTimesOnTarget = 0;
     /**
      * PID Constants for the raiser. RAISER_TOLERANCE is the absolute error
      * allowed in the raiser angle (in degrees).
@@ -53,7 +56,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     /**
      * The voltage output by the pot at the lowest angle.
      */
-    private static final double ZERO_V = GRTConstants.getValue("raiserZeroV");
+    private static final double tareAngle = GRTConstants.getValue("tareAngle");
     /**
      * The angular range of the potentiometer.
      */
@@ -114,7 +117,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     //Function that is called with the PID output gain. Here, it is being applied to the shooter motor speeds.
     private PIDOutput flywheelOutput = new PIDOutput() {
         public void pidWrite(double d) {
-            System.out.println("Motor output: " + ((int) (d * 1000)) / 1000.0 + " Shooter RPM: " + (int) flywheelEncoder.getRate() + "  Desired: " + flywheelController.getSetpoint());
+//            System.out.println("Motor output: " + ((int) (d * 1000)) / 1000.0 + " Shooter RPM: " + (int) flywheelEncoder.getRate() + "  Desired: " + flywheelController.getSetpoint());
             shooterMotor1.set(d);
             shooterMotor2.set(d);
         }
@@ -151,7 +154,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         if (velocity < 0 && lowerSwitchPressed) {
             return;
         }
-
+        
         logInfo("adjusting shooter by " + velocity);
         double currentAngle = getShooterAngle();
         if ((velocity > 0 && currentAngle <= MAX_ANGLE)
@@ -173,16 +176,24 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
      * Gets the current shooter angle.
      */
     public int getShooterAngle() {
-        return (int) ((ZERO_V - raiserPot.getValue()) * POT_RANGE) - 9;
+        return (int) (-raiserPot.getValue() * POT_RANGE + tareAngle);
     }
     private PIDSource raiserSource = new PIDSource() {
         public double pidGet() {
+            if (getShooterAngle() == raiserController.getSetpoint()) {
+                numTimesOnTarget++;
+                if (numTimesOnTarget >= NUM_ONTARGET)
+                    raiserController.disable();
+            } else {
+                numTimesOnTarget = 0;
+            }
+                
             return getShooterAngle();
         }
     };
     private PIDOutput raiserOutput = new PIDOutput() {
         public void pidWrite(double d) {
-            System.out.println("Motor output: " + ((int) (d * 1000)) / 1000.0 + " Raiser angle: " + (int) getShooterAngle() + "  Desired: " + raiserController.getSetpoint());
+//            System.out.println("Motor output: " + ((int) (d * 1000)) / 1000.0 + " Raiser angle: " + (int) getShooterAngle() + "  Desired: " + raiserController.getSetpoint());
             setRaiserMotorOutput(d);
         }
     };
@@ -223,9 +234,13 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         logInfo("Unshooting!");
         feeder.set(false);
     }
+    
+    DriverStationLCD lcd = DriverStationLCD.getInstance();
 
     public void valueChanged(PotentiometerEvent e) {
 //        System.out.println(getShooterAngle());
+        lcd.println(DriverStationLCD.Line.kUser1, 1, Integer.toString(getShooterAngle()) + " ");
+        lcd.updateLCD();
         double currentSpeed = raiser.get();
         if ((getShooterAngle() <= 0 && currentSpeed < 0)
                 || (getShooterAngle() >= MAX_ANGLE && currentSpeed > 0)) {

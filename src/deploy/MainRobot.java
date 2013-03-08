@@ -166,10 +166,7 @@ public class MainRobot extends GRTRobot {
 
         //Mechcontroller
         MechController mechController = new MechController(leftPrimary, rightPrimary, secondary,
-                shooter, youTiao, null, belts, dt,
-                GRTConstants.getValue("shooterPresetX"),
-                GRTConstants.getValue("shooterPresetY"),
-                GRTConstants.getValue("shooterPresetB"));
+                shooter, youTiao, null, belts, dt);
 
         addTeleopController(mechController);
         
@@ -185,16 +182,13 @@ public class MainRobot extends GRTRobot {
         
         // Macro version of autonomous
         Vector macros = new Vector();
-        macros.addElement(new ShooterSpeed(GRTConstants.getValue("shootingRPMS"), shooter, 2000));
-        macros.addElement(new ShooterAngle((int)GRTConstants.getValue("autoShooterAngle1"), shooter, 5000));
-        macros.addElement(new Shoot(shooter, 1000));
-        macros.addElement(new Shoot(shooter, 1000));
-        macros.addElement(new Shoot(shooter, 1000));
-        macros.addElement(new Shoot(shooter, 1000));
-        macros.addElement(new Shoot(shooter, 1000));
-        macros.addElement(new Shoot(shooter, 1000));
-        macros.addElement(new ShooterAngle(0, shooter, 1000));
-        macros.addElement(new ShooterSpeed(0, shooter, 2000));
+        macros.addElement(new ShooterSet(0, 0, shooter, 5000));
+        macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
+                GRTConstants.getValue("shootingRPMS"), shooter, 5000));
+        for (int i = 0; i < 10; i++)
+            macros.addElement(new Shoot(shooter, 1000));
+        //spins down shooter and lowers it prior to teleop
+        macros.addElement(new ShooterSet(0, 0, shooter, 1000));
       
  	GRTMacroController macroController = new GRTMacroController(macros); 
         addAutonomousController(macroController);

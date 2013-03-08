@@ -12,34 +12,39 @@ import mechanism.Shooter;
  *
  * @author keshav
  */
-public class ShooterAngle extends GRTMacro {
+public class ShooterSet extends GRTMacro {
  
-    private int angle = 0;
+    private final int angle;
+    private final double speed;
     private Shooter shooter;
     
     /**
      * Shooter angle
      * @param angle Desired angle
+     * @param speed
      * @param shooter Shooter object
      * @param timeout Timeout (in ms)
      */
-    public ShooterAngle(int angle, Shooter shooter, int timeout) {
+    public ShooterSet(int angle, double speed, Shooter shooter, int timeout) {
         super("Shooter Angle Macro", timeout);
         this.shooter = shooter;
         this.angle = angle;
+        this.speed = speed;
     }
 
     protected void perform() {
 //        if (Math.abs(shooter.getShooterAngle() - angle) < 2)
-        Timer.delay(4);
+        Timer.delay(3);
         hasCompletedExecution = true;        
     }
 
     public void die() {
+        shooter.adjustHeight(0);
     }
 
     protected void initialize() {
         shooter.setAngle(angle);
+        shooter.setSpeed(speed);
     }
 
 }

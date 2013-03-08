@@ -36,7 +36,6 @@ public class MechController extends EventController implements GRTJoystickListen
     
     private double shootingSpeed = GRTConstants.getValue("shootingRPMS");
 
-    private double shooterPresetX;
     private double shooterPresetY;
     private double shooterPresetB;
 
@@ -50,8 +49,7 @@ public class MechController extends EventController implements GRTJoystickListen
             GRTXboxJoystick secondary,
             Shooter shooter, ExternalPickup pickerUpper,
             Climber climber, Belts belts,
-            GRTDriveTrain dt,
-            double presetX, double presetY, double presetB) {
+            GRTDriveTrain dt) {
         super("Mechanism Controller");
         this.leftJoy = leftJoy;
         this.rightJoy = rightJoy;
@@ -64,9 +62,8 @@ public class MechController extends EventController implements GRTJoystickListen
 
         this.dt = dt;
 
-        this.shooterPresetX = presetX;
-        this.shooterPresetY = presetY;
-        this.shooterPresetB = presetB;
+        this.shooterPresetB = GRTConstants.getValue("anglePyramidFrontPreset");
+        this.shooterPresetY = GRTConstants.getValue("anglePyramidRearPreset");
     }
 
     protected void startListening() {
@@ -160,14 +157,13 @@ public class MechController extends EventController implements GRTJoystickListen
                 switch (e.getButtonID()){
                     case GRTXboxJoystick.KEY_BUTTON_X:
                         logError("X: Angle adjustment #X will be here.");
-                        shooter.setAngle(shooterPresetX);
+                        shooter.setAngle(0);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_Y:
                         logError("A: Angle adjustment #Y will be here.");
                         shooter.setAngle(shooterPresetY);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_B:
-                        logError("B: Angle adjustment #3 will be here.");
                         shooter.setAngle(shooterPresetB);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
