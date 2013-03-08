@@ -134,7 +134,7 @@ public class MainRobot extends GRTRobot {
                 "shooter potentiometer");
         
         GRTSwitch lowerShooterLimit = new GRTSwitch(getPinID("shooterLowerLimit"),
-                false, "lowerShooterLimit");
+                true, "lowerShooterLimit");
         
         Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder,
                 shooterRaiser, shooterEncoder, shooterPot, lowerShooterLimit);
@@ -186,7 +186,7 @@ public class MainRobot extends GRTRobot {
         // Macro version of autonomous
         Vector macros = new Vector();
         macros.addElement(new ShooterSpeed(GRTConstants.getValue("shootingRPMS"), shooter, 2000));
-        macros.addElement(new ShooterAngle((int)GRTConstants.getValue("autoShooterAngle1"), shooter, 1000));
+        macros.addElement(new ShooterAngle((int)GRTConstants.getValue("autoShooterAngle1"), shooter, 5000));
         macros.addElement(new Shoot(shooter, 1000));
         macros.addElement(new Shoot(shooter, 1000));
         macros.addElement(new Shoot(shooter, 1000));

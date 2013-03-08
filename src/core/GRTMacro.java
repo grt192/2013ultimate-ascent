@@ -73,9 +73,8 @@ public abstract class GRTMacro extends GRTLoggedProcess {
             while (!hasCompletedExecution && !hasTimedOut) {
                 if ((System.currentTimeMillis() - startTime) > timeout) {
                     hasTimedOut = true;
-                    die();
                     notifyListeners(NOTIFY_TIMEDOUT);
-                    return;
+                    break;
                 }
 
                 perform();

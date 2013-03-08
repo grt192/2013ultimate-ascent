@@ -12,10 +12,10 @@ rightDT2,2
 leftShifter,6
 rightShifter,5
 ##Drivetrain sensors
-encoderLeftA,11
-encoderLeftB,12
-encoderRightA,5
-encoderRightB,6
+encoderLeftA,9
+encoderLeftB,10
+encoderRightA,14
+encoderRightB,13
 ##DT scalefactors
 leftDT1Scale,-1.0
 leftDT2Scale,-1.0
@@ -36,18 +36,18 @@ shooterRaiser,8
 shooterFeeder,8
 ##Shooter sensors
 shooterLowerLimit,2
-shooterEncoderA,13
-shooterEncoderB,14
+shooterEncoderA,12
+shooterEncoderB,11
 shooterEncoderPulseDistance,0.016667
 shooterPotentiometer,2
 ##Shooter PID Constants
-raiserZeroV, 0.14
+raiserZeroV, 0.205
 raiserPotRange,300
 maxRaiserAngle,47
 
 shooterPresetX,0
-shooterPresetY,35
-shooterPresetB,45
+shooterPresetY,30
+shooterPresetB,42
 
 adjustDividerUp,2.0
 adjustDividerDown,-1.0
@@ -81,7 +81,7 @@ pickUpUpperLimit,7
 pickUpLowerLimit,8
 
 ##Autonomous Constants
-autoShooterAngle1,38
+autoShooterAngle1,30
 autoAngle1,180
 autoDistance1,3
 driveMacro,5

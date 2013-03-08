@@ -158,8 +158,6 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
                 || (velocity < 0 && currentAngle >= 0)
                 || (velocity == 0)) {
             raiser.set(velocity);
-        } else {
-            System.out.println("Did not set velo. req velo=" + velocity + ", currentAngle=" + currentAngle);
         }
     }
 
@@ -175,7 +173,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
      * Gets the current shooter angle.
      */
     public int getShooterAngle() {
-        return (int) ((ZERO_V - raiserPot.getValue()) * POT_RANGE);
+        return (int) ((ZERO_V - raiserPot.getValue()) * POT_RANGE) - 9;
     }
     private PIDSource raiserSource = new PIDSource() {
         public double pidGet() {
@@ -227,11 +225,11 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     }
 
     public void valueChanged(PotentiometerEvent e) {
+//        System.out.println(getShooterAngle());
         double currentSpeed = raiser.get();
         if ((getShooterAngle() <= 0 && currentSpeed < 0)
                 || (getShooterAngle() >= MAX_ANGLE && currentSpeed > 0)) {
             raiser.set(0);
-            System.out.println("stopping due to potchange");
         }
     }
 
@@ -253,6 +251,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
 
     public void switchStateChanged(SwitchEvent e) {
         lowerSwitchPressed = e.getState();
+        System.out.println("Limit switch state: " + e.getState());
         if (lowerSwitchPressed && raiser.get() < 0) {
             raiser.set(0);
             System.out.println("stopping due to limitswitch");

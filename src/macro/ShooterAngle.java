@@ -5,6 +5,7 @@
 package macro;
 
 import core.GRTMacro;
+import edu.wpi.first.wpilibj.Timer;
 import mechanism.Shooter;
 
 /**
@@ -29,8 +30,9 @@ public class ShooterAngle extends GRTMacro {
     }
 
     protected void perform() {
-        if (Math.abs(shooter.getShooterAngle() - angle) < 2)
-            hasCompletedExecution = true;        
+//        if (Math.abs(shooter.getShooterAngle() - angle) < 2)
+        Timer.delay(4);
+        hasCompletedExecution = true;        
     }
 
     public void die() {

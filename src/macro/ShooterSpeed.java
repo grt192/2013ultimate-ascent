@@ -30,7 +30,7 @@ public class ShooterSpeed extends GRTMacro {
 
     protected void perform() {
         //in the future, instead of delaying, check to see if speed is correct
-        Timer.delay(2000);
+        Timer.delay(1.5);
         hasCompletedExecution = true;
     }
 

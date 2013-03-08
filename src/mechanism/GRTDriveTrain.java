@@ -91,20 +91,20 @@ public class GRTDriveTrain extends GRTLoggedProcess {
         if(leftEncoder != null && rightEncoder != null) {
             this.leftEncoder = leftEncoder;
             this.rightEncoder = rightEncoder;
-            leftP = GRTConstants.getValue("DTLeftP");
-            leftI = GRTConstants.getValue("DTLeftI");
-            leftD = GRTConstants.getValue("DTLeftD");
-            rightP = GRTConstants.getValue("DTRightP");
-            rightI = GRTConstants.getValue("DTRightI");
-            rightD = GRTConstants.getValue("DTRightD");
-            
-            leftController = new PIDController(leftP, leftI, leftD,
-                    leftSource, leftOutput);
-            rightController = new PIDController(rightP, rightI, rightD,
-                    rightSource, rightOutput);
-            
-            leftController.setOutputRange(-1, 1);
-            rightController.setOutputRange(-1, 1);
+//            leftP = GRTConstants.getValue("DTLeftP");
+//            leftI = GRTConstants.getValue("DTLeftI");
+//            leftD = GRTConstants.getValue("DTLeftD");
+//            rightP = GRTConstants.getValue("DTRightP");
+//            rightI = GRTConstants.getValue("DTRightI");
+//            rightD = GRTConstants.getValue("DTRightD");
+//            
+//            leftController = new PIDController(leftP, leftI, leftD,
+//                    leftSource, leftOutput);
+//            rightController = new PIDController(rightP, rightI, rightD,
+//                    rightSource, rightOutput);
+//            
+//            leftController.setOutputRange(-1, 1);
+//            rightController.setOutputRange(-1, 1);
         }
     }
     
@@ -136,8 +136,12 @@ public class GRTDriveTrain extends GRTLoggedProcess {
      * @param rightVelocity right drivetrain velocity, from -1.0 - 1.0
      */
     public void setMotorSpeeds(double leftVelocity, double rightVelocity) {
-        leftController.disable();
-        rightController.disable();
+        if (leftController != null) {
+            leftController.disable();
+        }
+        if (rightController != null) {
+            rightController.disable();
+        }
         logInfo("Left: " + leftVelocity + "\tRight: " + rightVelocity);
 
         leftFront.set(leftVelocity * leftFrontSF * power);
