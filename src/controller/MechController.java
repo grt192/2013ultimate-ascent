@@ -126,7 +126,7 @@ public class MechController extends EventController implements GRTJoystickListen
                     case GRTJoystick.KEY_BUTTON_3: 
                         pickerUpper.pickUp();
                         belts.moveUp();
-                        belts.extendShovel();
+//                        belts.extendShovel();
                         break;
                     case GRTJoystick.KEY_BUTTON_2: 
                         pickerUpper.spitOut();

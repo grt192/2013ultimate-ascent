@@ -182,6 +182,7 @@ public class MainRobot extends GRTRobot {
         
         // Macro version of autonomous
         Vector macros = new Vector();
+        macros.addElement(new PrimeShovel(belts, 1000));
         macros.addElement(new ShooterSet(0, 0, shooter, 5000));
         macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
                 GRTConstants.getValue("shootingRPMS"), shooter, 5000));
