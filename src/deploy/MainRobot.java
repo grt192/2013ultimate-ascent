@@ -4,23 +4,26 @@ import actuator.GRTSolenoid;
 import controller.DriveController;
 import controller.MechController;
 import core.GRTConstants;
+import core.GRTMacroController;
 import core.SensorPoller;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import java.util.Vector;
 import logger.GRTLogger;
+import macro.*;
 import mechanism.Belts;
 import mechanism.ExternalPickup;
 import mechanism.GRTDriveTrain;
 import mechanism.Shooter;
 import sensor.GRTBatterySensor;
 import sensor.GRTEncoder;
+import sensor.GRTGyro;
 import sensor.GRTJoystick;
 import sensor.GRTSwitch;
 import sensor.GRTXboxJoystick;
+import sensor.Potentiometer;
 
 /**
  * Constructor for the main robot. Put all robot components here.
@@ -38,27 +41,14 @@ public class MainRobot extends GRTRobot {
         
         System.out.println("Robot being instantiated");
         
-        boolean consoleOut;
-        try {
-            consoleOut = ( GRTConstants.getValue("consoleOutput") == 1.0 );
-        } catch (Exception ex){
-            GRTLogger.logError("consoleOutput key not found in constants file. Maybe you'd like to add it?");
-            consoleOut = true;
-            GRTLogger.disableLogging();
-        }
-        
-        if (!consoleOut){
+        if (GRTConstants.getValue("consoleOutput") == 0.0){
             GRTLogger.disableLogging();
         }
         
         double robot = GRTConstants.getValue("robot");
-        if (robot == 2012.0){
-            GRTLogger.logInfo("Starting up 2012 Test Base");
-            base2012Init();
-        }
-        if (robot == 2013.0){
-            GRTLogger.logInfo("Starting up 2013 Test Base");
-            base2013Init();
+        if (robot == 2013.2){
+            System.out.println("Starting up 2013 OmegaBot");
+            omegaInit();
         }
         
     }
@@ -69,141 +59,145 @@ public class MainRobot extends GRTRobot {
     }
 
     /**
-     * Initializer for the 2013 robot.
+     * Initializer for omega bot.
      */
-    private void base2013Init() {
+    private void omegaInit() {
 
-        GRTLogger.logInfo("Base 2013: GRTFramework starting up.");
-        SensorPoller sp = new SensorPoller();
-
-        //Driver station components
-        GRTJoystick primary = new GRTJoystick(1, "primary");
-        GRTJoystick secondary =
-                new GRTJoystick(2, "secondary");
-        sp.addSensor(primary);
+        SensorPoller sp = new SensorPoller(10);     //Thread that polls all sensors every 10ms.
+        
+        GRTJoystick leftPrimary = new GRTJoystick(1, "left primary joy");
+        GRTJoystick rightPrimary = new GRTJoystick(2, "right primary joy");
+        GRTXboxJoystick secondary = new GRTXboxJoystick(3, "xbox mech joy");
+        sp.addSensor(leftPrimary);
+        sp.addSensor(rightPrimary);
         sp.addSensor(secondary);
- 
+
         GRTLogger.logInfo("Joysticks initialized");
 
         //Battery Sensor
         GRTBatterySensor batterySensor = new GRTBatterySensor("battery");
         sp.addSensor(batterySensor);
-
+        
         //Shifter solenoids
-        //GRTSolenoid leftShifter = new GRTSolenoid((int) GRTConstants.getValue("leftSolenoid"));
-        //GRTSolenoid rightShifter = new GRTSolenoid((int) GRTConstants.getValue("rightSolenoid"));
-
-        //Compressor
-        Compressor compressor = new Compressor((int) GRTConstants.getValue("compressor"), 1);
-        compressor.start();
 
         // PWM outputs
-        Victor leftDT1 = new Victor((int) GRTConstants.getValue("leftDT1"));
-        Victor leftDT2 = new Victor((int) GRTConstants.getValue("leftDT2"));
-        Victor rightDT1 = new Victor((int) GRTConstants.getValue("rightDT1"));
-        Victor rightDT2 = new Victor((int) GRTConstants.getValue("rightDT2"));
+        //TODO check motor pins
+        Talon leftDT1 = new Talon(getPinID("leftDT1"));
+        Talon leftDT2 = new Talon(getPinID("leftDT2"));
+        Talon rightDT1 = new Talon(getPinID("rightDT1"));
+        Talon rightDT2 = new Talon(getPinID("rightDT2"));
         GRTLogger.logInfo("Motors initialized");
 
-        //Add to Test Mode
-        LiveWindow.addActuator("DT", "leftDT1", leftDT1);
-        LiveWindow.addActuator("DT", "leftDT2", leftDT2);
-        LiveWindow.addActuator("DT", "rightDT1", rightDT1);
-        LiveWindow.addActuator("DT", "rightDT2", rightDT2);
-
-        // Encoders
-//        GRTEncoder leftEnc = new GRTEncoder((int) GRTConstants.getValue("encoderLeftA"),
-//                (int) GRTConstants.getValue("encoderLeftB"),
-//                1, 50, "leftEnc");
-//        GRTEncoder rightEnc = new GRTEncoder((int) GRTConstants.getValue("encoderRightA"),
-//                (int) GRTConstants.getValue("encoderRightB"),
-//                1, 50, "rightEnc");
-//        sp.addSensor(leftEnc);
-//        sp.addSensor(rightEnc);
-
-        GRTLogger.logInfo("Encoders initialized");
-
         //Mechanisms
-        dt = new GRTDriveTrain(leftDT1, leftDT2,
-                rightDT1, rightDT2);
+        GRTEncoder leftEnc = new GRTEncoder(getPinID("encoderLeftA"),
+                getPinID("encoderLeftB"),
+                50, true, "leftEnc");
+        GRTEncoder rightEnc = new GRTEncoder(getPinID("encoderRightA"),
+                getPinID("encoderRightB"),
+                50, false, "rightEnc");
+        sp.addSensor(leftEnc);
+        sp.addSensor(rightEnc);
+        
+        GRTSolenoid leftShifter = new GRTSolenoid(getPinID("leftShifter"));
+        GRTSolenoid rightShifter = new GRTSolenoid(getPinID("rightShifter"));
+        
+        
+        
+        dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2, leftShifter, rightShifter,
+                leftEnc, rightEnc);
 
-        GRTLogger.logInfo("Setting the scale factors!");
-        dt.setScaleFactors(GRTConstants.getValue("leftDT1Scale"),
+        dt.setScaleFactors(
+                GRTConstants.getValue("leftDT1Scale"),
                 GRTConstants.getValue("leftDT2Scale"),
                 GRTConstants.getValue("rightDT1Scale"),
                 GRTConstants.getValue("rightDT2Scale"));
 
-        GRTLogger.logInfo("Mechanisms initialized");
-
-        //Controllers
-//        MacroDriveTrapezoidal trap = new MacroDriveTrapezoidal(dt, -5, 10000, leftEnc, rightEnc, 2000, 2000);
-//        
-//        Vector macros = new Vector();
-//        macros.addElement(trap);
-//        EventController ac = new GRTMacroController(macros);
-//        addAutonomousController(ac);
-
-
-        DriveController dc =
-                new DriveController(dt, primary, secondary);
-
-        GRTLogger.logInfo("Controllers Initialized");
+        DriveController dc = new DriveController(dt, leftPrimary, rightPrimary);
 
         addTeleopController(dc);
-        sp.startPolling();
 
-        GRTLogger.logSuccess("Ready to drive.");
-    }
+        //Compressor
+        System.out.println("compressorSwitch = " + getPinID("compressorSwitch"));
+        Compressor compressor = new Compressor(1,1);        //They should be the same...HACK
+        compressor.start();
+        System.out.println("pressure switch="+compressor.getPressureSwitchValue());
 
-    /**
-     * Initialize function for the 2012 base.
-     */
-    private void base2012Init() {
-        GRTLogger.logInfo("2012 Base: GRTFramework starting up.");
-        SensorPoller sp = new SensorPoller();
-
-        //Battery Sensor
-        GRTBatterySensor batterySensor = new GRTBatterySensor("battery");
-        sp.addSensor(batterySensor);
-
-        //Driver station components
-        GRTJoystick joy1 = new GRTJoystick(1, "Joystick");
-        GRTJoystick joy2 = new GRTJoystick(2, "Joystick");
-        sp.addSensor(joy1);
-        sp.addSensor(joy2);
+        //shooter
+        Talon shooter1 = new Talon(getPinID("shooter1"));
+        Talon shooter2 = new Talon(getPinID("shooter2"));
+        Talon shooterRaiser = new Talon(getPinID("shooterRaiser"));
+        GRTSolenoid shooterFeeder = new GRTSolenoid(getPinID("shooterFeeder"));
         
-        GRTLogger.logInfo("Joysticks initialized");
+        GRTEncoder shooterEncoder = new GRTEncoder(getPinID("shooterEncoderA"),
+                getPinID("shooterEncoderB"), GRTConstants.getValue("shooterEncoderPulseDistance"), "shooterFlywheelEncoder");
+        Potentiometer shooterPot = new Potentiometer(getPinID("shooterPotentiometer"),
+                "shooter potentiometer");
+        
+        GRTSwitch lowerShooterLimit = new GRTSwitch(getPinID("shooterLowerLimit"),
+                true, "lowerShooterLimit");
+        
+        Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder,
+                shooterRaiser, shooterEncoder, shooterPot, lowerShooterLimit);
 
-        // PWM outputs
-        //TODO check motor pins
-        Talon leftDT1 = new Talon((int) GRTConstants.getValue("leftDT1"));
-        Talon leftDT2 = new Talon((int) GRTConstants.getValue("leftDT2"));
-        Talon rightDT1 = new Talon((int) GRTConstants.getValue("rightDT1"));
-        Talon rightDT2 = new Talon((int) GRTConstants.getValue("rightDT2"));
-        GRTLogger.logInfo("Motors initialized");
+        sp.addSensor(shooterEncoder);
+        sp.addSensor(shooterPot);
+        
+        //Belts
+        System.out.println("belts = " + getPinID("belts"));
+        System.out.println("shovelLifter = " + getPinID("shovelLifter"));
+        System.out.println("rollerMotor = " + getPinID("rollerMotor"));
+        System.out.println("raiserMotor = " + getPinID("raiserMotor"));
+        
+        Victor beltsMotor = new Victor(getPinID("belts"));
+        GRTSolenoid shovelLifter = new GRTSolenoid(getPinID("shovelLifter"));
 
-        //Mechanisms
-        dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2);
-        dt.setScaleFactors(1, -1, -1, 1);
+        Belts belts = new Belts(beltsMotor, shovelLifter);
 
 
-        DriveController dc = new DriveController(dt, joy1, joy2);
+        //PickerUpper
+        SpeedController rollerMotor = new Victor(getPinID("rollerMotor"));
+        SpeedController raiserMotor = new Victor(getPinID("raiserMotor"));
+        GRTSwitch limitUp = new GRTSwitch(getPinID("pickUpUpperLimit"), false, "limitUp");
+        GRTSwitch limitDown = new GRTSwitch(getPinID("pickUpLowerLimit"), false, "limitDown");
+        sp.addSensor(limitUp);
+        sp.addSensor(limitDown);
 
-        addTeleopController(dc);
+        ExternalPickup youTiao = new ExternalPickup(rollerMotor, raiserMotor, limitUp, limitDown);
+
+        //Mechcontroller
+        MechController mechController = new MechController(leftPrimary, rightPrimary, secondary,
+                shooter, youTiao, null, belts, dt);
+
+        addTeleopController(mechController);
+        
+//        Potentiometer p = new Potentiometer(3, "Shooter Pot");
+//        sp.addSensor(p);
+        
+        //Autonomous initializing
+        GRTGyro gyro = new GRTGyro(1, "Turning Gyro");
+        sp.addSensor(gyro);
+        
+//        AutonomousController controller = new AutonomousController(gyro, shooter, youTiao, belts, dt);
+//        addAutonomousController(controller);
+        
+        // Macro version of autonomous
+        Vector macros = new Vector();
+        macros.addElement(new PrimeShovel(belts, 1000));
+        macros.addElement(new ShooterSet(0, 0, shooter, 5000));
+        macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
+                GRTConstants.getValue("shootingRPMS"), shooter, 5000));
+        for (int i = 0; i < 10; i++)
+            macros.addElement(new Shoot(shooter, 1000));
+        //spins down shooter and lowers it prior to teleop
+        macros.addElement(new ShooterSet(0, 0, shooter, 1000));
+      
+ 	GRTMacroController macroController = new GRTMacroController(macros); 
+        addAutonomousController(macroController);
+        
         sp.startPolling();
-
-        GRTLogger.logInfo("Big G, Litte O");
-        Timer.delay(.2);
-        GRTLogger.logInfo("Go");
-        Timer.delay(.4);
-        GRTLogger.logInfo("Go");
-        Timer.delay(.4);
-        GRTLogger.logInfo("Go!");
     }
 
-    public void test() {
-        while (isTest() && isEnabled()) {
-            LiveWindow.run();
-            Timer.delay(.1);
-        }
+    private int getPinID(String name) {
+        return (int) GRTConstants.getValue(name);
     }
 }

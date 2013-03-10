@@ -31,7 +31,6 @@ public class GRTMacroController extends EventController implements MacroListener
             GRTMacro m = (GRTMacro) en.nextElement();
             m.reset();
             m.addListener(this);
-            
         }
         
         ((GRTMacro) macros.elementAt(currentIndex)).execute();
@@ -55,7 +54,7 @@ public class GRTMacroController extends EventController implements MacroListener
             GRTLogger.logSuccess("Completed all macros. Waiting for teleop!");
         }
     }
-
+    
     public void macroTimedOut(MacroEvent e) {
         GRTLogger.logError("Macro timed out. Skipping macros.");        
     }
