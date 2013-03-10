@@ -4,7 +4,6 @@ import actuator.GRTSolenoid;
 import controller.DriveController;
 import controller.MechController;
 import core.GRTConstants;
-import core.GRTMacro;
 import core.GRTMacroController;
 import core.SensorPoller;
 import edu.wpi.first.wpilibj.Compressor;
@@ -182,21 +181,18 @@ public class MainRobot extends GRTRobot {
         GRTGyro gyro = new GRTGyro(1, "Turning Gyro");
         sp.addSensor(gyro);
         
-//        AutonomousController controller = new AutonomousController(gyro, shooter, youTiao, belts, dt);
-//        addAutonomousController(controller);
-        
         // Macro version of autonomous
         Vector macros = new Vector();
         Vector concurrentMacros = new Vector();
         
         //primes shovel, spins up shooter and shoots 4x
         macros.addElement(new PrimeShovel(belts, 0));
-        macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngleB"),
+        macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
                 GRTConstants.getValue("shootingRPMS"), shooter, 2500));
         for (int i = 0; i < 4; i++)
             macros.addElement(new Shoot(shooter, 500));
         
-        //lowers shooter as EP starts up
+        //lowers shooter, starts up EP as starts driving
         ShooterSet lowerShooter = new ShooterSet(0, 0, shooter, 3000);
         macros.addElement(lowerShooter);
         concurrentMacros.addElement(lowerShooter);
@@ -204,13 +200,21 @@ public class MainRobot extends GRTRobot {
         macros.addElement(startPickup);
         concurrentMacros.addElement(startPickup);
         
-        //spins around, drives over frisbees, spins around again
+        //spins around, drives over frisbees
         macros.addElement(new MacroTurn(dt, gyro, 180, 2000));
         macros.addElement(new MacroDrive(dt, 3, 4000));
-        macros.addElement(new MacroTurn(dt, gyro, 180, 2000));
+
+        //spins around and drives back, all while preparing shooter
+        ShooterSet prepareSecondVolley = 
+                new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
+                GRTConstants.getValue("shootingRPMS"), shooter, 2500);
+        macros.addElement(prepareSecondVolley);
+        concurrentMacros.addElement(prepareSecondVolley);
+        macros.addElement(new MacroTurn(dt, gyro, -180, 2000));
+        macros.addElement(new MacroDrive(dt, 3, 4000));
         
         //prepares shooter, and shoots 4 more
-        macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngleF"),
+        macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
                 GRTConstants.getValue("shootingRPMS"), shooter, 3000));
         for (int i = 0; i < 5; i++)
             macros.addElement(new Shoot(shooter, 500));

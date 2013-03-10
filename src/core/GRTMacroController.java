@@ -21,7 +21,7 @@ import logger.GRTLogger;
 public class GRTMacroController extends EventController implements MacroListener {
 
     private Vector macros, concurrentMacros;
-    private int currentIndex = 0;
+    private int currentIndex = -1;
 
     /**
      * Creates a new GRTMacroController.
@@ -52,7 +52,7 @@ public class GRTMacroController extends EventController implements MacroListener
             m.addListener(this);
         }
 
-        ((GRTMacro) macros.elementAt(currentIndex)).execute();
+        startNextMacro();
     }
 
     protected void stopListening() {
