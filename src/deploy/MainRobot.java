@@ -38,6 +38,19 @@ public class MainRobot extends GRTRobot {
         
         System.out.println("Robot being instantiated");
         
+        boolean consoleOut;
+        try {
+            consoleOut = ( GRTConstants.getValue("consoleOutput") == 1.0 );
+        } catch (Exception ex){
+            GRTLogger.logError("consoleOutput key not found in constants file. Maybe you'd like to add it?");
+            consoleOut = true;
+            GRTLogger.disableLogging();
+        }
+        
+        if (!consoleOut){
+            GRTLogger.disableLogging();
+        }
+        
         double robot = GRTConstants.getValue("robot");
         if (robot == 2012.0){
             GRTLogger.logInfo("Starting up 2012 Test Base");
