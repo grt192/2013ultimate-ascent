@@ -22,7 +22,7 @@ public abstract class GRTMacro extends GRTLoggedProcess {
     protected boolean hasInitialized = false;
     private Vector macroListeners;
     private boolean hasStarted = false;
-    private int timeout;
+    int timeout;
     private long startTime;
     private int pollTime;
     private static final int NOTIFY_INITIALIZE = 0;
@@ -132,7 +132,7 @@ public abstract class GRTMacro extends GRTLoggedProcess {
     protected abstract void perform();
 
     /**
-     * After executing
+     * After executing, or to forcibly halt a macro
      */
     public abstract void die();
 
@@ -149,19 +149,19 @@ public abstract class GRTMacro extends GRTLoggedProcess {
             case NOTIFY_COMPLETED:
                 for (Enumeration en = macroListeners.elements(); en.
                         hasMoreElements();) {
-                    ((MacroListener) en.nextElement()).macroDone(new MacroEvent(name));
+                    ((MacroListener) en.nextElement()).macroDone(new MacroEvent(this));
                 }
                 break;
             case NOTIFY_TIMEDOUT:
                 for (Enumeration en = macroListeners.elements(); en.
                         hasMoreElements();) {
-                    ((MacroListener) en.nextElement()).macroTimedOut(new MacroEvent(name));
+                    ((MacroListener) en.nextElement()).macroTimedOut(new MacroEvent(this));
                 }
                 break;
             case NOTIFY_INITIALIZE:
                 for (Enumeration en = macroListeners.elements(); en.
                         hasMoreElements();) {
-                    ((MacroListener) en.nextElement()).macroInitialized(new MacroEvent(name));
+                    ((MacroListener) en.nextElement()).macroInitialized(new MacroEvent(this));
                 }
                 break;
         }

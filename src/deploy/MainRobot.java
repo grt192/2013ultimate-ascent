@@ -4,6 +4,7 @@ import actuator.GRTSolenoid;
 import controller.DriveController;
 import controller.MechController;
 import core.GRTConstants;
+import core.GRTMacro;
 import core.GRTMacroController;
 import core.SensorPoller;
 import edu.wpi.first.wpilibj.Compressor;
@@ -81,7 +82,6 @@ public class MainRobot extends GRTRobot {
         //Shifter solenoids
 
         // PWM outputs
-        //TODO check motor pins
         Talon leftDT1 = new Talon(getPinID("leftDT1"));
         Talon leftDT2 = new Talon(getPinID("leftDT2"));
         Talon rightDT1 = new Talon(getPinID("rightDT1"));
@@ -103,7 +103,8 @@ public class MainRobot extends GRTRobot {
         
         
         
-        dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2, leftShifter, rightShifter,
+        dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2,
+                leftShifter, rightShifter,
                 leftEnc, rightEnc);
 
         dt.setScaleFactors(
@@ -117,8 +118,8 @@ public class MainRobot extends GRTRobot {
         addTeleopController(dc);
 
         //Compressor
-        System.out.println("compressorSwitch = " + getPinID("compressorSwitch"));
-        Compressor compressor = new Compressor(1,1);        //They should be the same...HACK
+        Compressor compressor = new Compressor(getPinID("compressorSwitch"),
+                getPinID("compressorRelay"));
         compressor.start();
         System.out.println("pressure switch="+compressor.getPressureSwitchValue());
 
@@ -129,11 +130,15 @@ public class MainRobot extends GRTRobot {
         GRTSolenoid shooterFeeder = new GRTSolenoid(getPinID("shooterFeeder"));
         
         GRTEncoder shooterEncoder = new GRTEncoder(getPinID("shooterEncoderA"),
-                getPinID("shooterEncoderB"), GRTConstants.getValue("shooterEncoderPulseDistance"), "shooterFlywheelEncoder");
-        Potentiometer shooterPot = new Potentiometer(getPinID("shooterPotentiometer"),
+                getPinID("shooterEncoderB"),
+                GRTConstants.getValue("shooterEncoderPulseDistance"),
+                "shooterFlywheelEncoder");
+        Potentiometer shooterPot = new Potentiometer(
+                getPinID("shooterPotentiometer"),
                 "shooter potentiometer");
         
-        GRTSwitch lowerShooterLimit = new GRTSwitch(getPinID("shooterLowerLimit"),
+        GRTSwitch lowerShooterLimit = new GRTSwitch(
+                getPinID("shooterLowerLimit"),
                 true, "lowerShooterLimit");
         
         Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder,
@@ -182,12 +187,33 @@ public class MainRobot extends GRTRobot {
         
         // Macro version of autonomous
         Vector macros = new Vector();
-        macros.addElement(new PrimeShovel(belts, 1000));
-        macros.addElement(new ShooterSet(0, 0, shooter, 5000));
-        macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                GRTConstants.getValue("shootingRPMS"), shooter, 5000));
-        for (int i = 0; i < 10; i++)
-            macros.addElement(new Shoot(shooter, 1000));
+        Vector concurrentMacros = new Vector();
+        
+        //primes shovel, spins up shooter and shoots 4x
+        macros.addElement(new PrimeShovel(belts, 0));
+        macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngleB"),
+                GRTConstants.getValue("shootingRPMS"), shooter, 2500));
+        for (int i = 0; i < 4; i++)
+            macros.addElement(new Shoot(shooter, 500));
+        
+        //lowers shooter as EP starts up
+        ShooterSet lowerShooter = new ShooterSet(0, 0, shooter, 3000);
+        macros.addElement(lowerShooter);
+        concurrentMacros.addElement(lowerShooter);
+        AutoPickup startPickup = new AutoPickup(youTiao, belts, 300);
+        macros.addElement(startPickup);
+        concurrentMacros.addElement(startPickup);
+        
+        //spins around, drives over frisbees, spins around again
+        macros.addElement(new MacroTurn(dt, gyro, 180, 2000));
+        macros.addElement(new MacroDrive(dt, 3, 4000));
+        macros.addElement(new MacroTurn(dt, gyro, 180, 2000));
+        
+        //prepares shooter, and shoots 4 more
+        macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngleF"),
+                GRTConstants.getValue("shootingRPMS"), shooter, 3000));
+        for (int i = 0; i < 5; i++)
+            macros.addElement(new Shoot(shooter, 500));
         //spins down shooter and lowers it prior to teleop
         macros.addElement(new ShooterSet(0, 0, shooter, 1000));
       
