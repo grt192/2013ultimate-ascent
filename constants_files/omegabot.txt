@@ -174,17 +174,11 @@ driveMacro,5
 
 ##DriveMacro Constants
 
-DMLP,0.8
+DMP,0.8
 
-DMLI,1.0
+DMI,1.0
 
-DMLD,0.0
-
-DMRP,0.8
-
-DMRI,1.0
-
-DMRD,0.0
+DMD,0.0
 
 DMCP,2.0
 
