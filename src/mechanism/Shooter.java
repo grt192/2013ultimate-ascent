@@ -33,8 +33,6 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     private PIDController raiserController;
     private PIDController flywheelController;
     private boolean lowerSwitchPressed = false;
-    private static final int NUM_ONTARGET = 8;
-    private int numTimesOnTarget = 0;
     /**
      * PID Constants for the raiser. RAISER_TOLERANCE is the absolute error
      * allowed in the raiser angle (in degrees).
@@ -175,19 +173,11 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     /**
      * Gets the current shooter angle.
      */
-    public int getShooterAngle() {
-        return (int) (-raiserPot.getValue() * POT_RANGE + tareAngle);
+    public double getShooterAngle() {
+        return (-raiserPot.getValue() * POT_RANGE + tareAngle);
     }
     private PIDSource raiserSource = new PIDSource() {
         public double pidGet() {
-            if (getShooterAngle() == raiserController.getSetpoint()) {
-                numTimesOnTarget++;
-                if (numTimesOnTarget >= NUM_ONTARGET)
-                    raiserController.disable();
-            } else {
-                numTimesOnTarget = 0;
-            }
-                
             return getShooterAngle();
         }
     };
@@ -239,7 +229,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
 
     public void valueChanged(PotentiometerEvent e) {
 //        System.out.println(getShooterAngle());
-        lcd.println(DriverStationLCD.Line.kUser1, 1, Integer.toString(getShooterAngle()) + " ");
+        lcd.println(DriverStationLCD.Line.kUser1, 1, Double.toString(getShooterAngle()) + " ");
         lcd.updateLCD();
         double currentSpeed = raiser.get();
         if ((getShooterAngle() <= 0 && currentSpeed < 0)

@@ -239,6 +239,7 @@ public class MechController extends EventController implements GRTJoystickListen
     
     public void leftXAxisMoved(XboxJoystickEvent e) {
         //Use Xbox left axis to make fine adjustments to the robot's directional heading.
+        logInfo("Left x axis moved!");
         if (e.getSource() == secondary){
             System.out.println("Slowly turning dt's");
             dt.setMotorSpeeds(-e.getData() / turningDivider , e.getData() / turningDivider );
