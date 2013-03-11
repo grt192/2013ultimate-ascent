@@ -21,11 +21,10 @@ public class GRTBatterySensor extends Sensor {
     /**
      * Instantiates a new battery sensor.
      *
-     * @param pollTime how often to poll
      * @param name name of sensor
      */
-    public GRTBatterySensor(int pollTime, String name) {
-        super(name, pollTime, 1);
+    public GRTBatterySensor(String name) {
+        super(name, 1);
         ds = DriverStation.getInstance();
         listeners = new Vector();
     }

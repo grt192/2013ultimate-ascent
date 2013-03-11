@@ -4,21 +4,17 @@ import logger.GRTLogger;
 
 /**
  * A GRTLoggedProcess is a controllable process. It can be initiated/terminated.
+ * When a GRTLoggedProcess is constructed, it is not run.
  *
- * When a GRTLoggedProcess is constructed, it is neither run nor enabled.
- * 
- * Logging is done to the singleton GRTLogger.
+ * Logging is done to the static GRTLogger.
  *
  * @author ajc
- *
  */
-public abstract class GRTLoggedProcess implements Runnable {
+public abstract class GRTLoggedProcess {
 
     protected final String name;
-    protected boolean enabled = false;
     protected boolean running = false;
     private int sleepTime;
-    
     private Thread thread = null;
 
     /**
@@ -42,38 +38,29 @@ public abstract class GRTLoggedProcess implements Runnable {
         this.sleepTime = sleepTime;
     }
 
-    /*
-     * The run method of GRTLoggedProcess, by default, performs an action at
-     * some interval, but only if poll() is overridden and pollTime is
-     * nonnegative.
-     * 
-     * Polls, then sleeps.
-     *
-     * Instead of calling run(), call start() instead.
-     */
-    public void run() {
-        running = true;
-        while (running && sleepTime >= 0) {
-            //only poll, and thus only send events, if enabled
-            if (enabled) {
+    private Runnable poller = new Runnable() {
+        public void run() {
+            running = true;
+            while (running && sleepTime >= 0) {
+                //only poll, and thus only send events, if enabled
                 poll();
-            }
 
-            try {
-                Thread.sleep(sleepTime);
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
             }
+            thread = null;
         }
-        thread = null;
-    }
-    
+    };
+
     /**
      * Starts polling.
      */
     public void startPolling() {
         if (sleepTime >= 0 && !isRunning()) {
-            thread = new Thread(this);
+            thread = new Thread(poller);
             thread.start();
         }
     }
@@ -112,29 +99,6 @@ public abstract class GRTLoggedProcess implements Runnable {
     }
 
     /**
-     * Enables actions of this process.
-     */
-    public void enable() {
-        enabled = true;
-    }
-
-    /**
-     * Disables actions of this process.
-     */
-    public void disable() {
-        enabled = false;
-    }
-
-    /**
-     * Returns whether or not actions of this process are enabled.
-     *
-     * @return true if enabled, false otherwise.
-     */
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    /**
      * Stops execution of this process.
      */
     public void halt() {
@@ -168,10 +132,10 @@ public abstract class GRTLoggedProcess implements Runnable {
     public String toString() {
         return "[[" + getID() + "]]";
     }
-    
+
     /**
      * Sets how long to sleep for.
-     * 
+     *
      * @param millis time to sleep for between polls, in milliseconds
      */
     protected void setSleepTime(int millis) {

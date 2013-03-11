@@ -1,14 +1,13 @@
 package core;
 
-import event.events.SensorEvent;
-import event.listeners.SensorChangeListener;
-import java.util.Enumeration;
-import java.util.Vector;
-
 /**
  * A sensor sends numeric sensor event data. They only send data when running.
  * Sensors can either receive data through events, or by polling. It
  * additionally stores the state of variables and performs state change checks.
+ * 
+ * For performance reasons, sensors do not poll on their own. Instead, sensors
+ * may be fed to a SensorPoller to have the SensorPoller poll the sensors
+ * instead.
  *
  * @author ajc
  */
@@ -19,30 +18,18 @@ public abstract class Sensor extends GRTLoggedProcess {
     public static final double FALSE = 0.0;
     public static final double ERROR = Double.NaN;
     //Instance variables
-    private final Vector stateChangeListeners;   //Collection of things that listen to this sensor
     private double[] data;
 
     /**
-     * Constructs a sensor that doesn't poll.
-     *
-     * @param name name of sensor.
-     * @param numData number of pieces of data.
-     */
-    public Sensor(String name, int numData) {
-        this(name, -1, numData);
-    }
-
-    /**
-     * Construct a polling sensor. Subclasses need to start themselves--make a
-     * call to startPolling();
+     * Construct a sensor.
      *
      * @param name name of the sensor.
      * @param sleepTime time between polls [ms].
      * @param numData number of pieces of data.
      */
-    public Sensor(String name, int sleepTime, int numData) {
-        super(name, sleepTime);
-        stateChangeListeners = new Vector();
+    public Sensor(String name, int numData) {
+        super(name, -1);
+        logInfo("New non-threaded sensor as well!");
         running = true;
         data = new double[numData];
     }
@@ -57,7 +44,7 @@ public abstract class Sensor extends GRTLoggedProcess {
         double previous = data[id];
         //notify self and state change listeners if the datum has changed
         if (previous != datum) {
-            notifyStateChange(id, datum);
+            notifyListeners(id, datum);
         }
         data[id] = datum;
     }
@@ -85,59 +72,10 @@ public abstract class Sensor extends GRTLoggedProcess {
     }
 
     /**
-     * Enables listening. Sensors need not listen to events, however.
-     */
-    protected void startListening() {
-    }
-
-    /**
-     * Disables listening. Sensors need not listen to events, however.
-     */
-    protected void stopListening() {
-    }
-
-    public void enable() {
-        //enable() always works because a Sensor is always running
-        super.enable();
-        startListening();
-    }
-
-    public void disable() {
-        super.disable();
-        stopListening();
-    }
-
-    /**
      * Calls the listener events based on what has changed
      *
      * @param id the key of the data that changed
      * @param newDatum the datum's new value
      */
     protected abstract void notifyListeners(int id, double newDatum);
-
-    protected void notifyStateChange(int id, double newDatum) {
-        notifyListeners(id, newDatum);
-        SensorEvent e = new SensorEvent(this, id, newDatum);
-        for (Enumeration en = stateChangeListeners.elements(); en.hasMoreElements();) {
-            ((SensorChangeListener) en.nextElement()).sensorStateChanged(e);
-        }
-    }
-
-    /**
-     * Adds a sensor state change listener.
-     *
-     * @param l state change listener to add.
-     */
-    public void addSensorStateChangeListener(SensorChangeListener l) {
-        stateChangeListeners.addElement(l);
-    }
-
-    /**
-     * Removes a sensor state change listener.
-     *
-     * @param l state change listener to remove.
-     */
-    public void removeSensorStateChangeListener(SensorChangeListener l) {
-        stateChangeListeners.removeElement(l);
-    }
 }

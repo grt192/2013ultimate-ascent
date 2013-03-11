@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package macro;
 
 import core.GRTMacro;
@@ -50,7 +46,7 @@ public class MacroTurn extends GRTMacro {
      * @param gyro gyroscope to track robot movement
      * @param dt drivetrain to command
      */
-    public MacroTurn(double turnAngle, int timeout, GRTGyro gyro, GRTDriveTrain dt) {
+    public MacroTurn(GRTDriveTrain dt, GRTGyro gyro, double turnAngle, int timeout) {
         super("Turn Macro", timeout, 50);
         
         this.turnAngle = turnAngle;

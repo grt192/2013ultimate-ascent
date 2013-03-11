@@ -5,7 +5,6 @@
 package core;
 
 import event.events.MacroEvent;
-import event.listeners.EncoderListener;
 import event.listeners.MacroListener;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -32,7 +31,6 @@ public class GRTMacroController extends EventController implements MacroListener
             GRTMacro m = (GRTMacro) en.nextElement();
             m.reset();
             m.addListener(this);
-            
         }
         
         ((GRTMacro) macros.elementAt(currentIndex)).execute();
@@ -54,10 +52,9 @@ public class GRTMacroController extends EventController implements MacroListener
             ((GRTMacro) macros.elementAt(currentIndex)).execute();
         } else {
             GRTLogger.logSuccess("Completed all macros. Waiting for teleop!");
-            return;
         }
     }
-
+    
     public void macroTimedOut(MacroEvent e) {
         GRTLogger.logError("Macro timed out. Skipping macros.");        
     }

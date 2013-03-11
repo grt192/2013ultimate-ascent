@@ -6,6 +6,8 @@ package core;
  * @author ajc
  */
 public abstract class EventController extends GRTLoggedProcess {
+    
+    protected boolean enabled = false;
 
     public EventController(String name) {
         super(name);
@@ -26,7 +28,7 @@ public abstract class EventController extends GRTLoggedProcess {
      */
     public void enable() {
         //enable() always works because an EventController is always running
-        super.enable();
+        enabled = true;
         startListening();
     }
 
@@ -34,7 +36,7 @@ public abstract class EventController extends GRTLoggedProcess {
      * Disables actions, and stops listening.
      */
     public void disable() {
-        super.disable();
+        enabled = false;
         stopListening();
     }
 }

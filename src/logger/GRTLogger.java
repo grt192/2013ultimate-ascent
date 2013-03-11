@@ -27,6 +27,7 @@ public final class GRTLogger {
     private static final Vector dsBuffer = new Vector();
     private static Vector logReceivers = new Vector();
     private static boolean fileLogging = false;
+    private static boolean logging     = true;
     private static String loggingFileName;     //Files to which we log our output.
     private static PrintStream fileWriter;
 
@@ -62,6 +63,14 @@ public final class GRTLogger {
         } catch (IOException e) {
             throw new Error("File logging fail");
         }
+    }
+    
+    public static void enableLogging(){
+        logging = true;
+    }
+    
+    public static void disableLogging(){
+        logging = false;
     }
 
     /**
@@ -124,6 +133,10 @@ public final class GRTLogger {
     }
 
     private static void log(String data, int logtype) {
+        if (!logging){
+            return;
+        }
+        
         String message = elapsedTime() + " " + PREFIX[logtype] + data;
         System.out.println("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b" + message);
 

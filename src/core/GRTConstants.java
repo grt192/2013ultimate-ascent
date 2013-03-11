@@ -76,6 +76,9 @@ public class GRTConstants {
      * key exists
      */
     public static double getValue(String id) {
+        if (!table.containsKey(id)) {
+            System.out.println("Constants string \"" + id + "\" not found");
+        }
         return ((Double) table.get(id)).doubleValue();
     }
 }

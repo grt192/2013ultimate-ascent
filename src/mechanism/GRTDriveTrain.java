@@ -1,7 +1,11 @@
 package mechanism;
 
+import actuator.GRTSolenoid;
+import core.GRTConstants;
 import core.GRTLoggedProcess;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.SpeedController;
 import logger.GRTLogger;
 import sensor.GRTEncoder;
@@ -24,10 +28,12 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     private double rightBackSF = -1;
     
     private boolean hasShifters = false;
-    private Solenoid leftShifter, rightShifter;
+    private GRTSolenoid leftShifter, rightShifter;
     
-    private boolean hasEncoders = false;
     private GRTEncoder leftEncoder, rightEncoder;
+    
+    private PIDController leftController, rightController;
+    private double leftP, leftI, leftD, rightP, rightI, rightD;
 
     double power = 1;    //State variable determining if we run at 1/2 power. 
     
@@ -57,7 +63,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
 
     public GRTDriveTrain(SpeedController leftFront, SpeedController leftBack,
             SpeedController rightFront, SpeedController rightBack,
-            Solenoid leftShifter, Solenoid rightShifter) {
+            GRTSolenoid leftShifter, GRTSolenoid rightShifter) {
 
         this(leftFront, leftBack, rightFront, rightBack,
                 leftShifter, rightShifter,
@@ -66,7 +72,7 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     
     public GRTDriveTrain(SpeedController leftFront, SpeedController leftBack,
             SpeedController rightFront, SpeedController rightBack,
-            Solenoid leftShifter, Solenoid rightShifter,
+            GRTSolenoid leftShifter, GRTSolenoid rightShifter,
             GRTEncoder leftEncoder, GRTEncoder rightEncoder) {
         
         super("Drivetrain");
@@ -83,11 +89,23 @@ public class GRTDriveTrain extends GRTLoggedProcess {
         }
         
         if(leftEncoder != null && rightEncoder != null) {
-            this.hasEncoders = true;
             this.leftEncoder = leftEncoder;
             this.rightEncoder = rightEncoder;
+//            leftP = GRTConstants.getValue("DTLeftP");
+//            leftI = GRTConstants.getValue("DTLeftI");
+//            leftD = GRTConstants.getValue("DTLeftD");
+//            rightP = GRTConstants.getValue("DTRightP");
+//            rightI = GRTConstants.getValue("DTRightI");
+//            rightD = GRTConstants.getValue("DTRightD");
+//            
+//            leftController = new PIDController(leftP, leftI, leftD,
+//                    leftSource, leftOutput);
+//            rightController = new PIDController(rightP, rightI, rightD,
+//                    rightSource, rightOutput);
+//            
+//            leftController.setOutputRange(-1, 1);
+//            rightController.setOutputRange(-1, 1);
         }
-        
     }
     
     /**
@@ -111,19 +129,39 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     }
     
     /**
-     * Set the left and right side speeds of the drivetrain motors.
+     * Set the left and right side speed controller
+     * output for the drivetrain motors.
      *
-     * @param leftVelocity left drivetrain velocity
-     * @param rightVelocity right drivetrain velocity
+     * @param leftVelocity left drivetrain velocity, from -1.0 - 1.0
+     * @param rightVelocity right drivetrain velocity, from -1.0 - 1.0
      */
     public void setMotorSpeeds(double leftVelocity, double rightVelocity) {
-        logInfo("Left: " +  leftVelocity +"\tRight: " + rightVelocity);        
-        
+        if (leftController != null) {
+            leftController.disable();
+        }
+        if (rightController != null) {
+            rightController.disable();
+        }
+        logInfo("Left: " + leftVelocity + "\tRight: " + rightVelocity);
+
         leftFront.set(leftVelocity * leftFrontSF * power);
-        rightFront.set(rightVelocity * rightFrontSF * power);
         leftBack.set(leftVelocity * leftBackSF * power);
+
         rightBack.set(rightVelocity * rightBackSF * power);
-        
+        rightFront.set(rightVelocity * rightFrontSF * power);
+    }
+    
+    /**
+     * Set the left and right side DT velocities.
+     * 
+     * @param leftVelocity velocity of left side, in RPM
+     * @param rightVelocity velocity of right side, in RPM
+     */
+    public void setSpeeds(double leftVelocity, double rightVelocity) {
+        leftController.setSetpoint(leftVelocity);
+        rightController.setSetpoint(rightVelocity);
+        leftController.enable();
+        rightController.enable();
     }
         
     /**
@@ -163,16 +201,37 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     }
     
     public GRTEncoder getLeftEncoder(){
-        if(hasEncoders){
-            return leftEncoder;
-        }
-        return null;
+        return leftEncoder;
     }
     
     public GRTEncoder getRightEncoder(){
-        if(hasEncoders){
-            return rightEncoder;
-        }
-        return null;
+        return rightEncoder;
     }
+    
+    private PIDOutput leftOutput = new PIDOutput() {
+        public void pidWrite(double output) {
+            leftFront.set(output * leftFrontSF);
+            leftBack.set(output * leftBackSF);
+        }
+    };
+    
+    private PIDOutput rightOutput = new PIDOutput() {
+        public void pidWrite(double output) {
+            rightFront.set(output * rightFrontSF);
+            rightBack.set(output * rightBackSF);
+        }
+    };
+    
+    private PIDSource leftSource = new PIDSource() {
+        public double pidGet() {
+            return leftEncoder.getRate();
+        }
+    };
+    
+    private PIDSource rightSource = new PIDSource() {
+
+        public double pidGet() {
+            return rightEncoder.getRate();
+        }
+    };
 }
