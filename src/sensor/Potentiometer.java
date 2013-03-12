@@ -14,6 +14,10 @@ import java.util.Vector;
  */
 public class Potentiometer extends Sensor {
 
+    private static final int FILTER_AVG_NUM = 5;
+    private double[] previousValues = new double[FILTER_AVG_NUM];
+    private int pollNum;
+    
     public static final int KEY_VALUE = 0;
     public static final int NUM_DATA = 1;
     private AnalogChannel channel;
@@ -44,6 +48,7 @@ public class Potentiometer extends Sensor {
     }
 
     protected void poll() {
+        previousValues[pollNum++ % FILTER_AVG_NUM] = getUnfilteredValue();
         setState(KEY_VALUE, getValue());
     }
 
@@ -54,6 +59,13 @@ public class Potentiometer extends Sensor {
      * 1 representing all the way to the right
      */
     public double getValue() {
+        double temp = 0;
+        for (int i = 0; i < FILTER_AVG_NUM; i++)
+            temp += previousValues[i];
+        return temp/FILTER_AVG_NUM;
+    }
+    
+    public double getUnfilteredValue() {
         return channel.getVoltage() / 5.0;
     }
 
