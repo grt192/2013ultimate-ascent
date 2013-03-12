@@ -64,21 +64,6 @@ public class MainRobot extends GRTRobot {
     private void omegaInit() {
 
         SensorPoller sp = new SensorPoller(10);     //Thread that polls all sensors every 10ms.
-        
-        GRTJoystick leftPrimary = new GRTJoystick(1, "left primary joy");
-        GRTJoystick rightPrimary = new GRTJoystick(2, "right primary joy");
-        GRTXboxJoystick secondary = new GRTXboxJoystick(3, "xbox mech joy");
-        sp.addSensor(leftPrimary);
-        sp.addSensor(rightPrimary);
-        sp.addSensor(secondary);
-
-        GRTLogger.logInfo("Joysticks initialized");
-
-        //Battery Sensor
-        GRTBatterySensor batterySensor = new GRTBatterySensor("battery");
-        sp.addSensor(batterySensor);
-        
-        //Shifter solenoids
 
         // PWM outputs
         //TODO check motor pins
@@ -91,19 +76,13 @@ public class MainRobot extends GRTRobot {
         //Mechanisms
         GRTEncoder leftEnc = new GRTEncoder(getPinID("encoderLeftA"),
                 getPinID("encoderLeftB"),
-                50, true, "leftEnc");
+                GRTConstants.getValue("DTDistancePerPulse"), false, "leftEnc");
         GRTEncoder rightEnc = new GRTEncoder(getPinID("encoderRightA"),
                 getPinID("encoderRightB"),
-                50, false, "rightEnc");
+                GRTConstants.getValue("DTDistancePerPulse"), true, "rightEnc");
         sp.addSensor(leftEnc);
         sp.addSensor(rightEnc);
-        
-        GRTSolenoid leftShifter = new GRTSolenoid(getPinID("leftShifter"));
-        GRTSolenoid rightShifter = new GRTSolenoid(getPinID("rightShifter"));
-        
-        
-        
-        dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2, leftShifter, rightShifter,
+               dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2,
                 leftEnc, rightEnc);
 
         dt.setScaleFactors(
@@ -112,87 +91,13 @@ public class MainRobot extends GRTRobot {
                 GRTConstants.getValue("rightDT1Scale"),
                 GRTConstants.getValue("rightDT2Scale"));
 
-        DriveController dc = new DriveController(dt, leftPrimary, rightPrimary);
-
-        addTeleopController(dc);
-
-        //Compressor
-        System.out.println("compressorSwitch = " + getPinID("compressorSwitch"));
-        Compressor compressor = new Compressor(1,1);        //They should be the same...HACK
-        compressor.start();
-        System.out.println("pressure switch="+compressor.getPressureSwitchValue());
-
-        //shooter
-        Talon shooter1 = new Talon(getPinID("shooter1"));
-        Talon shooter2 = new Talon(getPinID("shooter2"));
-        Talon shooterRaiser = new Talon(getPinID("shooterRaiser"));
-        GRTSolenoid shooterFeeder = new GRTSolenoid(getPinID("shooterFeeder"));
-        
-        GRTEncoder shooterEncoder = new GRTEncoder(getPinID("shooterEncoderA"),
-                getPinID("shooterEncoderB"), GRTConstants.getValue("shooterEncoderPulseDistance"), "shooterFlywheelEncoder");
-        Potentiometer shooterPot = new Potentiometer(getPinID("shooterPotentiometer"),
-                "shooter potentiometer");
-        
-        GRTSwitch lowerShooterLimit = new GRTSwitch(getPinID("shooterLowerLimit"),
-                true, "lowerShooterLimit");
-        
-        Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder,
-                shooterRaiser, shooterEncoder, shooterPot, lowerShooterLimit);
-
-        sp.addSensor(shooterEncoder);
-        sp.addSensor(shooterPot);
-        
-        //Belts
-        System.out.println("belts = " + getPinID("belts"));
-        System.out.println("shovelLifter = " + getPinID("shovelLifter"));
-        System.out.println("rollerMotor = " + getPinID("rollerMotor"));
-        System.out.println("raiserMotor = " + getPinID("raiserMotor"));
-        
-        Victor beltsMotor = new Victor(getPinID("belts"));
-        GRTSolenoid shovelLifter = new GRTSolenoid(getPinID("shovelLifter"));
-
-        Belts belts = new Belts(beltsMotor, shovelLifter);
-
-
-        //PickerUpper
-        SpeedController rollerMotor = new Victor(getPinID("rollerMotor"));
-        SpeedController raiserMotor = new Victor(getPinID("raiserMotor"));
-        GRTSwitch limitUp = new GRTSwitch(getPinID("pickUpUpperLimit"), false, "limitUp");
-        GRTSwitch limitDown = new GRTSwitch(getPinID("pickUpLowerLimit"), false, "limitDown");
-        sp.addSensor(limitUp);
-        sp.addSensor(limitDown);
-
-        ExternalPickup youTiao = new ExternalPickup(rollerMotor, raiserMotor, limitUp, limitDown);
-
-        //Mechcontroller
-        MechController mechController = new MechController(leftPrimary, rightPrimary, secondary,
-                shooter, youTiao, null, belts, dt);
-
-        addTeleopController(mechController);
-        
-//        Potentiometer p = new Potentiometer(3, "Shooter Pot");
-//        sp.addSensor(p);
-        
-        //Autonomous initializing
-        GRTGyro gyro = new GRTGyro(1, "Turning Gyro");
-        sp.addSensor(gyro);
-        
-//        AutonomousController controller = new AutonomousController(gyro, shooter, youTiao, belts, dt);
-//        addAutonomousController(controller);
-        
-        // Macro version of autonomous
         Vector macros = new Vector();
-        macros.addElement(new PrimeShovel(belts, 1000));
-        macros.addElement(new ShooterSet(0, 0, shooter, 5000));
-        macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                GRTConstants.getValue("shootingRPMS"), shooter, 5000));
-        for (int i = 0; i < 10; i++)
-            macros.addElement(new Shoot(shooter, 1000));
-        //spins down shooter and lowers it prior to teleop
-        macros.addElement(new ShooterSet(0, 0, shooter, 1000));
-      
- 	GRTMacroController macroController = new GRTMacroController(macros); 
+        macros.addElement(  new MacroDrive(dt, GRTConstants.getValue("autoDistance"), (int)GRTConstants.getValue("driveTimeout"))  );
+        
+        GRTMacroController macroController = new GRTMacroController(macros); 
         addAutonomousController(macroController);
+        
+        System.out.println("Start sensor polling!");
         
         sp.startPolling();
     }

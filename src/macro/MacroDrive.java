@@ -15,7 +15,7 @@ import sensor.GRTEncoder;
 /**
  * Drives straight for a set distance.
  * 
- * @author keshav
+ * @author keshav, calvin, dan (github: dannyperson, twitter: @dannyperson. LinkedIn: Daniel Frei)
  */
 public class MacroDrive extends GRTMacro {
 
@@ -46,6 +46,7 @@ public class MacroDrive extends GRTMacro {
     
     private PIDSource leftSource = new PIDSource() {
         public double pidGet() {
+            System.out.println("distance = " + leftTraveledDistance());
             return leftTraveledDistance();
         }
     };
@@ -59,6 +60,7 @@ public class MacroDrive extends GRTMacro {
     
     private PIDSource rightSource = new PIDSource() {
         public double pidGet() {
+            System.out.println("distance = " + rightTraveledDistance());
             return rightTraveledDistance();
         }
     };
@@ -93,6 +95,7 @@ public class MacroDrive extends GRTMacro {
     };
     
     private void updateMotorSpeeds() {
+        System.out.println("Setting motor speeds :\t" + leftSpeed  + "\t" + rightSpeed);
         dt.setMotorSpeeds(leftSpeed * leftSF, rightSpeed * rightSF);
     }
     
@@ -125,8 +128,8 @@ public class MacroDrive extends GRTMacro {
         leftInitialDistance = leftEncoder.getDistance();
         rightInitialDistance = rightEncoder.getDistance();
 
-        leftDTController = new PIDController(LP, LI, LD, leftSource, leftOutput, POLL_TIME);
-        rightDTController = new PIDController(RP, RI, RD, rightSource, rightOutput, POLL_TIME);
+        leftDTController = new PIDController(LP, LI, LD, leftSource, leftOutput);
+        rightDTController = new PIDController(RP, RI, RD, rightSource, rightOutput);
 
         straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
 
@@ -137,10 +140,11 @@ public class MacroDrive extends GRTMacro {
         rightDTController.setSetpoint(distance);
         straightController.setSetpoint(0);
 
-        leftDTController.setOutputRange(-1.0, 1.0);
-        rightDTController.setOutputRange(-1.0, 1.0);
+        leftDTController.setOutputRange(-0.3, 0.3);
+        rightDTController.setOutputRange(-0.3, 0.3);
         straightController.setOutputRange(-1.0, 1.0);
 
+        System.out.println("Enabling PID Controllers");
         leftDTController.enable();
         rightDTController.enable();
         straightController.enable();
@@ -148,11 +152,13 @@ public class MacroDrive extends GRTMacro {
 
     protected void perform() {
         if (leftDTController.onTarget() && rightDTController.onTarget()) {
+            System.out.println("Execution of driving complete");
             hasCompletedExecution = true;
         }
     }
 
     public void die() {
+        System.out.println("Killing Driving Straight Macro");
         dt.setMotorSpeeds(0, 0);
         leftDTController.free();
         rightDTController.free();
