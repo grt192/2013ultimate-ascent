@@ -15,7 +15,7 @@ import sensor.GRTEncoder;
 /**
  * Drives straight for a set distance.
  * 
- * @author keshav, calvin, dan (github: dannyperson, twitter: @dannyperson. LinkedIn: Daniel Frei)
+ * @author keshav
  */
 public class MacroDrive extends GRTMacro {
 
@@ -42,35 +42,14 @@ public class MacroDrive extends GRTMacro {
     
     private PIDSource DTSource = new PIDSource() {
         public double pidGet() {
-<<<<<<< HEAD
-            System.out.println("distance = " + leftTraveledDistance());
-            return leftTraveledDistance();
-        }
-    };
-    
-    private PIDOutput leftOutput = new PIDOutput() {
-        public void pidWrite(double output) {
-            leftSpeed = output;
-            updateMotorSpeeds();
-        }
-    };
-    
-    private PIDSource rightSource = new PIDSource() {
-        public double pidGet() {
-            System.out.println("distance = " + rightTraveledDistance());
-            return rightTraveledDistance();
-        }
-    };
-    
-    private PIDOutput rightOutput = new PIDOutput() {
-=======
+            System.out.println ("distance = " + (rightTraveledDistance() + leftTraveledDistance()) / 2);
             return (rightTraveledDistance() + leftTraveledDistance()) / 2;
         }
     };
     
     private PIDOutput DTOutput = new PIDOutput() {
->>>>>>> origin/omega1
         public void pidWrite(double output) {
+            System.out.println ("distance = " + (rightTraveledDistance() + leftTraveledDistance()) / 2);
             rightSpeed = output;
             leftSpeed = output;
             updateMotorSpeeds();
@@ -90,10 +69,10 @@ public class MacroDrive extends GRTMacro {
     private PIDOutput straightOutput = new PIDOutput() {
         public void pidWrite(double output) {
             if (output > 0) { //if left is ahead, pidGet will correct with negative number
-                leftSF = 1 + output; //leftSF is now low 
+                leftSF = 1 - output; //leftSF is now low 
                 rightSF = 1;
             } else {
-                rightSF = 1 - output;
+                rightSF = 1 + output;
                 leftSF = 1;
             }
             updateMotorSpeeds();
@@ -101,7 +80,7 @@ public class MacroDrive extends GRTMacro {
     };
     
     private void updateMotorSpeeds() {
-        System.out.println("Setting motor speeds :\t" + leftSpeed  + "\t" + rightSpeed);
+        System.out.println("Setting motor speeds to\t" + leftSpeed*leftSF + "\t" + rightSpeed*rightSF);
         dt.setMotorSpeeds(leftSpeed * leftSF, rightSpeed * rightSF);
     }
     
@@ -134,12 +113,7 @@ public class MacroDrive extends GRTMacro {
         leftInitialDistance = leftEncoder.getDistance();
         rightInitialDistance = rightEncoder.getDistance();
 
-<<<<<<< HEAD
-        leftDTController = new PIDController(LP, LI, LD, leftSource, leftOutput);
-        rightDTController = new PIDController(RP, RI, RD, rightSource, rightOutput);
-=======
-        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput, POLL_TIME);
->>>>>>> origin/omega1
+        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput);
 
         straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
 
@@ -148,38 +122,22 @@ public class MacroDrive extends GRTMacro {
         DTController.setSetpoint(distance);
         straightController.setSetpoint(0);
 
-<<<<<<< HEAD
-        leftDTController.setOutputRange(-0.3, 0.3);
-        rightDTController.setOutputRange(-0.3, 0.3);
-        straightController.setOutputRange(-1.0, 1.0);
-
-        System.out.println("Enabling PID Controllers");
-        leftDTController.enable();
-        rightDTController.enable();
-=======
-        DTController.setOutputRange(-1.0, 1.0);
+        DTController.setOutputRange(-0.4, 0.4);
         straightController.setOutputRange(-1.0, 1.0);
 
         DTController.enable();
->>>>>>> origin/omega1
         straightController.enable();
     }
 
 
 
     protected void perform() {
-<<<<<<< HEAD
-        if (leftDTController.onTarget() && rightDTController.onTarget()) {
-            System.out.println("Execution of driving complete");
-=======
         if (DTController.onTarget()) {
->>>>>>> origin/omega1
-            hasCompletedExecution = true;
+//            hasCompletedExecution = true;
         }
     }
 
     public void die() {
-        System.out.println("Killing Driving Straight Macro");
         dt.setMotorSpeeds(0, 0);
         DTController.free();
         straightController.free();
