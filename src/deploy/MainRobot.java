@@ -7,6 +7,8 @@ import core.GRTConstants;
 import core.GRTMacroController;
 import core.SensorPoller;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStationEnhancedIO;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
@@ -32,8 +34,13 @@ import sensor.Potentiometer;
  */
 public class MainRobot extends GRTRobot {
 
+    private static final int AUTO_MODE_DO_NOTHING= -1;
+    private static final int AUTO_MODE_3_FRISBEE = 0;
+    private static final int AUTO_MODE_7_FRISBEE = 1;
+    
     private GRTDriveTrain dt;
-
+    private int autoMode = AUTO_MODE_3_FRISBEE; //Default autonomous mode
+    
     /**
      * Initializer for the robot. Calls an appropriate initialization function.
      */
@@ -170,31 +177,49 @@ public class MainRobot extends GRTRobot {
 
         addTeleopController(mechController);
         
-//        Potentiometer p = new Potentiometer(3, "Shooter Pot");
-//        sp.addSensor(p);
-        
         //Autonomous initializing
         GRTGyro gyro = new GRTGyro(1, "Turning Gyro");
         sp.addSensor(gyro);
         
-//        AutonomousController controller = new AutonomousController(gyro, shooter, youTiao, belts, dt);
-//        addAutonomousController(controller);
+        autoMode = getAutonomousMode();
         
-        // Macro version of autonomous
-        Vector macros = new Vector();
-        macros.addElement(new PrimeShovel(belts, 1000));
-        macros.addElement(new ShooterSet(0, 0, shooter, 5000));
-        macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                GRTConstants.getValue("shootingRPMS"), shooter, 5000));
-        for (int i = 0; i < 10; i++)
-            macros.addElement(new Shoot(shooter, 1000));
-        //spins down shooter and lowers it prior to teleop
-        macros.addElement(new ShooterSet(0, 0, shooter, 1000));
-      
- 	GRTMacroController macroController = new GRTMacroController(macros); 
-        addAutonomousController(macroController);
+        if (autoMode == AUTO_MODE_3_FRISBEE){
+            // Macro version of autonomous
+            Vector macros = new Vector();
+            macros.addElement(new PrimeShovel(belts, 1000));
+            macros.addElement(new ShooterSet(0, 0, shooter, 5000));
+            macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
+                    GRTConstants.getValue("shootingRPMS"), shooter, 5000));
+            for (int i = 0; i < 10; i++)
+                macros.addElement(new Shoot(shooter, 1000));
+            //spins down shooter and lowers it prior to teleop
+            macros.addElement(new ShooterSet(0, 0, shooter, 1000));
+
+            GRTMacroController macroController = new GRTMacroController(macros); 
+            addAutonomousController(macroController);
+        }
         
         sp.startPolling();
+    }
+    
+    private int getAutonomousMode(){
+        //Check the state of the buttons that are on.
+        DriverStationEnhancedIO io = DriverStation.getInstance().getEnhancedIO();
+        try {
+            if (io.getButton(1)){
+                return AUTO_MODE_3_FRISBEE;
+            }
+
+            else if (io.getButton(2)){
+                return AUTO_MODE_7_FRISBEE;
+            }
+            
+            else {
+                return AUTO_MODE_DO_NOTHING;
+            }
+        } catch(Exception e){
+            return 0;   //Return the default 
+        }
     }
 
     private int getPinID(String name) {
