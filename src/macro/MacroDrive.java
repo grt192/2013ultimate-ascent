@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import mechanism.GRTDriveTrain;
 import sensor.GRTEncoder;
+import sensor.GRTGyro;
 
 /**
  * Drives straight for a set distance.
@@ -37,19 +38,16 @@ public class MacroDrive extends GRTMacro {
     private static final double CP = GRTConstants.getValue("DMCP");
     private static final double CI = GRTConstants.getValue("DMCI");
     private static final double CD = GRTConstants.getValue("DMCD");
-    private static final int POLL_TIME = 12;
     private static final double TOLERANCE = GRTConstants.getValue("DMTol");
-    
+        
     private PIDSource DTSource = new PIDSource() {
         public double pidGet() {
-            System.out.println ("distance = " + (rightTraveledDistance() + leftTraveledDistance()) / 2);
             return (rightTraveledDistance() + leftTraveledDistance()) / 2;
         }
     };
     
     private PIDOutput DTOutput = new PIDOutput() {
         public void pidWrite(double output) {
-            System.out.println ("distance = " + (rightTraveledDistance() + leftTraveledDistance()) / 2);
             rightSpeed = output;
             leftSpeed = output;
             updateMotorSpeeds();
@@ -69,10 +67,10 @@ public class MacroDrive extends GRTMacro {
     private PIDOutput straightOutput = new PIDOutput() {
         public void pidWrite(double output) {
             if (output > 0) { //if left is ahead, pidGet will correct with negative number
-                leftSF = 1 - output; //leftSF is now low 
+                leftSF = 1 + output; //leftSF is now low 
                 rightSF = 1;
             } else {
-                rightSF = 1 + output;
+                rightSF = 1 - output;
                 leftSF = 1;
             }
             updateMotorSpeeds();
@@ -80,7 +78,6 @@ public class MacroDrive extends GRTMacro {
     };
     
     private void updateMotorSpeeds() {
-        System.out.println("Setting motor speeds to\t" + leftSpeed*leftSF + "\t" + rightSpeed*rightSF);
         dt.setMotorSpeeds(leftSpeed * leftSF, rightSpeed * rightSF);
     }
     
@@ -110,6 +107,7 @@ public class MacroDrive extends GRTMacro {
     protected void initialize() {
         dt.setMotorSpeeds(velocity, velocity);
 
+        
         leftInitialDistance = leftEncoder.getDistance();
         rightInitialDistance = rightEncoder.getDistance();
 
