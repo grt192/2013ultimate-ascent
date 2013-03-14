@@ -92,7 +92,9 @@ public class MainRobot extends GRTRobot {
                 GRTConstants.getValue("rightDT2Scale"));
 
         Vector macros = new Vector();
-        macros.addElement(  new MacroDrive(dt, GRTConstants.getValue("autoDistance"), (int)GRTConstants.getValue("driveTimeout"))  );
+        macros.addElement(new MacroDrive(dt, GRTConstants.getValue("autoDistance"), 7000));
+        macros.addElement(new MacroDelay(1000));
+        macros.addElement(new MacroDrive(dt, -GRTConstants.getValue("autoDistance"), 7000));
         
         GRTMacroController macroController = new GRTMacroController(macros); 
         addAutonomousController(macroController);

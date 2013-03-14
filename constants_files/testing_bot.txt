@@ -2,8 +2,8 @@
 
 robot,2013.2
 
-driveTimeout, 5000
-autoDistance, 2
+driveTimeout, 70000
+autoDistance, 1.0
 
 consoleOutput,0
 
@@ -47,7 +47,7 @@ rightDT2Scale,-1.0
 
 ##DT Speed Regulation constants
 
-DTDistancePerPulse,0.00155
+DTDistancePerPulse,0.00021667
 
 
 
@@ -175,17 +175,16 @@ driveMacro,5
 
 ##DriveMacro Constants
 
-DMP,0.0001
+DMP,0.133
 
-DMI,0.1
+DMI,0.002
 
 DMD,0.0
 
-DMCP,0.0
+DMCP,100
 
-DMCI,0.0
+DMCI,0.7
 
 DMCD,0.0
 
 DMTol,0.03
-

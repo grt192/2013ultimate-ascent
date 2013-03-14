@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package macro;
 
 import core.GRTConstants;
@@ -11,7 +7,6 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import mechanism.GRTDriveTrain;
 import sensor.GRTEncoder;
-import sensor.GRTGyro;
 
 /**
  * Drives straight for a set distance.
@@ -29,7 +24,7 @@ public class MacroDrive extends GRTMacro {
     private PIDController straightController;
     private GRTEncoder leftEncoder;
     private GRTEncoder rightEncoder;
-    private double leftSpeed, rightSpeed;
+    private double speed;
     private double leftSF = 1;
     private double rightSF = 1;
     private static final double DTP = GRTConstants.getValue("DMP");
@@ -48,8 +43,7 @@ public class MacroDrive extends GRTMacro {
     
     private PIDOutput DTOutput = new PIDOutput() {
         public void pidWrite(double output) {
-            rightSpeed = output;
-            leftSpeed = output;
+            speed = output;
             updateMotorSpeeds();
         }
     };
@@ -66,11 +60,12 @@ public class MacroDrive extends GRTMacro {
     
     private PIDOutput straightOutput = new PIDOutput() {
         public void pidWrite(double output) {
-            if (output > 0) { //if left is ahead, pidGet will correct with negative number
-                leftSF = 1 + output; //leftSF is now low 
+            double modifier = Math.abs(output);
+            if ((leftTraveledDistance() > rightTraveledDistance()) == speed > 0) { //if left is farther ahead
+                leftSF = 1 - modifier; //leftSF is now low 
                 rightSF = 1;
             } else {
-                rightSF = 1 - output;
+                rightSF = 1 - modifier;
                 leftSF = 1;
             }
             updateMotorSpeeds();
@@ -78,7 +73,12 @@ public class MacroDrive extends GRTMacro {
     };
     
     private void updateMotorSpeeds() {
-        dt.setMotorSpeeds(leftSpeed * leftSF, rightSpeed * rightSF);
+        dt.setMotorSpeeds(speed * leftSF, speed * rightSF);
+        System.out.println(((int) (1000*leftTraveledDistance()) / 1000.0) +
+                "\t" + ((int) (1000*rightTraveledDistance()) / 1000.0) +
+                "\t" + ((int) (1000*speed)) / 1000.0 +
+                "\t" + ((int) (1000*leftSF)) / 1000.0 + 
+                "\t" + ((int) (1000*rightSF)) / 1000.0);
     }
     
     private double rightTraveledDistance() {
