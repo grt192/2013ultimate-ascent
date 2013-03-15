@@ -61,13 +61,18 @@ public class MacroDrive extends GRTMacro {
     private PIDOutput straightOutput = new PIDOutput() {
         public void pidWrite(double output) {
             double modifier = Math.abs(output);
-            if ((leftTraveledDistance() > rightTraveledDistance()) == speed > 0) { //if left is farther ahead
+            //concise code is better code
+            leftSF = 1 - (speed * output < 0 ? modifier : 0);
+            rightSF = 2 - modifier - leftSF;
+
+            /*if (output * speed < 0) { //if their product is less than zero
                 leftSF = 1 - modifier; //leftSF is now low 
                 rightSF = 1;
             } else {
                 rightSF = 1 - modifier;
                 leftSF = 1;
-            }
+            }*/            
+            
             updateMotorSpeeds();
         }
     };
