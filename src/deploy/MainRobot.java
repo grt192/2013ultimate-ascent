@@ -88,13 +88,14 @@ public class MainRobot extends GRTRobot {
         Talon rightDT2 = new Talon(getPinID("rightDT2"));
         GRTLogger.logInfo("Motors initialized");
 
+        double dtDistancePerPulse = GRTConstants.getValue("DTDistancePerPulse");
         //Mechanisms
         GRTEncoder leftEnc = new GRTEncoder(getPinID("encoderLeftA"),
                 getPinID("encoderLeftB"),
-                50, true, "leftEnc");
+                dtDistancePerPulse, true, "leftEnc");
         GRTEncoder rightEnc = new GRTEncoder(getPinID("encoderRightA"),
                 getPinID("encoderRightB"),
-                50, false, "rightEnc");
+                dtDistancePerPulse, false, "rightEnc");
         sp.addSensor(leftEnc);
         sp.addSensor(rightEnc);
         
