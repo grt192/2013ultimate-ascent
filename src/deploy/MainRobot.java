@@ -64,9 +64,9 @@ public class MainRobot extends GRTRobot {
     private void omegaInit() {
 
         SensorPoller sp = new SensorPoller(10);     //Thread that polls all sensors every 10ms.
-        
+
         GRTJoystick leftPrimary = new GRTJoystick(1, "left primary joy");
-        GRTJoystick rightPrimary = new GRTJoystick(2, "right primary joy");
+       GRTJoystick rightPrimary = new GRTJoystick(2, "right primary joy");
         GRTXboxJoystick secondary = new GRTXboxJoystick(3, "xbox mech joy");
         sp.addSensor(leftPrimary);
         sp.addSensor(rightPrimary);
@@ -79,7 +79,9 @@ public class MainRobot extends GRTRobot {
         sp.addSensor(batterySensor);
         
         //Shifter solenoids
-
+        GRTSolenoid leftShifter = new GRTSolenoid(getPinID("leftShifter"));
+        GRTSolenoid rightShifter = new GRTSolenoid(getPinID("rightShifter"));
+        
         // PWM outputs
         //TODO check motor pins
         Talon leftDT1 = new Talon(getPinID("leftDT1"));
@@ -98,13 +100,8 @@ public class MainRobot extends GRTRobot {
                 dtDistancePerPulse, false, "rightEnc");
         sp.addSensor(leftEnc);
         sp.addSensor(rightEnc);
-        
-        GRTSolenoid leftShifter = new GRTSolenoid(getPinID("leftShifter"));
-        GRTSolenoid rightShifter = new GRTSolenoid(getPinID("rightShifter"));
-        
-        
-        
-        dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2, leftShifter, rightShifter,
+        dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2,
+                leftShifter, rightShifter,
                 leftEnc, rightEnc);
 
         dt.setScaleFactors(
@@ -142,7 +139,7 @@ public class MainRobot extends GRTRobot {
 
         sp.addSensor(shooterEncoder);
         sp.addSensor(shooterPot);
-        
+       
         //Belts
         System.out.println("belts = " + getPinID("belts"));
         System.out.println("shovelLifter = " + getPinID("shovelLifter"));
@@ -171,29 +168,19 @@ public class MainRobot extends GRTRobot {
 
         addTeleopController(mechController);
         
-//        Potentiometer p = new Potentiometer(3, "Shooter Pot");
-//        sp.addSensor(p);
-        
         //Autonomous initializing
         GRTGyro gyro = new GRTGyro(1, "Turning Gyro");
         sp.addSensor(gyro);
-        
-//        AutonomousController controller = new AutonomousController(gyro, shooter, youTiao, belts, dt);
-//        addAutonomousController(controller);
-        
-        // Macro version of autonomous
+
         Vector macros = new Vector();
-        macros.addElement(new PrimeShovel(belts, 1000));
-        macros.addElement(new ShooterSet(0, 0, shooter, 5000));
-        macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                GRTConstants.getValue("shootingRPMS"), shooter, 5000));
-        for (int i = 0; i < 10; i++)
-            macros.addElement(new Shoot(shooter, 1000));
-        //spins down shooter and lowers it prior to teleop
-        macros.addElement(new ShooterSet(0, 0, shooter, 1000));
-      
- 	GRTMacroController macroController = new GRTMacroController(macros); 
+        macros.addElement(new MacroDrive(dt, GRTConstants.getValue("autoDistance"), 7000));
+        macros.addElement(new MacroDelay(1000));
+        macros.addElement(new MacroDrive(dt, -GRTConstants.getValue("autoDistance"), 7000));
+        
+        GRTMacroController macroController = new GRTMacroController(macros); 
         addAutonomousController(macroController);
+        
+        System.out.println("Start sensor polling!");
         
         sp.startPolling();
     }

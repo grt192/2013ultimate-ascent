@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package macro;
 
 import core.GRTConstants;
@@ -28,7 +24,7 @@ public class MacroDrive extends GRTMacro {
     private PIDController straightController;
     private GRTEncoder leftEncoder;
     private GRTEncoder rightEncoder;
-    private double leftSpeed, rightSpeed;
+    private double speed;
     private double leftSF = 1;
     private double rightSF = 1;
     private static final double DTP = GRTConstants.getValue("DMP");
@@ -37,9 +33,8 @@ public class MacroDrive extends GRTMacro {
     private static final double CP = GRTConstants.getValue("DMCP");
     private static final double CI = GRTConstants.getValue("DMCI");
     private static final double CD = GRTConstants.getValue("DMCD");
-    private static final int POLL_TIME = 12;
     private static final double TOLERANCE = GRTConstants.getValue("DMTol");
-    
+        
     private PIDSource DTSource = new PIDSource() {
         public double pidGet() {
             return (rightTraveledDistance() + leftTraveledDistance()) / 2;
@@ -48,8 +43,7 @@ public class MacroDrive extends GRTMacro {
     
     private PIDOutput DTOutput = new PIDOutput() {
         public void pidWrite(double output) {
-            rightSpeed = output;
-            leftSpeed = output;
+            speed = output;
             updateMotorSpeeds();
         }
     };
@@ -66,19 +60,30 @@ public class MacroDrive extends GRTMacro {
     
     private PIDOutput straightOutput = new PIDOutput() {
         public void pidWrite(double output) {
-            if (output > 0) { //if left is ahead, pidGet will correct with negative number
-                leftSF = 1 + output; //leftSF is now low 
+            double modifier = Math.abs(output);
+            //concise code is better code
+            leftSF = 1 - (speed * output < 0 ? modifier : 0);
+            rightSF = 2 - modifier - leftSF;
+
+            /*if (output * speed < 0) { //if their product is less than zero
+                leftSF = 1 - modifier; //leftSF is now low 
                 rightSF = 1;
             } else {
-                rightSF = 1 - output;
+                rightSF = 1 - modifier;
                 leftSF = 1;
-            }
+            }*/            
+            
             updateMotorSpeeds();
         }
     };
     
     private void updateMotorSpeeds() {
-        dt.setMotorSpeeds(leftSpeed * leftSF, rightSpeed * rightSF);
+        dt.setMotorSpeeds(speed * leftSF, speed * rightSF);
+        System.out.println(((int) (1000*leftTraveledDistance()) / 1000.0) +
+                "\t" + ((int) (1000*rightTraveledDistance()) / 1000.0) +
+                "\t" + ((int) (1000*speed)) / 1000.0 +
+                "\t" + ((int) (1000*leftSF)) / 1000.0 + 
+                "\t" + ((int) (1000*rightSF)) / 1000.0);
     }
     
     private double rightTraveledDistance() {
@@ -107,10 +112,11 @@ public class MacroDrive extends GRTMacro {
     protected void initialize() {
         dt.setMotorSpeeds(velocity, velocity);
 
+        
         leftInitialDistance = leftEncoder.getDistance();
         rightInitialDistance = rightEncoder.getDistance();
 
-        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput, POLL_TIME);
+        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput);
 
         straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
 
@@ -119,7 +125,7 @@ public class MacroDrive extends GRTMacro {
         DTController.setSetpoint(distance);
         straightController.setSetpoint(0);
 
-        DTController.setOutputRange(-1.0, 1.0);
+        DTController.setOutputRange(-0.4, 0.4);
         straightController.setOutputRange(-1.0, 1.0);
 
         DTController.enable();
@@ -130,7 +136,7 @@ public class MacroDrive extends GRTMacro {
 
     protected void perform() {
         if (DTController.onTarget()) {
-            hasCompletedExecution = true;
+//            hasCompletedExecution = true;
         }
     }
 

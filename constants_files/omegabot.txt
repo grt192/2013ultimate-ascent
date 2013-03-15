@@ -93,10 +93,10 @@ autoDistance1,3
 driveMacro,5
 
 ##DriveMacro Constants
-DMP,0.8
-DMI,1.0
+DMP,0.133
+DMI,0.002
 DMD,0.0
-DMCP,2.0
-DMCI,0.5
+DMCP,100
+DMCI,0.7
 DMCD,0.0
-DMTol,0.1
+DMTol,0.03
