@@ -1,4 +1,7 @@
 ##Preliminary Omega Bot Constants.
+#
+#IMPORTANT: for pin values, modify robots to fit the pins, not vice versa (to keep both omegas identical).
+#ENCODERS: Green wire is pin A, yellow is pin B, A should come numerically before B.
 
 robot,2013.2
 
@@ -26,9 +29,9 @@ rightShifter,5
 
 ##Drivetrain sensors
 
-encoderLeftA,10
+encoderLeftA,9
 
-encoderLeftB,9
+encoderLeftB,10
 
 encoderRightA,13
 
@@ -74,9 +77,9 @@ shooterFeeder,8
 
 shooterLowerLimit,2
 
-shooterEncoderA,12
+shooterEncoderA,11
 
-shooterEncoderB,11
+shooterEncoderB,12
 
 shooterEncoderPulseDistance,0.016667
 
