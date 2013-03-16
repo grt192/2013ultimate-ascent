@@ -1,5 +1,6 @@
 package macro;
 
+import core.GRTConstants;
 import core.GRTMacro;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -15,17 +16,17 @@ import sensor.GRTGyro;
 public class MacroTurn extends GRTMacro {
 
     private double targetAngle;
-    private double currentAngle;
+    private double startAngle;
     private final double turnAngle;
     private GRTGyro gyro;
     private GRTDriveTrain dt;
     private PIDController controller;
-    private static final double P = 1.0;
-    private static final double I = 0.0;
-    private static final double D = 0.0;
-    private static final double F = 0.0;
-    private static final double POLL_TIME = 0.05;
+    private static final double P = GRTConstants.getValue("TMP");
+    private static final double I = GRTConstants.getValue("TMI");
+    private static final double D = GRTConstants.getValue("TMD");
 
+    private boolean previouslyOnTarget = false;
+    
     private PIDSource pidSource = new PIDSource() {
         public double pidGet() {
             logInfo("Setpoint: " + targetAngle + " current angle: " + gyro.getAngle());
@@ -35,6 +36,8 @@ public class MacroTurn extends GRTMacro {
     private PIDOutput pidOutput = new PIDOutput() {
         public void pidWrite(double output) {
             logInfo("Drive left: " + output + " drive right: " + -output);
+            System.out.println(turnAngle + "\t" + (gyro.getAngle() - startAngle) + "\t" + output);
+
             dt.setMotorSpeeds(output, -output);
         }
     };
@@ -49,27 +52,32 @@ public class MacroTurn extends GRTMacro {
     public MacroTurn(GRTDriveTrain dt, GRTGyro gyro, double turnAngle, int timeout) {
         super("Turn Macro", timeout, 50);
         
+        this.dt = dt;
         this.turnAngle = turnAngle;
         this.gyro = gyro;
-        controller = new PIDController(P, I, D, F, pidSource, pidOutput, POLL_TIME);
-        controller.setOutputRange(-1, 1);
-        
-        controller.setAbsoluteTolerance(3.0);
     }
 
     protected void perform() {
-        if (controller.onTarget())
-            hasCompletedExecution = true;
+        if (controller.onTarget()) {
+            if (previouslyOnTarget)
+                hasCompletedExecution = true;
+            else
+                previouslyOnTarget = true;
+        }
     }
 
     public void die() {
+        hasCompletedExecution = true;
         controller.disable();
         controller.free();
     }
     
     public void initialize() {
-        currentAngle = gyro.getAngle();
-        targetAngle = currentAngle + turnAngle;
+        startAngle = gyro.getAngle();
+        targetAngle = startAngle + turnAngle;
+        controller = new PIDController(P, I, D, pidSource, pidOutput);
+        controller.setOutputRange(-1, 1);
+        controller.setAbsoluteTolerance(GRTConstants.getValue("TMTol"));
         controller.setSetpoint(targetAngle);
         controller.enable();
     }

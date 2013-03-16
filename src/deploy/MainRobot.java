@@ -161,6 +161,8 @@ public class MainRobot extends GRTRobot {
         sp.addSensor(limitDown);
 
         ExternalPickup youTiao = new ExternalPickup(rollerMotor, raiserMotor, limitUp, limitDown);
+        
+        System.out.println("Mechs created");
 
         //Mechcontroller
         MechController mechController = new MechController(leftPrimary, rightPrimary, secondary,
@@ -172,11 +174,17 @@ public class MainRobot extends GRTRobot {
         GRTGyro gyro = new GRTGyro(1, "Turning Gyro");
         sp.addSensor(gyro);
 
-        Vector macros = new Vector();
-        macros.addElement(new MacroDrive(dt, GRTConstants.getValue("autoDistance"), 7000));
-        macros.addElement(new MacroDelay(1000));
-        macros.addElement(new MacroDrive(dt, -GRTConstants.getValue("autoDistance"), 7000));
+        System.out.println("Start macro creation");
         
+        double turnAngle = GRTConstants.getValue("autoAngle1");
+        
+        Vector macros = new Vector();
+//        macros.addElement(new MacroDrive(dt, GRTConstants.getValue("autoDistance"), 7000));
+//        macros.addElement(new MacroDelay(1000));
+        macros.addElement(new MacroTurn(dt, gyro, turnAngle, 70000));
+//        macros.addElement(new MacroDelay(1000));
+//        macros.addElement(new MacroDrive(dt, GRTConstants.getValue("autoDistance"), 7000));
+//        
         GRTMacroController macroController = new GRTMacroController(macros); 
         addAutonomousController(macroController);
         

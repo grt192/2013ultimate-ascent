@@ -34,6 +34,10 @@ public class MacroDrive extends GRTMacro {
     private static final double CI = GRTConstants.getValue("DMCI");
     private static final double CD = GRTConstants.getValue("DMCD");
     private static final double TOLERANCE = GRTConstants.getValue("DMTol");
+    
+    private static final double MAX_MOTOR_OUTPUT = GRTConstants.getValue("DMMax");
+    
+    private boolean previouslyOnTarget = false;
         
     private PIDSource DTSource = new PIDSource() {
         public double pidGet() {
@@ -62,9 +66,8 @@ public class MacroDrive extends GRTMacro {
         public void pidWrite(double output) {
             double modifier = Math.abs(output);
             //concise code is better code
-            leftSF = 1 - (speed * output < 0 ? modifier : 0);
-            rightSF = 2 - modifier - leftSF;
-
+            rightSF = 2 - modifier - (leftSF = 1 - (speed * output < 0 ? modifier : 0));
+            
             /*if (output * speed < 0) { //if their product is less than zero
                 leftSF = 1 - modifier; //leftSF is now low 
                 rightSF = 1;
@@ -79,11 +82,6 @@ public class MacroDrive extends GRTMacro {
     
     private void updateMotorSpeeds() {
         dt.setMotorSpeeds(speed * leftSF, speed * rightSF);
-        System.out.println(((int) (1000*leftTraveledDistance()) / 1000.0) +
-                "\t" + ((int) (1000*rightTraveledDistance()) / 1000.0) +
-                "\t" + ((int) (1000*speed)) / 1000.0 +
-                "\t" + ((int) (1000*leftSF)) / 1000.0 + 
-                "\t" + ((int) (1000*rightSF)) / 1000.0);
     }
     
     private double rightTraveledDistance() {
@@ -125,7 +123,7 @@ public class MacroDrive extends GRTMacro {
         DTController.setSetpoint(distance);
         straightController.setSetpoint(0);
 
-        DTController.setOutputRange(-0.4, 0.4);
+        DTController.setOutputRange(-MAX_MOTOR_OUTPUT, MAX_MOTOR_OUTPUT);
         straightController.setOutputRange(-1.0, 1.0);
 
         DTController.enable();
@@ -136,12 +134,18 @@ public class MacroDrive extends GRTMacro {
 
     protected void perform() {
         if (DTController.onTarget()) {
-//            hasCompletedExecution = true;
+            if (previouslyOnTarget)
+                hasCompletedExecution = true;
+            else
+                previouslyOnTarget = true;
         }
     }
 
     public void die() {
+        hasCompletedExecution = true;
         dt.setMotorSpeeds(0, 0);
+        DTController.disable();
+        straightController.disable();
         DTController.free();
         straightController.free();
     }
