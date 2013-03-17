@@ -14,7 +14,7 @@ public class MacroUpdateTracking extends GRTMacro {
     private GRTVisionTracker vt;
     
     public MacroUpdateTracking(GRTVisionTracker visionTracker){
-        super("Macro--Vision Tracker Updating", 1000, 1000);    //Having pollTime == timeout means we will only update once.
+        super("Macro--Vision Tracker Updating", 1000);
         this.vt = visionTracker;
     }
 
@@ -30,6 +30,7 @@ public class MacroUpdateTracking extends GRTMacro {
      */
     protected void perform() {
         vt.updateTrackingData();
+        hasCompletedExecution = true;
     }
 
     /**
