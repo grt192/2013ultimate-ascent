@@ -91,7 +91,6 @@ public class MainRobot extends GRTRobot {
         GRTSolenoid rightShifter = new GRTSolenoid(getPinID("rightShifter"));
         
         // PWM outputs
-        //TODO check motor pins
         Talon leftDT1 = new Talon(getPinID("leftDT1"));
         Talon leftDT2 = new Talon(getPinID("leftDT2"));
         Talon rightDT1 = new Talon(getPinID("rightDT1"));
@@ -108,6 +107,7 @@ public class MainRobot extends GRTRobot {
                 dtDistancePerPulse, false, "rightEnc");
         sp.addSensor(leftEnc);
         sp.addSensor(rightEnc);
+
         dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2,
                 leftShifter, rightShifter,
                 leftEnc, rightEnc);
@@ -123,8 +123,8 @@ public class MainRobot extends GRTRobot {
         addTeleopController(dc);
 
         //Compressor
-        System.out.println("compressorSwitch = " + getPinID("compressorSwitch"));
-        Compressor compressor = new Compressor(1,1);        //They should be the same...HACK
+        Compressor compressor = new Compressor(getPinID("compressorSwitch"),
+                getPinID("compressorRelay"));
         compressor.start();
         System.out.println("pressure switch="+compressor.getPressureSwitchValue());
 
@@ -135,11 +135,15 @@ public class MainRobot extends GRTRobot {
         GRTSolenoid shooterFeeder = new GRTSolenoid(getPinID("shooterFeeder"));
         
         GRTEncoder shooterEncoder = new GRTEncoder(getPinID("shooterEncoderA"),
-                getPinID("shooterEncoderB"), GRTConstants.getValue("shooterEncoderPulseDistance"), "shooterFlywheelEncoder");
-        Potentiometer shooterPot = new Potentiometer(getPinID("shooterPotentiometer"),
+                getPinID("shooterEncoderB"),
+                GRTConstants.getValue("shooterEncoderPulseDistance"),
+                "shooterFlywheelEncoder");
+        Potentiometer shooterPot = new Potentiometer(
+                getPinID("shooterPotentiometer"),
                 "shooter potentiometer");
         
-        GRTSwitch lowerShooterLimit = new GRTSwitch(getPinID("shooterLowerLimit"),
+        GRTSwitch lowerShooterLimit = new GRTSwitch(
+                getPinID("shooterLowerLimit"),
                 true, "lowerShooterLimit");
         
         Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder,
@@ -169,7 +173,7 @@ public class MainRobot extends GRTRobot {
         sp.addSensor(limitDown);
 
         ExternalPickup youTiao = new ExternalPickup(rollerMotor, raiserMotor, limitUp, limitDown);
-        
+
         System.out.println("Mechs created");
 
         //Mechcontroller
@@ -177,18 +181,19 @@ public class MainRobot extends GRTRobot {
                 shooter, youTiao, null, belts, dt);
 
         addTeleopController(mechController);
-        
+
         //Autonomous initializing
         GRTGyro gyro = new GRTGyro(1, "Turning Gyro");
         sp.addSensor(gyro);
 
         System.out.println("Start macro creation");
-        
+
         autoMode = getAutonomousMode();
-        
+
         Vector macros = new Vector();
+        Vector concurrentMacros = new Vector();
         GRTMacroController macroController;
-        
+
         switch (autoMode) {
             case AUTO_MODE_3_FRISBEE:
                 // Macro version of autonomous
@@ -206,21 +211,49 @@ public class MainRobot extends GRTRobot {
                 addAutonomousController(macroController);
                 break;
             case AUTO_MODE_7_FRISBEE:
-                // Macro version of autonomous
-                macros.addElement(new PrimeShovel(belts, 1000));
-                macros.addElement(new ShooterSet(0, 0, shooter, 5000));
+                //primes shovel, spins up shooter and shoots 4x
+                macros.addElement(new PrimeShovel(belts, 0));
                 macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                        GRTConstants.getValue("shootingRPMS"), shooter, 5000));
+                        GRTConstants.getValue("shootingRPMS"), shooter, 2500));
                 for (int i = 0; i < 4; i++) {
-                    macros.addElement(new Shoot(shooter, 1000));
+                    macros.addElement(new Shoot(shooter, 500));
                 }
-                //todo rest
-                
-                macroController = new GRTMacroController(macros);
+
+                //lowers shooter, starts up EP as starts driving
+                ShooterSet lowerShooter = new ShooterSet(0, 0, shooter, 3000);
+                macros.addElement(lowerShooter);
+                concurrentMacros.addElement(lowerShooter);
+                AutoPickup startPickup = new AutoPickup(youTiao, belts, 300);
+                macros.addElement(startPickup);
+                concurrentMacros.addElement(startPickup);
+
+                //spins around, drives over frisbees
+                macros.addElement(new MacroTurn(dt, gyro, 180, 2000));
+                macros.addElement(new MacroDrive(dt, 3, 4000));
+
+                //spins around and drives back, all while preparing shooter
+                ShooterSet prepareSecondVolley =
+                        new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
+                        GRTConstants.getValue("shootingRPMS"), shooter, 2500);
+                macros.addElement(prepareSecondVolley);
+                concurrentMacros.addElement(prepareSecondVolley);
+                macros.addElement(new MacroTurn(dt, gyro, -180, 2000));
+                macros.addElement(new MacroDrive(dt, 3, 4000));
+
+                //prepares shooter, and shoots 4 more
+                macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
+                        GRTConstants.getValue("shootingRPMS"), shooter, 3000));
+                for (int i = 0; i < 5; i++) {
+                    macros.addElement(new Shoot(shooter, 500));
+                }
+                //spins down shooter and lowers it prior to teleop
+                macros.addElement(new ShooterSet(0, 0, shooter, 1000));
+
+                macroController = new GRTMacroController(macros, concurrentMacros);
                 addAutonomousController(macroController);
+
                 break;
         }
-        
         sp.startPolling();
     }
     
