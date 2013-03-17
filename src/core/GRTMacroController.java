@@ -33,16 +33,10 @@ public class GRTMacroController extends EventController implements MacroListener
     }
 
     protected void stopListening() {
-        System.out.println("STOP THE SHIT");
-        System.out.println("STOP THE SHIT");
-        System.out.println("STOP THE SHIT");
-        System.out.println("STOP THE SHIT");
-        System.out.println("STOP THE SHIT");
-        System.out.println("STOP THE SHIT");
         for (Enumeration en = macros.elements(); en.hasMoreElements();) {
             GRTMacro m = (GRTMacro) en.nextElement();
             m.removeListener(this);    
-            if (!m.hasCompletedExecution)
+            if (!m.isDone())
                 m.die();
         }
     }   

@@ -54,6 +54,7 @@ public class MainRobot extends GRTRobot {
     }
 
     public void disabled() {
+        super.disabled();
         GRTLogger.logInfo("Disabling robot. Halting drivetrain");
         dt.setMotorSpeeds(0.0, 0.0);
     }

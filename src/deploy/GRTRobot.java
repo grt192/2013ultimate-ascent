@@ -55,9 +55,6 @@ public abstract class GRTRobot extends SimpleRobot {
     }
     
     public void disabled() {
-        System.out.println("HALT THY FECES");
-        System.out.println("HALT THY FECES");
-        System.out.println("HALT THY FECES");
         for (Enumeration en = autoControllers.elements(); en.hasMoreElements();) {
             ((EventController) en.nextElement()).disable();
         }
