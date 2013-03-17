@@ -1,11 +1,8 @@
 package mechanism;
 
 import actuator.GRTSolenoid;
-import core.GRTConstants;
 import core.GRTLoggedProcess;
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.SpeedController;
 import logger.GRTLogger;
 import sensor.GRTEncoder;
@@ -207,31 +204,4 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     public GRTEncoder getRightEncoder(){
         return rightEncoder;
     }
-    
-    private PIDOutput leftOutput = new PIDOutput() {
-        public void pidWrite(double output) {
-            leftFront.set(output * leftFrontSF);
-            leftBack.set(output * leftBackSF);
-        }
-    };
-    
-    private PIDOutput rightOutput = new PIDOutput() {
-        public void pidWrite(double output) {
-            rightFront.set(output * rightFrontSF);
-            rightBack.set(output * rightBackSF);
-        }
-    };
-    
-    private PIDSource leftSource = new PIDSource() {
-        public double pidGet() {
-            return leftEncoder.getRate();
-        }
-    };
-    
-    private PIDSource rightSource = new PIDSource() {
-
-        public double pidGet() {
-            return rightEncoder.getRate();
-        }
-    };
 }

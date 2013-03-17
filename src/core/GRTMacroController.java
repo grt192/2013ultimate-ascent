@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package core;
 
 import event.events.MacroEvent;
@@ -37,8 +33,12 @@ public class GRTMacroController extends EventController implements MacroListener
     }
 
     protected void stopListening() {
-        for (Enumeration en = macros.elements(); en.hasMoreElements();)
-            ((GRTMacro) en.nextElement()).removeListener(this);    
+        for (Enumeration en = macros.elements(); en.hasMoreElements();) {
+            GRTMacro m = (GRTMacro) en.nextElement();
+            m.removeListener(this);    
+            if (!m.isDone())
+                m.die();
+        }
     }   
 
     public void macroInitialized(MacroEvent e) {

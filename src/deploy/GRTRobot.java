@@ -52,7 +52,15 @@ public abstract class GRTRobot extends SimpleRobot {
         for (Enumeration en = teleopControllers.elements(); en.hasMoreElements();) {
             ((EventController) en.nextElement()).enable();
         }
-        
+    }
+    
+    public void disabled() {
+        for (Enumeration en = autoControllers.elements(); en.hasMoreElements();) {
+            ((EventController) en.nextElement()).disable();
+        }
+        for (Enumeration en = teleopControllers.elements(); en.hasMoreElements();) {
+            ((EventController) en.nextElement()).disable();
+        }
     }
 
     public void addAutonomousController(EventController c) {

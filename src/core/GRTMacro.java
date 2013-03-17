@@ -17,7 +17,7 @@ import java.util.Vector;
  */
 public abstract class GRTMacro extends GRTLoggedProcess {
 
-    protected boolean hasCompletedExecution = false;
+    protected boolean hasCompletedExecution = true;
     protected boolean hasTimedOut = false;
     protected boolean hasInitialized = false;
     private Vector macroListeners;

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package macro;
 
 import core.GRTConstants;
@@ -24,48 +20,34 @@ public class MacroDrive extends GRTMacro {
     private double velocity = 1;
     private double leftInitialDistance;
     private double rightInitialDistance;
-    private PIDController leftDTController;
-    private PIDController rightDTController;
+    private PIDController DTController;
     private PIDController straightController;
     private GRTEncoder leftEncoder;
     private GRTEncoder rightEncoder;
-    private double leftSpeed, rightSpeed;
+    private double speed;
     private double leftSF = 1;
     private double rightSF = 1;
-    private static final double LP = GRTConstants.getValue("DMLP");
-    private static final double LI = GRTConstants.getValue("DMLI");
-    private static final double LD = GRTConstants.getValue("DMLD");
-    private static final double RP = GRTConstants.getValue("DMRP");
-    private static final double RI = GRTConstants.getValue("DMRI");
-    private static final double RD = GRTConstants.getValue("DMRD");
+    private static final double DTP = GRTConstants.getValue("DMP");
+    private static final double DTI = GRTConstants.getValue("DMI");
+    private static final double DTD = GRTConstants.getValue("DMD");
     private static final double CP = GRTConstants.getValue("DMCP");
     private static final double CI = GRTConstants.getValue("DMCI");
     private static final double CD = GRTConstants.getValue("DMCD");
-    private static final int POLL_TIME = 12;
-    private static final double TOLERANCE = GRTConstants.getValue("DMTol"); //TODO
+    private static final double TOLERANCE = GRTConstants.getValue("DMTol");
     
-    private PIDSource leftSource = new PIDSource() {
+    private static final double MAX_MOTOR_OUTPUT = GRTConstants.getValue("DMMax");
+    
+    private boolean previouslyOnTarget = false;
+        
+    private PIDSource DTSource = new PIDSource() {
         public double pidGet() {
-            return leftTraveledDistance();
+            return (rightTraveledDistance() + leftTraveledDistance()) / 2;
         }
     };
     
-    private PIDOutput leftOutput = new PIDOutput() {
+    private PIDOutput DTOutput = new PIDOutput() {
         public void pidWrite(double output) {
-            leftSpeed = output;
-            updateMotorSpeeds();
-        }
-    };
-    
-    private PIDSource rightSource = new PIDSource() {
-        public double pidGet() {
-            return rightTraveledDistance();
-        }
-    };
-    
-    private PIDOutput rightOutput = new PIDOutput() {
-        public void pidWrite(double output) {
-            rightSpeed = output;
+            speed = output;
             updateMotorSpeeds();
         }
     };
@@ -82,18 +64,24 @@ public class MacroDrive extends GRTMacro {
     
     private PIDOutput straightOutput = new PIDOutput() {
         public void pidWrite(double output) {
-            if (output > 0) { //if left is ahead, pidGet will correct with negative number
-                leftSF = 1 + output; //leftSF is now low 
+            double modifier = Math.abs(output);
+            //concise code is better code
+            rightSF = 2 - modifier - (leftSF = 1 - (speed * output < 0 ? modifier : 0));
+            
+            /*if (output * speed < 0) { //if their product is less than zero
+                leftSF = 1 - modifier; //leftSF is now low 
                 rightSF = 1;
             } else {
-                rightSF = 1 - output;
+                rightSF = 1 - modifier;
                 leftSF = 1;
-            }
+            }*/            
+            
+            updateMotorSpeeds();
         }
     };
     
     private void updateMotorSpeeds() {
-        dt.setMotorSpeeds(leftSpeed * leftSF, rightSpeed * rightSF);
+        dt.setMotorSpeeds(speed * leftSF, speed * rightSF);
     }
     
     private double rightTraveledDistance() {
@@ -122,39 +110,43 @@ public class MacroDrive extends GRTMacro {
     protected void initialize() {
         dt.setMotorSpeeds(velocity, velocity);
 
+        
         leftInitialDistance = leftEncoder.getDistance();
         rightInitialDistance = rightEncoder.getDistance();
 
-        leftDTController = new PIDController(LP, LI, LD, leftSource, leftOutput, POLL_TIME);
-        rightDTController = new PIDController(RP, RI, RD, rightSource, rightOutput, POLL_TIME);
+        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput);
 
         straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
 
-        leftDTController.setAbsoluteTolerance(TOLERANCE);
-        rightDTController.setAbsoluteTolerance(TOLERANCE);
+        DTController.setAbsoluteTolerance(TOLERANCE);
 
-        leftDTController.setSetpoint(distance);
-        rightDTController.setSetpoint(distance);
+        DTController.setSetpoint(distance);
         straightController.setSetpoint(0);
 
-        leftDTController.setOutputRange(-1.0, 1.0);
-        rightDTController.setOutputRange(-1.0, 1.0);
+        DTController.setOutputRange(-MAX_MOTOR_OUTPUT, MAX_MOTOR_OUTPUT);
         straightController.setOutputRange(-1.0, 1.0);
 
-        leftDTController.enable();
-        rightDTController.enable();
+        DTController.enable();
         straightController.enable();
     }
 
+
+
     protected void perform() {
-        if (leftDTController.onTarget() && rightDTController.onTarget()) {
-            hasCompletedExecution = true;
+        if (DTController.onTarget()) {
+            if (previouslyOnTarget)
+                hasCompletedExecution = true;
+            else
+                previouslyOnTarget = true;
         }
     }
 
     public void die() {
+        hasCompletedExecution = true;
         dt.setMotorSpeeds(0, 0);
-        leftDTController.free();
-        rightDTController.free();
+        DTController.disable();
+        straightController.disable();
+        DTController.free();
+        straightController.free();
     }
 }
