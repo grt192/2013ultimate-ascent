@@ -9,42 +9,18 @@ import core.GRTLoggedProcess;
  */
 public class Climber extends GRTLoggedProcess {
     
-    private GRTDriveTrain dt;
-    private GRTSolenoid solenoid1;
-    private GRTSolenoid solenoid2;
-    private GRTSolenoid engager;
+    private GRTSolenoid solenoid;
     
-    public Climber(GRTDriveTrain dt, GRTSolenoid solenoid1, GRTSolenoid solenoid2,
-            GRTSolenoid engager) { //TODO motors
+    public Climber(GRTSolenoid solenoid) { 
         super("Climber mech");
-        this.dt = dt;
-        this.solenoid1 = solenoid1;
-        this.solenoid2 = solenoid2;
-        this.engager = engager;
+        this.solenoid = solenoid;
     }
     
-    public void engage() {
-        engager.set(true);
+    public void raise() {
+        solenoid.set(true);
     }
     
-    public void disengage() {
-        engager.set(false);
-    }
-    
-    public void toggleTop() {
-        solenoid1.set(!solenoid1.get());
-    }
-    
-    public void toggleBottom() {
-        solenoid2.set(!solenoid2.get());
-    }
-    
-    public void winch(double speed) {
-        dt.setMotorSpeeds(speed, speed);
-    }
-    
-    public boolean isEngaged()
-    {
-        return engager.get();
+    public void lower() {
+        solenoid.set(false);
     }
 }

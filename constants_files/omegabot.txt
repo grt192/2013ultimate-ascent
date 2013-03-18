@@ -5,8 +5,6 @@
 
 robot,2013.2
 
-
-
 consoleOutput,0
 fileLogging,0
 ##Drivetrain motors
@@ -35,7 +33,7 @@ compressorSwitch,1
 compressorRelay,1
 
 ##Shooter actuators
-shootingRPMS, 5000.0
+shootingRPMS, 50000.0
 shooter1,9
 shooter2,10
 shooterRaiser,8
@@ -86,17 +84,26 @@ raiserMotor,7
 pickUpUpperLimit,7
 pickUpLowerLimit,8
 
+#Climber solenoid
+climberSolenoid,4
+
 ##Autonomous Constants
 autoShooterAngle1,30
 autoAngle1,180
-autoDistance1,3
+autoDistance,3
 driveMacro,5
 
-##DriveMacro Constants
-DMP,0.133
-DMI,0.002
-DMD,0.0
-DMCP,100
-DMCI,0.7
+#DriveMacro Constants
+DMP,1.5
+DMI,0.0
+DMD,3.0
+DMCP,10
+DMCI,5
 DMCD,0.0
-DMTol,0.03
+DMTol,0.1
+DMMax,0.7
+
+TMP,0.008
+TMI,0.00
+TMD,0.02
+TMTol,0.5
