@@ -147,6 +147,9 @@ public class MechController extends EventController implements GRTJoystickListen
                     case GRTJoystick.KEY_BUTTON_3: 
                         climber.raise();
                         break;
+                    case GRTJoystick.KEY_BUTTON_2:
+                        climber.lower();
+                        break;
                 }   
             }
 
@@ -190,8 +193,6 @@ public class MechController extends EventController implements GRTJoystickListen
     public void buttonReleased(ButtonEvent e) {
         if (e.getSource() == leftJoy) {
             switch (e.getButtonID()) {
-                case GRTJoystick.KEY_BUTTON_3:
-                    climber.lower();
             }
         }
 
