@@ -5,6 +5,7 @@ import core.GRTMacro;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
+import event.listeners.ConstantUpdateListener;
 import mechanism.GRTDriveTrain;
 import sensor.GRTEncoder;
 
@@ -13,7 +14,7 @@ import sensor.GRTEncoder;
  * 
  * @author keshav
  */
-public class MacroDrive extends GRTMacro {
+public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
 
     private GRTDriveTrain dt;
     private double distance = 0;
@@ -27,15 +28,15 @@ public class MacroDrive extends GRTMacro {
     private double speed;
     private double leftSF = 1;
     private double rightSF = 1;
-    private static final double DTP = GRTConstants.getValue("DMP");
-    private static final double DTI = GRTConstants.getValue("DMI");
-    private static final double DTD = GRTConstants.getValue("DMD");
-    private static final double CP = GRTConstants.getValue("DMCP");
-    private static final double CI = GRTConstants.getValue("DMCI");
-    private static final double CD = GRTConstants.getValue("DMCD");
-    private static final double TOLERANCE = GRTConstants.getValue("DMTol");
+    private double DTP;
+    private double DTI;
+    private double DTD;
+    private double CP;
+    private double CI;
+    private double CD;
+    private double TOLERANCE;
     
-    private static final double MAX_MOTOR_OUTPUT = GRTConstants.getValue("DMMax");
+    private double MAX_MOTOR_OUTPUT;
     
     private boolean previouslyOnTarget = false;
         
@@ -105,6 +106,9 @@ public class MacroDrive extends GRTMacro {
         this.distance = distance;
         this.leftEncoder = dt.getLeftEncoder();
         this.rightEncoder = dt.getRightEncoder();
+        
+        GRTConstants.addListener(this);
+        updateConstants();
     }
 
     protected void initialize() {
@@ -148,5 +152,16 @@ public class MacroDrive extends GRTMacro {
         straightController.disable();
         DTController.free();
         straightController.free();
+    }
+
+    public void updateConstants() {
+        DTP = GRTConstants.getValue("DMP");
+        DTI = GRTConstants.getValue("DMI");
+        DTD = GRTConstants.getValue("DMD");
+        CP = GRTConstants.getValue("DMCP");
+        CI = GRTConstants.getValue("DMCI");
+        CD = GRTConstants.getValue("DMCD");
+        TOLERANCE = GRTConstants.getValue("DMTol");
+        MAX_MOTOR_OUTPUT = GRTConstants.getValue("DMMax");
     }
 }

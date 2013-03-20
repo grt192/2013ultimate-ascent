@@ -5,6 +5,7 @@ import core.GRTMacro;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
+import event.listeners.ConstantUpdateListener;
 import mechanism.GRTDriveTrain;
 import sensor.GRTGyro;
 
@@ -13,7 +14,7 @@ import sensor.GRTGyro;
  *
  * @author Calvin
  */
-public class MacroTurn extends GRTMacro {
+public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
 
     private double targetAngle;
     private double startAngle;
@@ -21,9 +22,9 @@ public class MacroTurn extends GRTMacro {
     private GRTGyro gyro;
     private GRTDriveTrain dt;
     private PIDController controller;
-    private static final double P = GRTConstants.getValue("TMP");
-    private static final double I = GRTConstants.getValue("TMI");
-    private static final double D = GRTConstants.getValue("TMD");
+    private double P;
+    private double I;
+    private double D;
 
     private boolean previouslyOnTarget = false;
     
@@ -55,6 +56,9 @@ public class MacroTurn extends GRTMacro {
         this.dt = dt;
         this.turnAngle = turnAngle;
         this.gyro = gyro;
+        
+        GRTConstants.addListener(this);
+        updateConstants();
     }
 
     protected void perform() {
@@ -80,5 +84,11 @@ public class MacroTurn extends GRTMacro {
         controller.setAbsoluteTolerance(GRTConstants.getValue("TMTol"));
         controller.setSetpoint(targetAngle);
         controller.enable();
+    }
+
+    public void updateConstants() {
+        P = GRTConstants.getValue("TMP");
+        I = GRTConstants.getValue("TMI");
+        D = GRTConstants.getValue("TMD");
     }
 }

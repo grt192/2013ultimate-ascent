@@ -2,9 +2,12 @@ package core;
 
 import com.sun.squawk.io.BufferedReader;
 import com.sun.squawk.microedition.io.FileConnection;
+import event.listeners.ConstantUpdateListener;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
 import javax.microedition.io.Connector;
 import logger.GRTLogger;
 
@@ -22,10 +25,12 @@ public class GRTConstants {
     private static final String FILE_LOC = "file:///constants.txt";
     private static final char DELIMITER = ',';
     private static final Hashtable table = new Hashtable();
+    
+    private static Vector constantUpdateListeners = new Vector();
    
 
     static {
-        updateConstants();
+        loadConstants();
         GRTLogger.logSuccess("Constants loaded");
     }
 
@@ -33,13 +38,14 @@ public class GRTConstants {
     }
 
     /**
-     * Reloads constants from the file, and notifies listeners.
+     * Reloads constants from the file
      */
-    private static void updateConstants() {
+    private static void loadConstants() {
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    ((FileConnection) Connector.open(FILE_LOC)).
-                    openInputStream()));
+            FileConnection fc = (FileConnection) Connector.open(FILE_LOC);
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(fc.openInputStream()));
+            
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.equals("") || line.startsWith("#"))
@@ -52,6 +58,9 @@ public class GRTConstants {
 
                 table.put(id, new Double(data));
             }
+            
+            reader.close();
+            fc.close();
 
         } catch (IOException e) {
             GRTLogger.logError("Constants file IO Error--probably nonexistent: "
@@ -67,6 +76,19 @@ public class GRTConstants {
             throw new Error("Mailformed constants file");
         }
     }
+    
+    /**
+     * Loads constants, and updates listeners.
+     */
+    public static void updateConstants() {
+        loadConstants();
+        
+        for (Enumeration en = constantUpdateListeners.elements();
+                en.hasMoreElements();)
+            ((ConstantUpdateListener) en.nextElement()).updateConstants();
+        
+        System.out.println("Updated Constants");
+    }
 
     /**
      * Get the constants value for a particular id.
@@ -80,5 +102,9 @@ public class GRTConstants {
             System.out.println("Constants string \"" + id + "\" not found");
         }
         return ((Double) table.get(id)).doubleValue();
+    }
+    
+    public static void addListener(ConstantUpdateListener l) {
+        constantUpdateListeners.addElement(l);
     }
 }

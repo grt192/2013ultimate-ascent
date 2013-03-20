@@ -158,7 +158,12 @@ public class GRTVisionTracker extends Sensor {
             image.write("/equalized.bmp");
 
             //image = new RGBImage("/testImage.jpg");		// get the sample image from the cRIO flash
-            BinaryImage thresholdImage = image.thresholdHSV((int) GRTConstants.getValue("hlow"), (int) GRTConstants.getValue("hhigh"), (int) GRTConstants.getValue("slow"), (int) GRTConstants.getValue("shigh"), (int) GRTConstants.getValue("vlow"), (int) GRTConstants.getValue("vhigh"));   // keep only green objects
+            BinaryImage thresholdImage = image.thresholdHSV((int) GRTConstants.getValue("hlow"),
+                    (int) GRTConstants.getValue("hhigh"),
+                    (int) GRTConstants.getValue("slow"),
+                    (int) GRTConstants.getValue("shigh"),
+                    (int) GRTConstants.getValue("vlow"),
+                    (int) GRTConstants.getValue("vhigh"));   // keep only green objects
             BinaryImage convexHullImage = thresholdImage.convexHull(false);          // fill in occluded rectangles
             BinaryImage filteredImage = convexHullImage.particleFilter(cc);           // filter out small particles
     

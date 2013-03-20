@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.SpeedController;
 import event.events.EncoderEvent;
 import event.events.PotentiometerEvent;
 import event.events.SwitchEvent;
+import event.listeners.ConstantUpdateListener;
 import event.listeners.EncoderListener;
 import event.listeners.PotentiometerListener;
 import event.listeners.SwitchListener;
@@ -23,7 +24,7 @@ import sensor.Potentiometer;
  *
  * @author Calvin
  */
-public class Shooter extends GRTLoggedProcess implements PotentiometerListener, EncoderListener, SwitchListener {
+public class Shooter extends GRTLoggedProcess implements PotentiometerListener, EncoderListener, SwitchListener, ConstantUpdateListener {
 
     private SpeedController shooterMotor1, shooterMotor2;
     private SpeedController raiser;
@@ -37,29 +38,27 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
      * PID Constants for the raiser. RAISER_TOLERANCE is the absolute error
      * allowed in the raiser angle (in degrees).
      */
-    private static final double RAISER_P = GRTConstants.getValue("shooterRaiserP");
-    private static final double RAISER_I = GRTConstants.getValue("shooterRaiserI");
-    private static final double RAISER_D = GRTConstants.getValue("shooterRaiserD");
-    private static final double RAISER_TOLERANCE =
-            GRTConstants.getValue("raiserTolerance");
+    private double RAISER_P;
+    private double RAISER_I;
+    private double RAISER_D;
+    private double RAISER_TOLERANCE;
     /**
      * PID Constants for the flywheel. FLYWHEEL_TOLERANCe is the percent error
      * allowed by the flywheel (i.e. 5.0 -> 5 percent).
      */
-    private static final double FLYWHEEL_P = GRTConstants.getValue("flywheelP");
-    private static final double FLYWHEEL_I = GRTConstants.getValue("flywheelI");
-    private static final double FLYWHEEL_D = GRTConstants.getValue("flywheelD");
-    private static final double FLYWHEEL_TOLERANCE =
-            GRTConstants.getValue("flywheelTolerance");
+    private double FLYWHEEL_P;
+    private double FLYWHEEL_I;
+    private double FLYWHEEL_D;
+    private double FLYWHEEL_TOLERANCE;
     /**
      * The voltage output by the pot at the lowest angle.
      */
-    private static final double tareAngle = GRTConstants.getValue("tareAngle");
+    private double tareAngle;
     /**
      * The angular range of the potentiometer.
      */
-    private static final double POT_RANGE = GRTConstants.getValue("raiserPotRange");
-    private static final double MAX_ANGLE = GRTConstants.getValue("maxRaiserAngle");
+    private double POT_RANGE;
+    private double MAX_ANGLE;
 
     /**
      * Creates a new shooter.
@@ -94,6 +93,9 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
 
         lowerLimit.addListener(this);
         raiserPot.addListener(this);
+        
+        GRTConstants.addListener(this);
+        updateConstants();
     }
 
     /**
@@ -152,7 +154,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         if (velocity < 0 && lowerSwitchPressed) {
             return;
         }
-        
+
         logInfo("adjusting shooter by " + velocity);
         double currentAngle = getShooterAngle();
         if ((velocity > 0 && currentAngle <= MAX_ANGLE)
@@ -224,7 +226,6 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         logInfo("Unshooting!");
         feeder.set(false);
     }
-    
     DriverStationLCD lcd = DriverStationLCD.getInstance();
 
     public void valueChanged(PotentiometerEvent e) {
@@ -261,5 +262,19 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
             raiser.set(0);
             System.out.println("stopping due to limitswitch");
         }
+    }
+
+    public void updateConstants() {
+        RAISER_P = GRTConstants.getValue("shooterRaiserP");
+        RAISER_I = GRTConstants.getValue("shooterRaiserI");
+        RAISER_D = GRTConstants.getValue("shooterRaiserD");
+        RAISER_TOLERANCE = GRTConstants.getValue("raiserTolerance");
+        FLYWHEEL_P = GRTConstants.getValue("flywheelP");
+        FLYWHEEL_I = GRTConstants.getValue("flywheelI");
+        FLYWHEEL_D = GRTConstants.getValue("flywheelD");
+        FLYWHEEL_TOLERANCE = GRTConstants.getValue("flywheelTolerance");
+        tareAngle = GRTConstants.getValue("tareAngle");
+        POT_RANGE = GRTConstants.getValue("raiserPotRange");
+        MAX_ANGLE = GRTConstants.getValue("maxRaiserAngle");
     }
 }

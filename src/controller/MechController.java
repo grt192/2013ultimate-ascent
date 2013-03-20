@@ -7,6 +7,7 @@ import event.events.JoystickEvent;
 import event.events.PotentiometerEvent;
 import event.events.XboxJoystickEvent;
 import event.listeners.ButtonListener;
+import event.listeners.ConstantUpdateListener;
 import event.listeners.GRTJoystickListener;
 import event.listeners.PotentiometerListener;
 import event.listeners.XboxJoystickListener;
@@ -23,7 +24,8 @@ import sensor.GRTXboxJoystick;
  *
  * @author Calvin, agd
  */
-public class MechController extends EventController implements GRTJoystickListener, XboxJoystickListener, PotentiometerListener, ButtonListener {
+public class MechController extends EventController implements GRTJoystickListener, XboxJoystickListener, PotentiometerListener, ButtonListener,
+        ConstantUpdateListener {
 
     private GRTJoystick leftJoy;
     private GRTJoystick rightJoy;
@@ -34,7 +36,7 @@ public class MechController extends EventController implements GRTJoystickListen
     private Shooter shooter;
     private GRTDriveTrain dt;
     
-    private double shootingSpeed = GRTConstants.getValue("shootingRPMS");
+    private double shootingSpeed;
 
     private double shooterPresetY;
     private double shooterPresetB;
@@ -61,9 +63,10 @@ public class MechController extends EventController implements GRTJoystickListen
         this.shooter = shooter;
 
         this.dt = dt;
+        
+        GRTConstants.addListener(this);
 
-        this.shooterPresetB = GRTConstants.getValue("anglePyramidFrontPreset");
-        this.shooterPresetY = GRTConstants.getValue("anglePyramidRearPreset");
+        updateConstants();
     }
 
     protected void startListening() {
@@ -75,22 +78,6 @@ public class MechController extends EventController implements GRTJoystickListen
 
         secondary.addJoystickListener(this);
         secondary.addButtonListener(this);
-
-        try {
-            turningDivider = GRTConstants.getValue("turningDivider");
-        } catch(Exception e){
-            turningDivider = 2.0;
-            logError("Could not find key  `turningDivider'  in the constants file. Maybe you should add it?");
-            logInfo("Setting turingDivider to default of " + turningDivider);
-        }
-
-        try {
-            adjustDivider = GRTConstants.getValue("adjustDivider");
-        } catch(Exception e){
-            adjustDivider = 10.0;
-            logError("Could not find key  `adjustDivider'  in the constants file. Maybe you should add it?");
-            logInfo("Setting adjustDivider to default of " + adjustDivider);
-        }
     }
 
     protected void stopListening() {
@@ -149,6 +136,9 @@ public class MechController extends EventController implements GRTJoystickListen
                         break;
                     case GRTJoystick.KEY_BUTTON_2:
                         climber.lower();
+                        break;
+                    case GRTJoystick.KEY_BUTTON_9:
+                        GRTConstants.updateConstants();
                         break;
                 }   
             }
@@ -280,4 +270,25 @@ public class MechController extends EventController implements GRTJoystickListen
         System.out.println("potentiometer value changed: " + e.getData());
     }
 
+    public void updateConstants() {
+        try {
+            turningDivider = GRTConstants.getValue("turningDivider");
+        } catch(Exception e){
+            turningDivider = 2.0;
+            logError("Could not find key  `turningDivider'  in the constants file. Maybe you should add it?");
+            logInfo("Setting turingDivider to default of " + turningDivider);
+        }
+
+        try {
+            adjustDivider = GRTConstants.getValue("adjustDivider");
+        } catch(Exception e){
+            adjustDivider = 10.0;
+            logError("Could not find key  `adjustDivider'  in the constants file. Maybe you should add it?");
+            logInfo("Setting adjustDivider to default of " + adjustDivider);
+        }
+        
+        shooterPresetB = GRTConstants.getValue("anglePyramidFrontPreset");
+        shooterPresetY = GRTConstants.getValue("anglePyramidRearPreset");
+        shootingSpeed = GRTConstants.getValue("shootingRPMS");
+    }
 }
