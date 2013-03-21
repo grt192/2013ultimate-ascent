@@ -34,7 +34,7 @@ public class ShooterSet extends GRTMacro {
 
     protected void perform() {
 //        if (Math.abs(shooter.getShooterAngle() - angle) < 2)
-        Timer.delay(3);
+        Timer.delay(2);
         hasCompletedExecution = true;        
     }
 

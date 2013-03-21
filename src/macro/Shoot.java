@@ -29,9 +29,9 @@ public class Shoot extends GRTMacro {
 
     protected void perform() {
         shooter.shoot();
-        Timer.delay(0.2);
+        Timer.delay(0.15);
         shooter.unShoot();
-        Timer.delay(0.5);
+        Timer.delay(0.3);
         hasCompletedExecution = true;
     }
 

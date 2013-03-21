@@ -1,5 +1,7 @@
 package event.events;
 
+import core.GRTMacro;
+
 
 /**
  *
@@ -7,13 +9,13 @@ package event.events;
  */
 public class MacroEvent {
 
-    private String source = "";
+    private GRTMacro source;
     
-    public MacroEvent(String source){
+    public MacroEvent(GRTMacro source){
         this.source = source;
     }
     
-    public String getSource(){
+    public GRTMacro getSource(){
         return source;
     }
     
