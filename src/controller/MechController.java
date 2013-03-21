@@ -113,7 +113,6 @@ public class MechController extends EventController implements GRTJoystickListen
                     case GRTJoystick.KEY_BUTTON_3: 
                         pickerUpper.pickUp();
                         belts.moveUp();
-//                        belts.extendShovel();
                         break;
                     case GRTJoystick.KEY_BUTTON_2: 
                         pickerUpper.spitOut();
@@ -189,7 +188,6 @@ public class MechController extends EventController implements GRTJoystickListen
         else if (e.getSource() == rightJoy) {
             switch (e.getButtonID()) {
                 case GRTJoystick.KEY_BUTTON_3:
-                    belts.retractShovel();
                 case GRTJoystick.KEY_BUTTON_2: 
                     pickerUpper.stopRoller();
                     belts.stop();

@@ -144,14 +144,12 @@ public class MainRobot extends GRTRobot {
 
         //Belts
         System.out.println("belts = " + getPinID("belts"));
-        System.out.println("shovelLifter = " + getPinID("shovelLifter"));
         System.out.println("rollerMotor = " + getPinID("rollerMotor"));
         System.out.println("raiserMotor = " + getPinID("raiserMotor"));
 
         Victor beltsMotor = new Victor(getPinID("belts"));
-        GRTSolenoid shovelLifter = new GRTSolenoid(getPinID("shovelLifter"));
 
-        Belts belts = new Belts(beltsMotor, shovelLifter);
+        Belts belts = new Belts(beltsMotor);
 
 
         //PickerUpper
