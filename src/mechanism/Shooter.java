@@ -81,16 +81,6 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         this.flywheelEncoder = flywheelEncoder;
         this.raiserPot = raiserPot;
 
-        flywheelController = new PIDController(FLYWHEEL_P, FLYWHEEL_I, FLYWHEEL_D,
-                flywheelSource, flywheelOutput);
-        flywheelController.setOutputRange(0, 1);
-        flywheelController.setPercentTolerance(FLYWHEEL_TOLERANCE);
-
-        raiserController = new PIDController(RAISER_P, RAISER_I, RAISER_D,
-                raiserSource, raiserOutput);
-        raiserController.setOutputRange(-1, 1);
-        raiserController.setAbsoluteTolerance(RAISER_TOLERANCE);
-
         lowerLimit.addListener(this);
         raiserPot.addListener(this);
         
@@ -276,5 +266,15 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         tareAngle = GRTConstants.getValue("tareAngle");
         POT_RANGE = GRTConstants.getValue("raiserPotRange");
         MAX_ANGLE = GRTConstants.getValue("maxRaiserAngle");
+        
+        flywheelController = new PIDController(FLYWHEEL_P, FLYWHEEL_I, FLYWHEEL_D,
+                flywheelSource, flywheelOutput);
+        flywheelController.setOutputRange(0, 1);
+        flywheelController.setPercentTolerance(FLYWHEEL_TOLERANCE);
+
+        raiserController = new PIDController(RAISER_P, RAISER_I, RAISER_D,
+                raiserSource, raiserOutput);
+        raiserController.setOutputRange(-1, 1);
+        raiserController.setAbsoluteTolerance(RAISER_TOLERANCE);
     }
 }
