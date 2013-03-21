@@ -85,7 +85,7 @@ pickUpUpperLimit,7
 pickUpLowerLimit,8
 
 #Climber solenoid
-climberSolenoid,4
+climberSolenoid,2
 
 ##Autonomous Constants
 autoShooterAngle1,30
