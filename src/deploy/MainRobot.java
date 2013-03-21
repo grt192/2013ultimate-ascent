@@ -258,15 +258,16 @@ public class MainRobot extends GRTRobot {
     }
     
     private int getAutonomousMode(){
+        System.out.print("Auto mode: ");
         //Check the state of the buttons that are on.
-        DriverStationEnhancedIO io = DriverStation.getInstance().getEnhancedIO();
+        DriverStation ds = DriverStation.getInstance();
         try {
-            if (io.getButton(1)){
+            if (ds.getDigitalIn(1)){
                 System.out.println("3 frisbee auto");
                 return AUTO_MODE_3_FRISBEE;
             }
 
-            else if (io.getButton(2)){
+            else if (ds.getDigitalIn(2)){
                 System.out.println("7 frisbee auto");
                 return AUTO_MODE_7_FRISBEE;
             }
@@ -276,7 +277,8 @@ public class MainRobot extends GRTRobot {
                 return AUTO_MODE_DO_NOTHING;
             }
         } catch(Exception e){
-            return 0;   //Return the default 
+            System.out.println("3 frisbee auto");
+            return AUTO_MODE_3_FRISBEE;   //Return the default 
         }
     }
 
