@@ -40,13 +40,11 @@ public class MechController extends EventController implements GRTJoystickListen
 
     private double shooterPresetY;
     private double shooterPresetB;
+    private double shooterDown;
 
     private double turningDivider;
-    private double adjustDivider;
     private double storedAngle;
     
-    private boolean leftShoulderHeld = false, leftTriggerHeld = false;  //Variables useful for collection logic.
-
     public MechController(GRTJoystick leftJoy, GRTJoystick rightJoy,
             GRTXboxJoystick secondary,
             Shooter shooter, ExternalPickup pickerUpper,
@@ -143,11 +141,9 @@ public class MechController extends EventController implements GRTJoystickListen
             else if (e.getSource() == secondary){
                 switch (e.getButtonID()){
                     case GRTXboxJoystick.KEY_BUTTON_X:
-                        logError("X: Angle adjustment #X will be here.");
-                        shooter.setAngle(0);
+                        shooter.setAngle(shooterDown);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_Y:
-                        logError("A: Angle adjustment #Y will be here.");
                         shooter.setAngle(shooterPresetY);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_B:
@@ -271,20 +267,11 @@ public class MechController extends EventController implements GRTJoystickListen
             turningDivider = GRTConstants.getValue("turningDivider");
         } catch(Exception e){
             turningDivider = 2.0;
-            logError("Could not find key  `turningDivider'  in the constants file. Maybe you should add it?");
-            logInfo("Setting turingDivider to default of " + turningDivider);
-        }
-
-        try {
-            adjustDivider = GRTConstants.getValue("adjustDivider");
-        } catch(Exception e){
-            adjustDivider = 10.0;
-            logError("Could not find key  `adjustDivider'  in the constants file. Maybe you should add it?");
-            logInfo("Setting adjustDivider to default of " + adjustDivider);
         }
         
         shooterPresetB = GRTConstants.getValue("anglePyramidFrontPreset");
         shooterPresetY = GRTConstants.getValue("anglePyramidRearPreset");
+        shooterDown = GRTConstants.getValue("shooterDown");
         shootingSpeed = GRTConstants.getValue("shootingRPMS");
     }
 }

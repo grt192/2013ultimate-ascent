@@ -14,7 +14,7 @@ import mechanism.Shooter;
  */
 public class ShooterSet extends GRTMacro {
  
-    private final int angle;
+    private final double angle;
     private final double speed;
     private Shooter shooter;
     
@@ -25,7 +25,7 @@ public class ShooterSet extends GRTMacro {
      * @param shooter Shooter object
      * @param timeout Timeout (in ms)
      */
-    public ShooterSet(int angle, double speed, Shooter shooter, int timeout) {
+    public ShooterSet(double angle, double speed, Shooter shooter, int timeout) {
         super("Shooter Angle Macro", timeout);
         this.shooter = shooter;
         this.angle = angle;

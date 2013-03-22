@@ -4,6 +4,7 @@ import actuator.GRTSolenoid;
 import controller.DriveController;
 import controller.MechController;
 import core.GRTConstants;
+import core.GRTMacro;
 import core.GRTMacroController;
 import core.SensorPoller;
 import edu.wpi.first.wpilibj.Compressor;
@@ -234,18 +235,22 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
     
     private void defineAutoMacros() {
         clearAutoControllers();
-        
+       
         autoMode = getAutonomousMode();
 
         Vector macros = new Vector();
         Vector concurrentMacros = new Vector();
 
+        double autoShooterAngle = GRTConstants.getValue("autonomousAngle");
+        double shootingSpeed = GRTConstants.getValue("shootingRPMS");
+        double downAngle = GRTConstants.getValue("shooterDown");
+        
         switch (autoMode) {
             case AUTO_MODE_3_FRISBEE:
                 // Macro version of autonomous
                 macros.addElement(new ShooterSet(0, 0, shooter, 5000));
-                macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                        GRTConstants.getValue("shootingRPMS"), shooter, 5000));
+                macros.addElement(new ShooterSet(autoShooterAngle,
+                        shootingSpeed, shooter, 5000));
                 for (int i = 0; i < 4; i++) {
                     macros.addElement(new Shoot(shooter, 1000));
                 }
@@ -256,15 +261,22 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 addAutonomousController(macroController);
                 break;
             case AUTO_MODE_7_FRISBEE:
+                double autoDriveDistance = GRTConstants.getValue("autoDistance");
+                
+                //lowers pickup
+                GRTMacro lowerPickup = new LowerPickup(ep);
+                macros.addElement(lowerPickup);
+                concurrentMacros.addElement(lowerPickup);
+                
                 //primes shovel, spins up shooter and shoots 4x
-                macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                        GRTConstants.getValue("shootingRPMS"), shooter, 2500));
+                macros.addElement(new ShooterSet(autoShooterAngle,
+                        shootingSpeed, shooter, 2500));
                 for (int i = 0; i < 4; i++) {
                     macros.addElement(new Shoot(shooter, 500));
                 }
 
-                //lowers shooter, starts up EP as starts driving
-                ShooterSet lowerShooter = new ShooterSet(0, 0, shooter, 3000);
+                //lowers shooter and starts up EP as it starts driving
+                ShooterSet lowerShooter = new ShooterSet(0, 0, shooter, 3500);
                 macros.addElement(lowerShooter);
                 concurrentMacros.addElement(lowerShooter);
                 AutoPickup startPickup = new AutoPickup(ep, belts, 300);
@@ -273,20 +285,17 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
 
                 //spins around, drives over frisbees
                 macros.addElement(new MacroTurn(dt, gyro, 180, 2000));
-                macros.addElement(new MacroDrive(dt, 3, 4000));
+                macros.addElement(new MacroDrive(dt, autoDriveDistance, 4000));
 
                 //spins around and drives back, all while preparing shooter
                 ShooterSet prepareSecondVolley =
-                        new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                        GRTConstants.getValue("shootingRPMS"), shooter, 2500);
+                        new ShooterSet(autoShooterAngle,
+                        shootingSpeed, shooter, 3500);
                 macros.addElement(prepareSecondVolley);
                 concurrentMacros.addElement(prepareSecondVolley);
                 macros.addElement(new MacroTurn(dt, gyro, -180, 2000));
-                macros.addElement(new MacroDrive(dt, 3, 4000));
+                macros.addElement(new MacroDrive(dt, autoDriveDistance, 4000));
 
-                //prepares shooter, and shoots 4 more
-                macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                        GRTConstants.getValue("shootingRPMS"), shooter, 3000));
                 for (int i = 0; i < 5; i++) {
                     macros.addElement(new Shoot(shooter, 500));
                 }

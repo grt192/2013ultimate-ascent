@@ -49,12 +49,9 @@ tareAngle,57
 raiserPotRange,300
 maxRaiserAngle,47
 
-autonomousAngle,30
-anglePyramidRearPreset,30
+autonomousAngle,27
+anglePyramidRearPreset,27
 anglePyramidFrontPreset,42
-
-adjustDividerUp,2.0
-adjustDividerDown,-1.0
 
 shooterRaiserP,0.3
 shooterRaiserI,0.0
@@ -87,10 +84,7 @@ pickUpLowerLimit,8
 climberSolenoid,7
 
 ##Autonomous Constants
-autoShooterAngle1,30
-autoAngle1,180
 autoDistance,3
-driveMacro,5
 
 #DriveMacro Constants
 DMP,1.5
