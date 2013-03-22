@@ -36,20 +36,18 @@ import sensor.Potentiometer;
  */
 public class MainRobot extends GRTRobot implements ConstantUpdateListener {
 
-    private static final int AUTO_MODE_DO_NOTHING= -1;
+    private static final int AUTO_MODE_DO_NOTHING = -1;
     private static final int AUTO_MODE_3_FRISBEE = 0;
     private static final int AUTO_MODE_7_FRISBEE = 1;
-    
     private GRTDriveTrain dt;
     private Belts belts;
     private Shooter shooter;
     private ExternalPickup ep;
     private Climber climber;
     private GRTGyro gyro;
-    
     private GRTMacroController macroController;
     private int autoMode = AUTO_MODE_3_FRISBEE; //Default autonomous mode
-    
+
     /**
      * Initializer for the robot. Calls an appropriate initialization function.
      */
@@ -57,12 +55,12 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
 
         System.out.println("Robot being instantiated");
 
-        if (GRTConstants.getValue("consoleOutput") == 0.0){
+        if (GRTConstants.getValue("consoleOutput") == 0.0) {
             GRTLogger.disableLogging();
         }
 
         double robot = GRTConstants.getValue("robot");
-        if (robot == 2013.2){
+        if (robot == 2013.2) {
             System.out.println("Starting up 2013 OmegaBot");
             omegaInit();
         }
@@ -135,7 +133,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         Compressor compressor = new Compressor(getPinID("compressorSwitch"),
                 getPinID("compressorRelay"));
         compressor.start();
-        System.out.println("pressure switch="+compressor.getPressureSwitchValue());
+        System.out.println("pressure switch=" + compressor.getPressureSwitchValue());
 
         //shooter
         Talon shooter1 = new Talon(getPinID("shooter1"));
@@ -198,44 +196,33 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
 
         System.out.println("Start macro creation");
         defineAutoMacros();
-        
+
         GRTConstants.addListener(this);
 
         sp.startPolling();
     }
-    
-    private int getAutonomousMode(){
+
+    private int getAutonomousMode() {
         System.out.print("Auto mode: ");
         //Check the state of the buttons that are on.
-        DriverStation ds = DriverStation.getInstance();
-        try {
-            if (ds.getDigitalIn(1)){
+        switch (getPinID("autoMode")) {
+            case 1:
                 System.out.println("3 frisbee auto");
                 return AUTO_MODE_3_FRISBEE;
-            }
-
-            else if (ds.getDigitalIn(2)){
+            case 2:
                 System.out.println("7 frisbee auto");
                 return AUTO_MODE_7_FRISBEE;
-            }
-            
-            else {
-                System.out.println("0 frisbee auto");
-                return AUTO_MODE_DO_NOTHING;
-            }
-        } catch(Exception e){
-            System.out.println("3 frisbee auto");
-            return AUTO_MODE_3_FRISBEE;   //Return the default 
         }
+        return AUTO_MODE_DO_NOTHING;
     }
 
     private int getPinID(String name) {
         return (int) GRTConstants.getValue(name);
     }
-    
+
     private void defineAutoMacros() {
         clearAutoControllers();
-       
+
         autoMode = getAutonomousMode();
 
         Vector macros = new Vector();
@@ -244,7 +231,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         double autoShooterAngle = GRTConstants.getValue("autonomousAngle");
         double shootingSpeed = GRTConstants.getValue("shootingRPMS");
         double downAngle = GRTConstants.getValue("shooterDown");
-        
+
         switch (autoMode) {
             case AUTO_MODE_3_FRISBEE:
                 // Macro version of autonomous
@@ -262,12 +249,12 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 break;
             case AUTO_MODE_7_FRISBEE:
                 double autoDriveDistance = GRTConstants.getValue("autoDistance");
-                
+
                 //lowers pickup
                 GRTMacro lowerPickup = new LowerPickup(ep);
                 macros.addElement(lowerPickup);
                 concurrentMacros.addElement(lowerPickup);
-                
+
                 //primes shovel, spins up shooter and shoots 4x
                 macros.addElement(new ShooterSet(autoShooterAngle,
                         shootingSpeed, shooter, 2500));

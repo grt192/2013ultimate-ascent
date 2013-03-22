@@ -44,14 +44,19 @@ shooterEncoderA,11
 shooterEncoderB,12
 shooterEncoderPulseDistance,0.016667
 shooterPotentiometer,2
+shooterDown,0
 ##Shooter PID Constants
 tareAngle,57
 raiserPotRange,300
-maxRaiserAngle,47
+maxRaiserAngle,44
 
-autonomousAngle,27
-anglePyramidRearPreset,27
+autonomousAngle,27.7
+cornerAngle,25.4
+anglePyramidRearPreset,27.7
 anglePyramidFrontPreset,42
+
+adjustDividerUp,2.0
+adjustDividerDown,-1.0
 
 shooterRaiserP,0.3
 shooterRaiserI,0.0
@@ -85,6 +90,7 @@ climberSolenoid,7
 
 ##Autonomous Constants
 autoDistance,3
+autoMode,1
 
 #DriveMacro Constants
 DMP,1.5
