@@ -235,7 +235,6 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         switch (autoMode) {
             case AUTO_MODE_3_FRISBEE:
                 // Macro version of autonomous
-                macros.addElement(new ShooterSet(0, 0, shooter, 5000));
                 macros.addElement(new ShooterSet(autoShooterAngle,
                         shootingSpeed, shooter, 5000));
                 for (int i = 0; i < 4; i++) {
