@@ -75,9 +75,8 @@ pickUpLowerSpeed,0.2
 
 ##Belt motor
 belts,6
-shovelLifter,7
 
-##Pickup motors
+#Pickup motors
 rollerMotor,5
 raiserMotor,7
 ##Pickup sensors
@@ -85,7 +84,7 @@ pickUpUpperLimit,7
 pickUpLowerLimit,8
 
 #Climber solenoid
-climberSolenoid,2
+climberSolenoid,7
 
 ##Autonomous Constants
 autoShooterAngle1,30

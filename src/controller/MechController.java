@@ -112,11 +112,9 @@ public class MechController extends EventController implements GRTJoystickListen
                 switch (e.getButtonID()) {
                     case GRTJoystick.KEY_BUTTON_3: 
                         pickerUpper.pickUp();
-                        belts.moveUp();
                         break;
                     case GRTJoystick.KEY_BUTTON_2: 
                         pickerUpper.spitOut();
-                        belts.moveDown();
                         break;
                         
                     case GRTJoystick.KEY_BUTTON_4:

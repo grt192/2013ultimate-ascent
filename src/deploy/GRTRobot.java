@@ -70,4 +70,20 @@ public abstract class GRTRobot extends SimpleRobot {
     public void addTeleopController(EventController c) {
         teleopControllers.addElement(c);
     }
+    
+    public void removeAutonomousController(EventController c) {
+        autoControllers.removeElement(c);
+    }
+    
+    public void removeTeleopController(EventController c) {
+        teleopControllers.removeElement(c);
+    }
+    
+    public void clearAutoControllers() {
+        autoControllers.removeAllElements();
+    }
+    
+    public void clearTeleopControllers() {
+        teleopControllers.removeAllElements();
+    }
 }

@@ -8,10 +8,10 @@ import core.GRTMacroController;
 import core.SensorPoller;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStationEnhancedIO;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
+import event.listeners.ConstantUpdateListener;
 import java.util.Vector;
 import logger.GRTLogger;
 import macro.*;
@@ -33,13 +33,20 @@ import sensor.Potentiometer;
  *
  * @author ajc
  */
-public class MainRobot extends GRTRobot {
+public class MainRobot extends GRTRobot implements ConstantUpdateListener {
 
     private static final int AUTO_MODE_DO_NOTHING= -1;
     private static final int AUTO_MODE_3_FRISBEE = 0;
     private static final int AUTO_MODE_7_FRISBEE = 1;
     
     private GRTDriveTrain dt;
+    private Belts belts;
+    private Shooter shooter;
+    private ExternalPickup ep;
+    private Climber climber;
+    private GRTGyro gyro;
+    
+    private GRTMacroController macroController;
     private int autoMode = AUTO_MODE_3_FRISBEE; //Default autonomous mode
     
     /**
@@ -146,7 +153,7 @@ public class MainRobot extends GRTRobot {
                 getPinID("shooterLowerLimit"),
                 true, "lowerShooterLimit");
 
-        Shooter shooter = new Shooter(shooter1, shooter2, shooterFeeder,
+        shooter = new Shooter(shooter1, shooter2, shooterFeeder,
                 shooterRaiser, shooterEncoder, shooterPot, lowerShooterLimit);
 
         sp.addSensor(shooterEncoder);
@@ -159,7 +166,7 @@ public class MainRobot extends GRTRobot {
 
         Victor beltsMotor = new Victor(getPinID("belts"));
 
-        Belts belts = new Belts(beltsMotor);
+        belts = new Belts(beltsMotor);
 
 
         //PickerUpper
@@ -170,90 +177,29 @@ public class MainRobot extends GRTRobot {
         sp.addSensor(limitUp);
         sp.addSensor(limitDown);
 
-        ExternalPickup youTiao = new ExternalPickup(rollerMotor, raiserMotor, limitUp, limitDown);
+        ep = new ExternalPickup(rollerMotor, raiserMotor, limitUp, limitDown);
 
         //Climber
         GRTSolenoid climberSolenoid = new GRTSolenoid(getPinID("climberSolenoid"));
-        Climber climber = new Climber(climberSolenoid);
+        climber = new Climber(climberSolenoid);
 
         System.out.println("Mechs created");
 
         //Mechcontroller
         MechController mechController = new MechController(leftPrimary, rightPrimary, secondary,
-                shooter, youTiao, climber, belts, dt);
+                shooter, ep, climber, belts, dt);
 
         addTeleopController(mechController);
 
         //Autonomous initializing
-        GRTGyro gyro = new GRTGyro(1, "Turning Gyro");
+        gyro = new GRTGyro(1, "Turning Gyro");
         sp.addSensor(gyro);
 
         System.out.println("Start macro creation");
+        defineAutoMacros();
+        
+        GRTConstants.addListener(this);
 
-        autoMode = getAutonomousMode();
-
-        Vector macros = new Vector();
-        Vector concurrentMacros = new Vector();
-        GRTMacroController macroController;
-
-        switch (autoMode) {
-            case AUTO_MODE_3_FRISBEE:
-                // Macro version of autonomous
-                macros.addElement(new ShooterSet(0, 0, shooter, 5000));
-                macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                        GRTConstants.getValue("shootingRPMS"), shooter, 5000));
-                for (int i = 0; i < 4; i++) {
-                    macros.addElement(new Shoot(shooter, 1000));
-                }
-                //spins down shooter and lowers it prior to teleop
-                macros.addElement(new ShooterSet(0, 0, shooter, 1000));
-
-                macroController = new GRTMacroController(macros);
-                addAutonomousController(macroController);
-                break;
-            case AUTO_MODE_7_FRISBEE:
-                //primes shovel, spins up shooter and shoots 4x
-                macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                        GRTConstants.getValue("shootingRPMS"), shooter, 2500));
-                for (int i = 0; i < 4; i++) {
-                    macros.addElement(new Shoot(shooter, 500));
-                }
-
-                //lowers shooter, starts up EP as starts driving
-                ShooterSet lowerShooter = new ShooterSet(0, 0, shooter, 3000);
-                macros.addElement(lowerShooter);
-                concurrentMacros.addElement(lowerShooter);
-                AutoPickup startPickup = new AutoPickup(youTiao, belts, 300);
-                macros.addElement(startPickup);
-                concurrentMacros.addElement(startPickup);
-
-                //spins around, drives over frisbees
-                macros.addElement(new MacroTurn(dt, gyro, 180, 2000));
-                macros.addElement(new MacroDrive(dt, 3, 4000));
-
-                //spins around and drives back, all while preparing shooter
-                ShooterSet prepareSecondVolley =
-                        new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                        GRTConstants.getValue("shootingRPMS"), shooter, 2500);
-                macros.addElement(prepareSecondVolley);
-                concurrentMacros.addElement(prepareSecondVolley);
-                macros.addElement(new MacroTurn(dt, gyro, -180, 2000));
-                macros.addElement(new MacroDrive(dt, 3, 4000));
-
-                //prepares shooter, and shoots 4 more
-                macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
-                        GRTConstants.getValue("shootingRPMS"), shooter, 3000));
-                for (int i = 0; i < 5; i++) {
-                    macros.addElement(new Shoot(shooter, 500));
-                }
-                //spins down shooter and lowers it prior to teleop
-                macros.addElement(new ShooterSet(0, 0, shooter, 1000));
-
-                macroController = new GRTMacroController(macros, concurrentMacros);
-                addAutonomousController(macroController);
-
-                break;
-        }
         sp.startPolling();
     }
     
@@ -284,5 +230,77 @@ public class MainRobot extends GRTRobot {
 
     private int getPinID(String name) {
         return (int) GRTConstants.getValue(name);
+    }
+    
+    private void defineAutoMacros() {
+        clearAutoControllers();
+        
+        autoMode = getAutonomousMode();
+
+        Vector macros = new Vector();
+        Vector concurrentMacros = new Vector();
+
+        switch (autoMode) {
+            case AUTO_MODE_3_FRISBEE:
+                // Macro version of autonomous
+                macros.addElement(new ShooterSet(0, 0, shooter, 5000));
+                macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
+                        GRTConstants.getValue("shootingRPMS"), shooter, 5000));
+                for (int i = 0; i < 4; i++) {
+                    macros.addElement(new Shoot(shooter, 1000));
+                }
+                //spins down shooter and lowers it prior to teleop
+                macros.addElement(new ShooterSet(0, 0, shooter, 1000));
+
+                macroController = new GRTMacroController(macros);
+                addAutonomousController(macroController);
+                break;
+            case AUTO_MODE_7_FRISBEE:
+                //primes shovel, spins up shooter and shoots 4x
+                macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
+                        GRTConstants.getValue("shootingRPMS"), shooter, 2500));
+                for (int i = 0; i < 4; i++) {
+                    macros.addElement(new Shoot(shooter, 500));
+                }
+
+                //lowers shooter, starts up EP as starts driving
+                ShooterSet lowerShooter = new ShooterSet(0, 0, shooter, 3000);
+                macros.addElement(lowerShooter);
+                concurrentMacros.addElement(lowerShooter);
+                AutoPickup startPickup = new AutoPickup(ep, belts, 300);
+                macros.addElement(startPickup);
+                concurrentMacros.addElement(startPickup);
+
+                //spins around, drives over frisbees
+                macros.addElement(new MacroTurn(dt, gyro, 180, 2000));
+                macros.addElement(new MacroDrive(dt, 3, 4000));
+
+                //spins around and drives back, all while preparing shooter
+                ShooterSet prepareSecondVolley =
+                        new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
+                        GRTConstants.getValue("shootingRPMS"), shooter, 2500);
+                macros.addElement(prepareSecondVolley);
+                concurrentMacros.addElement(prepareSecondVolley);
+                macros.addElement(new MacroTurn(dt, gyro, -180, 2000));
+                macros.addElement(new MacroDrive(dt, 3, 4000));
+
+                //prepares shooter, and shoots 4 more
+                macros.addElement(new ShooterSet((int) GRTConstants.getValue("autonomousAngle"),
+                        GRTConstants.getValue("shootingRPMS"), shooter, 3000));
+                for (int i = 0; i < 5; i++) {
+                    macros.addElement(new Shoot(shooter, 500));
+                }
+                //spins down shooter and lowers it prior to teleop
+                macros.addElement(new ShooterSet(0, 0, shooter, 1000));
+
+                macroController = new GRTMacroController(macros, concurrentMacros);
+                addAutonomousController(macroController);
+
+                break;
+        }
+    }
+
+    public void updateConstants() {
+        defineAutoMacros();
     }
 }
