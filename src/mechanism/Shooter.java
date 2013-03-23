@@ -277,6 +277,16 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         POT_RANGE = GRTConstants.getValue("raiserPotRange");
         MAX_ANGLE = GRTConstants.getValue("maxRaiserAngle");
         
+        if (flywheelController != null) {
+            flywheelController.disable();
+            flywheelController.free();
+        }
+        
+        if (raiserController != null) {
+            raiserController.disable();
+            raiserController.free();
+        }
+        
         flywheelController = new PIDController(FLYWHEEL_P, FLYWHEEL_I, FLYWHEEL_D,
                 flywheelSource, flywheelOutput);
         flywheelController.setOutputRange(0, 1);
