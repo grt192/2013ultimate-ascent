@@ -12,6 +12,10 @@ package event.listeners;
  */
 public interface ConstantUpdateListener {
     
+    /**
+     * Called when GRTConstants is updated, this class will reload constants
+     * as necessary.
+     */
     public void updateConstants();
     
 }

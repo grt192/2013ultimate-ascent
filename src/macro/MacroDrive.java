@@ -154,7 +154,7 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
         straightController.free();
     }
 
-    public void updateConstants() {
+    public final void updateConstants() {
         DTP = GRTConstants.getValue("DMP");
         DTI = GRTConstants.getValue("DMI");
         DTD = GRTConstants.getValue("DMD");

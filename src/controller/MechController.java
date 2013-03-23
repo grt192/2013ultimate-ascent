@@ -45,6 +45,9 @@ public class MechController extends EventController implements GRTJoystickListen
     private double turningDivider;
     private double storedAngle;
     
+    private int padPosition = 0; //-1 for left, 1 for right, 0 for center
+    private double DEG_INCREMENT = 0.75;
+    
     public MechController(GRTJoystick leftJoy, GRTJoystick rightJoy,
             GRTXboxJoystick secondary,
             Shooter shooter, ExternalPickup pickerUpper,
@@ -152,7 +155,6 @@ public class MechController extends EventController implements GRTJoystickListen
                     case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
                         shooter.setSpeed(shootingSpeed);
                         break;
-
                     case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
                         shooter.shoot();
                         System.out.println(shooter.getShooterAngle());
@@ -240,6 +242,10 @@ public class MechController extends EventController implements GRTJoystickListen
     }
 
     public void padMoved(XboxJoystickEvent e) {
+        int oldPadPosition = padPosition;
+        if (oldPadPosition != (padPosition = e.getData() > 0.5 ? 1 : (e.getData() < -0.5 ? -1 : 0))) {
+            shooter.incrementAngle(padPosition * DEG_INCREMENT);
+        }
     }
 
     public void triggerMoved(XboxJoystickEvent e) {
@@ -262,7 +268,7 @@ public class MechController extends EventController implements GRTJoystickListen
         System.out.println("potentiometer value changed: " + e.getData());
     }
 
-    public void updateConstants() {
+    public final void updateConstants() {
         try {
             turningDivider = GRTConstants.getValue("turningDivider");
         } catch(Exception e){

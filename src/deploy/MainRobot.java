@@ -241,7 +241,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                     macros.addElement(new Shoot(shooter, 1000));
                 }
                 //spins down shooter and lowers it prior to teleop
-                macros.addElement(new ShooterSet(0, 0, shooter, 1000));
+                macros.addElement(new ShooterSet(downAngle, 0, shooter, 1000));
 
                 macroController = new GRTMacroController(macros);
                 addAutonomousController(macroController);
@@ -262,7 +262,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 }
 
                 //lowers shooter and starts up EP as it starts driving
-                ShooterSet lowerShooter = new ShooterSet(0, 0, shooter, 3500);
+                ShooterSet lowerShooter = new ShooterSet(downAngle, 0, shooter, 3500);
                 macros.addElement(lowerShooter);
                 concurrentMacros.addElement(lowerShooter);
                 AutoPickup startPickup = new AutoPickup(ep, belts, 300);
@@ -286,7 +286,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                     macros.addElement(new Shoot(shooter, 500));
                 }
                 //spins down shooter and lowers it prior to teleop
-                macros.addElement(new ShooterSet(0, 0, shooter, 1000));
+                macros.addElement(new ShooterSet(downAngle, 0, shooter, 1000));
 
                 macroController = new GRTMacroController(macros, concurrentMacros);
                 addAutonomousController(macroController);
@@ -295,7 +295,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         }
     }
 
-    public void updateConstants() {
+    public final void updateConstants() {
         defineAutoMacros();
     }
 }

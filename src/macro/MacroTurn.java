@@ -86,7 +86,7 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
         controller.enable();
     }
 
-    public void updateConstants() {
+    public final void updateConstants() {
         P = GRTConstants.getValue("TMP");
         I = GRTConstants.getValue("TMI");
         D = GRTConstants.getValue("TMD");

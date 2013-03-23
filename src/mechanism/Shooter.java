@@ -196,6 +196,16 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         raiserController.setSetpoint(angle);
         raiserController.enable();
     }
+    
+    /**
+     * Increments the shooter angle.
+     * Raises shooter if delta > 0, lowers if delta < 0
+     * 
+     * @param delta desired change in shooter angle
+     */
+    public void incrementAngle(double delta) {
+        setAngle(raiserController.getSetpoint() + delta);
+    }
 
     /**
      * Extends luna.
@@ -254,7 +264,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         }
     }
 
-    public void updateConstants() {
+    public final void updateConstants() {
         RAISER_P = GRTConstants.getValue("shooterRaiserP");
         RAISER_I = GRTConstants.getValue("shooterRaiserI");
         RAISER_D = GRTConstants.getValue("shooterRaiserD");
