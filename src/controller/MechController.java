@@ -2,6 +2,7 @@ package controller;
 
 import core.EventController;
 import core.GRTConstants;
+import edu.wpi.first.wpilibj.Timer;
 import event.events.ButtonEvent;
 import event.events.JoystickEvent;
 import event.events.PotentiometerEvent;
@@ -47,6 +48,10 @@ public class MechController extends EventController implements GRTJoystickListen
     
     private int padPosition = 0; //-1 for left, 1 for right, 0 for center
     private double DEG_INCREMENT = 0.75;
+    
+    private boolean canShoot = true;
+    
+    private double shotDelay = 0.5;
     
     public MechController(GRTJoystick leftJoy, GRTJoystick rightJoy,
             GRTXboxJoystick secondary,
@@ -156,8 +161,10 @@ public class MechController extends EventController implements GRTJoystickListen
                         shooter.setSpeed(shootingSpeed);
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
-                        shooter.shoot();
-                        System.out.println(shooter.getShooterAngle());
+                        if (canShoot) {
+                            shooter.shoot();
+                            new Thread(shooterTimer).start();
+                        }
                         break;
                     case GRTXboxJoystick.KEY_BUTTON_BACK:
                         logInfo("Storing angle.");
@@ -280,4 +287,13 @@ public class MechController extends EventController implements GRTJoystickListen
         shooterDown = GRTConstants.getValue("shooterDown");
         shootingSpeed = GRTConstants.getValue("shootingRPMS");
     }
+    
+    private Runnable shooterTimer = new Runnable() {
+
+        public void run() {
+            canShoot = false;
+            Timer.delay(shotDelay);
+            canShoot = true;
+        }
+    };
 }
