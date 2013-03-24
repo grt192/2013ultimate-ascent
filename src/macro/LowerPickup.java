@@ -28,7 +28,7 @@ public class LowerPickup extends GRTMacro {
         ep.lower();
         Timer.delay(0.4);
         ep.stopRaiser();
-        
+        hasCompletedExecution = true;
     }
 
     public void die() {

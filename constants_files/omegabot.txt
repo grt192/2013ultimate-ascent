@@ -50,9 +50,9 @@ tareAngle,57
 raiserPotRange,300
 maxRaiserAngle,44
 
-autonomousAngle,27.8
+autonomousAngle,28.3
 cornerAngle,25.4
-anglePyramidRearPreset,27.8
+anglePyramidRearPreset,28.3
 anglePyramidFrontPreset,42
 
 adjustDividerUp,2.0
