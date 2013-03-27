@@ -238,7 +238,9 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 // Macro version of autonomous
                 macros.addElement(new ShooterSet(autoShooterAngle,
                         shootingSpeed, shooter, 5000));
-                for (int i = 0; i < 3; i++) {
+                //Shoot our 3 frisbees. 
+                //shoots 4 times in case hopper gets jammed
+                for (int i = 0; i < 4; i++) {
                     macros.addElement(new Shoot(shooter, 1000));
                 }
                 //spins down shooter and lowers it prior to teleop
@@ -298,7 +300,8 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 macros.addElement(new ShooterSet(autoShooterAngle,
                         shootingSpeed, shooter, 5000));
                 //Shoot our 3 frisbees.
-                for (int i = 0; i < 3; i++) {
+                //shoots 4 times in case hopper gets jammed
+                for (int i = 0; i < 4; i++) {
                     macros.addElement(new Shoot(shooter, 1000));
                 }
                 
