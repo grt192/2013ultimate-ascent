@@ -59,7 +59,8 @@ public class GRTVisionTracker extends Sensor {
 
     private int X_IMAGE_RES = 320;          //X Image resolution in pixels, should be 160, 320 or 640. Defaults to 320
     //    private final double VIEW_ANGLE = 43.5;       //Axis 206 camera
-    private final double VIEW_ANGLE = 47;       //Axis M1011 camera
+    private final double HORIZONTAL_VIEW_ANGLE = 45.76;       //Axis M1011 camera
+    private final double VERTICAL_VIEW_ANGLE = 34.64;       //Axis M1011 camera
 //horz: 47 ver: 35
     private CriteriaCollection cc;
 
@@ -288,7 +289,7 @@ public class GRTVisionTracker extends Sensor {
          //changed by Yonatan Oren//
         //return X_IMAGE_RES * targetHeight / (height * 12 * 2 * Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
          //return 240.0 * targetWidth / (width * Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
-         return 360.0 * targetHeight / (height * Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
+         return 360.0 * targetHeight / (height * Math.tan(HORIZONTAL_VIEW_ANGLE*Math.PI/(180*2)));
          //4800 / 62 * tan(
     }
 
