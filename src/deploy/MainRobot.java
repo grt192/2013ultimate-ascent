@@ -39,6 +39,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
     private static final int AUTO_MODE_DO_NOTHING = -1;
     private static final int AUTO_MODE_3_FRISBEE = 0;
     private static final int AUTO_MODE_7_FRISBEE = 1;
+    private static final int AUTO_MODE_DRIVE_CENTER_LEFT = 2;
     private GRTDriveTrain dt;
     private Belts belts;
     private Shooter shooter;
@@ -237,7 +238,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 // Macro version of autonomous
                 macros.addElement(new ShooterSet(autoShooterAngle,
                         shootingSpeed, shooter, 5000));
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < 3; i++) {
                     macros.addElement(new Shoot(shooter, 1000));
                 }
                 //spins down shooter and lowers it prior to teleop
@@ -292,6 +293,20 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 addAutonomousController(macroController);
 
                 break;
+            case AUTO_MODE_DRIVE_CENTER_LEFT:
+                //Set the shooter angle
+                macros.addElement(new ShooterSet(autoShooterAngle,
+                        shootingSpeed, shooter, 5000));
+                //Shoot our 3 frisbees.
+                for (int i = 0; i < 3; i++) {
+                    macros.addElement(new Shoot(shooter, 1000));
+                }
+                
+                macros.addElement(new ShooterSet(downAngle, 0, shooter, 1000)); //spins down shooter and lowers it prior to teleop
+                macros.addElement(new MacroDrive(dt, 2.54, 5000));      //Drive towards the driver 2.54m (100 inches. almost to the other side of the lines).
+                macros.addElement(new MacroTurn(dt, gyro, 90, 3000));   //Turn to the right (the driver's left).
+                macros.addElement((new MacroDrive(dt, 1.00, 2000)));    //Drive towards the leftmost edge of the field.
+                GRTMacroController mc = new GRTMacroController(macros);
         }
     }
 
