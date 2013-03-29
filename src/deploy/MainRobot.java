@@ -36,10 +36,14 @@ import sensor.Potentiometer;
  */
 public class MainRobot extends GRTRobot implements ConstantUpdateListener {
 
+    //Autonomous mode constants
     private static final int AUTO_MODE_DO_NOTHING = -1;
     private static final int AUTO_MODE_3_FRISBEE = 0;
-    private static final int AUTO_MODE_7_FRISBEE = 1;
-    private static final int AUTO_MODE_DRIVE_CENTER_LEFT = 2;
+    private static final int AUTO_MODE_5_FRISBEE = 1;
+    private static final int AUTO_MODE_7_FRISBEE = 2;
+    private static final int AUTO_MODE_DRIVE_CENTER_LEFT = 3;
+    
+    //Private i-vars.
     private GRTDriveTrain dt;
     private Belts belts;
     private Shooter shooter;
@@ -209,24 +213,34 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         System.out.print("Auto mode: ");
         //Check the state of the buttons that are on.
         switch (getPinID("autoMode")) {
-            case 1:
+            case AUTO_MODE_3_FRISBEE:
                 System.out.println("3 frisbee auto");
                 return AUTO_MODE_3_FRISBEE;
-            case 2:
-                System.out.println("7 frisbee auto");
-                return AUTO_MODE_7_FRISBEE;
+            case AUTO_MODE_5_FRISBEE:
+                System.out.println("5 frisbee auto");
+                return AUTO_MODE_5_FRISBEE;
+            case AUTO_MODE_7_FRISBEE:
+                System.out.println("7 Frisbee auto");
+                return AUTO_MODE_DRIVE_CENTER_LEFT;
+            default:
+                //We do nothing
+                System.out.println("Auto Strategy: Do nothing");
+                return AUTO_MODE_DO_NOTHING;
         }
-        return AUTO_MODE_DO_NOTHING;
     }
 
     private int getPinID(String name) {
         return (int) GRTConstants.getValue(name);
     }
 
+    /**
+     * Lays out definitions of each auto macro routine.
+     * Based on the type of autonomous mode
+     */
     private void defineAutoMacros() {
         clearAutoControllers();
 
-        autoMode = getAutonomousMode();
+        autoMode = getAutonomousMode(); //Get our autonomous mode
 
         Vector macros = new Vector();
         Vector concurrentMacros = new Vector();
@@ -235,7 +249,15 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         double shootingSpeed = GRTConstants.getValue("shootingRPMS");
         double downAngle = GRTConstants.getValue("shooterDown");
 
+        GRTLogger.logInfo("autoMode = " + autoMode);
+        GRTLogger.logInfo("autoMode = " + autoMode);
+        GRTLogger.logInfo("autoMode = " + autoMode);
         switch (autoMode) {
+            case 10:
+                GRTLogger.logInfo("Straight driving stuff");
+                macros.addElement(new MacroDrive(dt, 3, 3000));
+                macros.addElement(new MacroDrive(dt, -3, 3000));
+                break;
             case AUTO_MODE_3_FRISBEE:
                 // Macro version of autonomous
                 macros.addElement(new ShooterSet(autoShooterAngle,
@@ -247,9 +269,6 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 }
                 //spins down shooter and lowers it prior to teleop
                 macros.addElement(new ShooterSet(downAngle, 0, shooter, 1000));
-
-                macroController = new GRTMacroController(macros);
-                addAutonomousController(macroController);
                 break;
             case AUTO_MODE_7_FRISBEE:
                 double autoDriveDistance = GRTConstants.getValue("autoDistance");
@@ -275,6 +294,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 concurrentMacros.addElement(startPickup);
 
                 //spins around, drives over frisbees
+                System.out.println("180 turn");
                 macros.addElement(new MacroTurn(dt, gyro, 180, 2000));
                 macros.addElement(new MacroDrive(dt, autoDriveDistance, 4000));
 
@@ -292,11 +312,50 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 }
                 //spins down shooter and lowers it prior to teleop
                 macros.addElement(new ShooterSet(downAngle, 0, shooter, 1000));
-
-                macroController = new GRTMacroController(macros, concurrentMacros);
-                addAutonomousController(macroController);
-
                 break;
+            case AUTO_MODE_5_FRISBEE:    
+                double autoDistance = 1.27;
+                //lowers pickup
+                GRTMacro lower = new LowerPickup(ep);
+                macros.addElement(lower);
+                concurrentMacros.addElement(lower);
+
+                //primes shovel, spins up shooter and shoots 4x
+                macros.addElement(new ShooterSet(autoShooterAngle,
+                        shootingSpeed, shooter, 2500));
+                for (int i = 0; i < 4; i++) {
+                    macros.addElement(new Shoot(shooter, 500));
+                }
+
+                //lowers shooter and starts up EP as it starts driving
+                ShooterSet lShooter = new ShooterSet(downAngle, 0, shooter, 3500);
+                macros.addElement(lShooter);
+                concurrentMacros.addElement(lShooter);
+                AutoPickup pickup = new AutoPickup(ep, belts, 300);
+                macros.addElement(pickup);
+                concurrentMacros.addElement(pickup);
+
+                //spins around, drives over frisbees
+                System.out.println("180 turn");
+                macros.addElement(new MacroTurn(dt, gyro, 180, 2000));
+                macros.addElement(new MacroDrive(dt, autoDistance, 4000));
+
+                //spins around and drives back, all while preparing shooter
+                ShooterSet prepareVolley =
+                        new ShooterSet(autoShooterAngle,
+                        shootingSpeed, shooter, 3500);
+                macros.addElement(prepareVolley);
+                concurrentMacros.addElement(prepareVolley);
+                macros.addElement(new MacroTurn(dt, gyro, -180, 2000));
+                macros.addElement(new MacroDrive(dt, autoDistance, 4000));
+
+                for (int i = 0; i < 5; i++) {
+                    macros.addElement(new Shoot(shooter, 500));
+                }
+                //spins down shooter and lowers it prior to teleop
+                macros.addElement(new ShooterSet(downAngle, 0, shooter, 1000));
+                break;
+                
             case AUTO_MODE_DRIVE_CENTER_LEFT:
                 //Set the shooter angle
                 macros.addElement(new ShooterSet(autoShooterAngle,
@@ -311,8 +370,11 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 macros.addElement(new MacroDrive(dt, 2.54, 5000));      //Drive towards the driver 2.54m (100 inches. almost to the other side of the lines).
                 macros.addElement(new MacroTurn(dt, gyro, 90, 3000));   //Turn to the right (the driver's left).
                 macros.addElement((new MacroDrive(dt, 1.00, 2000)));    //Drive towards the leftmost edge of the field.
-                GRTMacroController mc = new GRTMacroController(macros);
+                break;
         }
+        
+        macroController = new GRTMacroController(macros);
+        addAutonomousController(macroController);
     }
 
     public final void updateConstants() {

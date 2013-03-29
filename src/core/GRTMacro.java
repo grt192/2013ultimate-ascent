@@ -17,7 +17,7 @@ import java.util.Vector;
  */
 public abstract class GRTMacro extends GRTLoggedProcess {
 
-    protected boolean hasCompletedExecution = true;
+    protected boolean hasCompletedExecution = false;
     protected boolean hasTimedOut = false;
     protected boolean hasInitialized = false;
     private Vector macroListeners;
@@ -66,13 +66,17 @@ public abstract class GRTMacro extends GRTLoggedProcess {
         if (!hasStarted) {
             hasStarted = true;
 
+            logInfo("Initializing Macro...");
             initialize();
+            hasInitialized = true;
+            logInfo("Finished Initializing Macro...");
             notifyListeners(NOTIFY_INITIALIZE);
             this.startTime = System.currentTimeMillis();
 
             while (!hasCompletedExecution && !hasTimedOut) {
                 if ((System.currentTimeMillis() - startTime) > timeout) {
                     hasTimedOut = true;
+                    hasCompletedExecution = true;
                     notifyListeners(NOTIFY_TIMEDOUT);
                     break;
                 }
@@ -85,7 +89,9 @@ public abstract class GRTMacro extends GRTLoggedProcess {
                     ex.printStackTrace();
                 }
             }
+            logInfo("Killing Macro...");
             die();
+            logInfo("Finished Killing Macro...");
             notifyListeners(NOTIFY_COMPLETED);
         }
     }
