@@ -80,6 +80,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
     private void omegaInit() {
 
         SensorPoller sp = new SensorPoller(10);     //Thread that polls all sensors every 10ms.
+        SensorPoller encp = new SensorPoller(50);   //Thread that polls encoders less often, to make speed readings more consistent
 
         GRTJoystick leftPrimary = new GRTJoystick(1, "left primary joy");
         GRTJoystick rightPrimary = new GRTJoystick(2, "right primary joy");
@@ -113,8 +114,8 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         GRTEncoder rightEnc = new GRTEncoder(getPinID("encoderRightA"),
                 getPinID("encoderRightB"),
                 dtDistancePerPulse, false, "rightEnc");
-        sp.addSensor(leftEnc);
-        sp.addSensor(rightEnc);
+        encp.addSensor(leftEnc);
+        encp.addSensor(rightEnc);
 
         dt = new GRTDriveTrain(leftDT1, leftDT2, rightDT1, rightDT2,
                 leftShifter, rightShifter,
@@ -156,7 +157,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         shooter = new Shooter(shooter1, shooter2, shooterFeeder,
                 shooterRaiser, shooterEncoder, shooterPot, lowerShooterLimit);
 
-        sp.addSensor(shooterEncoder);
+        encp.addSensor(shooterEncoder);
         sp.addSensor(shooterPot);
 
         //Belts
@@ -201,6 +202,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         GRTConstants.addListener(this);
 
         sp.startPolling();
+        encp.startPolling();
     }
 
     private int getAutonomousMode() {
