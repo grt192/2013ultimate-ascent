@@ -1,0 +1,25 @@
+##shooter raiser + flywheel
+shooterRaiserP,0.3
+shooterRaiserI,0.02
+shooterRaiserD,0.2
+raiserTolerance,2.0
+flywheelP,0.0001
+flywheelI,0.0001
+flywheelD,0.0
+flywheelTolerance,5.0
+
+#DriveMacro Constants
+DMP,1.5
+DMI,0.0
+DMD,3.0
+DMCP,10
+DMCI,5
+DMCD,0.0
+DMTol,0.1
+DMMax,0.7
+
+#TurnMacro Constants
+TMP,0.008
+TMI,0.00
+TMD,0.02
+TMTol,0.5
