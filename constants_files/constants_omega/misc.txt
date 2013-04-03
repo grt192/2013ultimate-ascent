@@ -1,0 +1,7 @@
+robot,2013.2
+
+consoleOutput,0
+fileLogging,0
+
+adjustDividerUp,2.0
+adjustDividerDown,-1.0

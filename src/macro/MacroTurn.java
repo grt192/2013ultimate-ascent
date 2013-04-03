@@ -30,15 +30,11 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
     
     private PIDSource pidSource = new PIDSource() {
         public double pidGet() {
-            logInfo("Setpoint: " + targetAngle + " current angle: " + gyro.getAngle());
             return gyro.getAngle();
         }
     };
     private PIDOutput pidOutput = new PIDOutput() {
         public void pidWrite(double output) {
-            logInfo("Drive left: " + output + " drive right: " + -output);
-            System.out.println(turnAngle + "\t" + (gyro.getAngle() - startAngle) + "\t" + output);
-
             dt.setMotorSpeeds(output, -output);
         }
     };
