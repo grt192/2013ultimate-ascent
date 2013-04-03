@@ -193,7 +193,6 @@ public class MechController extends EventController implements GRTJoystickListen
                 case GRTJoystick.KEY_BUTTON_3:
                 case GRTJoystick.KEY_BUTTON_2: 
                     pickerUpper.stopRoller();
-                    belts.stop();
                     break;
                 case GRTJoystick.KEY_BUTTON_4:
                 case GRTJoystick.KEY_BUTTON_5:
