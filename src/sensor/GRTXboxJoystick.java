@@ -44,6 +44,8 @@ public class GRTXboxJoystick extends Sensor {
     private final Joystick joystick;
     private final Vector buttonListeners;
     private final Vector joystickListeners;
+    
+    private static final double DEAD_ZONE = 0.07;
 
     public GRTXboxJoystick(int channel, String name) {
         super(name, NUM_DATA);
@@ -58,13 +60,26 @@ public class GRTXboxJoystick extends Sensor {
             //if we measure true, this indicates pressed state
             setState(i, joystick.getRawButton(i + 1) ? PRESSED : RELEASED);
         }
-        setState(KEY_LEFT_X, joystick.getX());
-        setState(KEY_LEFT_Y, joystick.getY());
-        setState(KEY_RIGHT_X, joystick.getRawAxis(4));
-        setState(KEY_RIGHT_Y, joystick.getRawAxis(5));
+        
+        setState(KEY_LEFT_X, calcDeadZone(joystick.getX()));
+        setState(KEY_LEFT_Y, calcDeadZone(joystick.getY()));
+        setState(KEY_RIGHT_X, calcDeadZone(joystick.getRawAxis(4)));
+        setState(KEY_RIGHT_Y, calcDeadZone(joystick.getRawAxis(5)));
         setState(KEY_JOYSTICK_ANGLE, joystick.getDirectionRadians());
         setState(KEY_TRIGGER, joystick.getZ());
         setState(KEY_PAD, joystick.getRawAxis(6));
+    }
+    
+    private double calcDeadZone(double y) {
+        boolean negative = y < 0;
+        y = Math.abs(y);
+        if (y <= DEAD_ZONE){
+            y = 0.0;
+        } else {
+            y = (y - DEAD_ZONE) / (1 - DEAD_ZONE);
+        }
+        
+        return negative ? -y : y;
     }
 
     protected void notifyListeners(int id, double newDatum) {

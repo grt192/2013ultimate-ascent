@@ -59,6 +59,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
      */
     private double POT_RANGE;
     private double MAX_ANGLE;
+    private double MIN_ANGLE;
 
     /**
      * Creates a new shooter.
@@ -148,9 +149,9 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         logInfo("adjusting shooter by " + velocity);
         double currentAngle = getShooterAngle();
         if ((velocity > 0 && currentAngle <= MAX_ANGLE)
-                || (velocity < 0 && currentAngle >= 0)
+                || (velocity < 0 && currentAngle >= MIN_ANGLE)
                 || (velocity == 0)) {
-            raiser.set(velocity);
+            raiser.set(-velocity);
         }
     }
 
@@ -187,8 +188,8 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
      */
     public void setAngle(double angle) {
         logInfo("Setting Angle to " + angle);
-        if (angle < 0) {
-            angle = 0;
+        if (angle < MIN_ANGLE) {
+            angle = MIN_ANGLE;
         } else if (angle > MAX_ANGLE) {
             angle = MAX_ANGLE;
         }
@@ -232,8 +233,8 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
 //        System.out.println(getShooterAngle());
         lcd.println(DriverStationLCD.Line.kUser1, 1, Double.toString(getShooterAngle()) + " ");
         lcd.updateLCD();
-        double currentSpeed = raiser.get();
-        if ((getShooterAngle() <= 0 && currentSpeed < 0)
+        double currentSpeed = -raiser.get();
+        if ((getShooterAngle() <= MIN_ANGLE && currentSpeed < 0)
                 || (getShooterAngle() >= MAX_ANGLE && currentSpeed > 0)) {
             raiser.set(0);
         }
@@ -258,7 +259,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
     public void switchStateChanged(SwitchEvent e) {
         lowerSwitchPressed = e.getState();
         System.out.println("Limit switch state: " + e.getState());
-        if (lowerSwitchPressed && raiser.get() < 0) {
+        if (lowerSwitchPressed && raiser.get() > 0) {
             raiser.set(0);
             System.out.println("stopping due to limitswitch");
         }
@@ -276,6 +277,7 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         tareAngle = GRTConstants.getValue("tareAngle");
         POT_RANGE = GRTConstants.getValue("raiserPotRange");
         MAX_ANGLE = GRTConstants.getValue("maxRaiserAngle");
+        MIN_ANGLE = GRTConstants.getValue("minRaiserAngle");
         
         if (flywheelController != null) {
             flywheelController.disable();

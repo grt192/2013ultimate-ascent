@@ -1,0 +1,30 @@
+##Autonomous Constants
+autoMode,1
+
+##3 frisbee auto
+autoDistance,3
+
+##5 Frisbee auto
+auto5Distance, 1.80
+backupDistance, 0.50
+headingAngle, 160.0
+
+##Centerline auto
+#initial x and y position
+CenterlineInitialX,0
+CenterlineInitialY,3
+#Initial heading
+CenterlineStartingAngle, 180.0
+
+#Absolute heading to center line
+centerlineDriveAngle, 225
+
+#Distance from pyramid to center line
+driveToCenter, 5.75
+
+#Absolute angle of the center line. Should always be 90.0
+centerPickupAngle, 90.0
+
+#How far along the line we want to drive. Prop. to number of frisbees to pickup
+#usually, should be sligthly more than halfway across the field
+pickupFrisbeesDriveDistance, 4.2

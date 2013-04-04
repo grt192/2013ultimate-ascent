@@ -12,7 +12,7 @@ shootingRPMS,50000
 tareAngle,57
 raiserPotRange,300
 maxRaiserAngle,45
-
+minRaiserAngle,15
 #Raise/lower speed
 pickUpRaiseSpeed,-0.5
 pickUpLowerSpeed,0.2

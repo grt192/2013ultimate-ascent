@@ -3,3 +3,4 @@ shooterDown,0
 cornerAngle,25.4
 anglePyramidRearPreset,28.3
 anglePyramidFrontPreset,42
+anglePyramidCorner, 23.0

@@ -1,6 +1,0 @@
-file:///constants_omega/auto.txt
-file:///constants_omega/mechconstants.txt
-file:///constants_omega/misc.txt
-file:///constants_omega/pid.txt
-file:///constants_omega/pins.txt
-file:///constants_omega/presets.txt

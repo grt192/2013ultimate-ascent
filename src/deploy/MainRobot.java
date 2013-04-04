@@ -1,8 +1,10 @@
 package deploy;
 
+import controller.auto.ThreeFrisbeeAuto;
 import actuator.GRTSolenoid;
 import controller.DriveController;
 import controller.MechController;
+import controller.auto.FiveFrisbeeAuto;
 import core.GRTConstants;
 import core.GRTMacro;
 import core.GRTMacroController;
@@ -224,7 +226,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 return AUTO_MODE_DRIVE_CENTER_LEFT;
             default:
                 //We do nothing
-                System.out.println("Auto Strategy: Do nothing");
+                System.out.println("Auto Strategy: Do nothing. Yep.");
                 return AUTO_MODE_DO_NOTHING;
         }
     }
@@ -244,59 +246,16 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
 
         Vector macros = new Vector();
 
-        double autoShooterAngle = GRTConstants.getValue("autonomousAngle");
-        double shootingSpeed = GRTConstants.getValue("shootingRPMS");
-        double downAngle = GRTConstants.getValue("shooterDown");
 
         GRTLogger.logInfo("autoMode = " + autoMode);
         GRTLogger.logInfo("autoMode = " + autoMode);
         GRTLogger.logInfo("autoMode = " + autoMode);
         switch (autoMode) {
             
+            case AUTO_MODE_3_FRISBEE:
+                macroController = new ThreeFrisbeeAuto(shooter);
             case AUTO_MODE_5_FRISBEE:
-                /**
-                 * Okay, five frisbee. Starting in the back right corner of the
-                 * pyramid, we first start by firing our 2 starting frisbees.
-                 */
-                System.out.println("30 Point Autonomous Activated.");
-//                double autoDriveDistance = GRTConstants.getValue(10);
-                double autoDriveDistance = 0.50;    //Drive angled for 1.80m to pickup the two frisbees centered under the pyramid.
-
-                //lowers pickup
-                GRTMacro lowerPickup = new LowerPickup(ep);
-                macros.addElement(lowerPickup);
-//                concurrentMacros.addElement(lowerPickup);
-
-                //Sets up shooter angle and flywheel speed
-                System.out.println("Setting shooter up to shoot ");
-                macros.addElement(new ShooterSet(autoShooterAngle, shootingSpeed, shooter, 2500));
-                
-                //Shoot our 3 frisbees (4 shots in case of a misfire)
-                for (int i = 0; i < 4; i++) {
-                    System.out.println("\tShooting a frisbee!");
-                    macros.addElement(new Shoot(shooter, 500));
-                }
-
-                //lowers shooter and starts up EP as it starts driving
-                ShooterSet lowerShooter = new ShooterSet(downAngle, 0, shooter, 3500);
-                macros.addElement(lowerShooter);
-//                concurrentMacros.addElement(lowerShooter);
-                AutoPickup startPickup = new AutoPickup(ep, belts, 300);
-                macros.addElement(startPickup);
-//                concurrentMacros.addElement(startPickup);
-
-                //spins around, drives over frisbees
-                System.out.println("100-something degree turn");
-                macros.addElement(new MacroTurn(dt, gyro, -130, 2000));
-                macros.addElement(new MacroDrive(dt, autoDriveDistance, 4000));
-                macros.addElement(new MacroDrive(dt, -autoDriveDistance, 4000));
-                macros.addElement(new MacroTurn(dt, gyro, 130, 2000));
-                
-                for (int i = 0; i < 5; i++) {
-                    macros.addElement(new Shoot(shooter, 500));
-                }
-                //spins down shooter and lowers it prior to teleop
-                macros.addElement(new ShooterSet(downAngle, 0, shooter, 1000));
+                macroController = new FiveFrisbeeAuto(dt, shooter, belts, ep, gyro);
                 break;
             
             default:    //Do nothing
