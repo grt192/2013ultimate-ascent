@@ -16,27 +16,17 @@ import logger.GRTLogger;
  */
 public class GRTMacroController extends EventController implements MacroListener {
 
-    private Vector macros, concurrentMacros;
+    private Vector macros;
     private int currentIndex = -1;
+
 
     /**
      * Creates a new GRTMacroController.
      * @param macros list of macros to run
      */
     public GRTMacroController(Vector macros) {
-        this(macros, new Vector());
-    }
-
-    /**
-     * Creates a new GRTMacroController.
-     * @param macros list of macros to run
-     * @param concurrentMacros macros which will be run in their own thread,
-     * allowing multiple macros to run simultaneously
-     */
-    public GRTMacroController(Vector macros, Vector concurrentMacros) {
         super("Macro controller");
         this.macros = macros;
-        this.concurrentMacros = concurrentMacros;
         System.out.println("Number of macros: " + macros.size());
     }
 
@@ -70,9 +60,7 @@ public class GRTMacroController extends EventController implements MacroListener
 
     public void macroDone(MacroEvent e) {
         GRTLogger.logInfo("Completed macro: " + e.getSource().getID());
-        if (!concurrentMacros.contains(e.getSource())){
             startNextMacro();
-        }
     }
 
     public void macroTimedOut(MacroEvent e) {
@@ -81,26 +69,25 @@ public class GRTMacroController extends EventController implements MacroListener
     }
     
     private void startNextMacro() {
-        if (!enabled) {
-            System.out.println("startNextMacro while unenabled");
-            return;
-        }
+//        if (!enabled) {
+//            System.out.println("startNextMacro while unenabled");
+//            return;
+//        }
         
         System.out.println("Next macro up to bat!");
-        ++currentIndex;
-        if (currentIndex < macros.size()) {
+        if (++currentIndex < macros.size()) {
             System.out.println("Starting new Macros!");
             GRTMacro macro = (GRTMacro) macros.elementAt(currentIndex);
-            if (concurrentMacros.contains(macro)) 
-            {
-                System.out.println("\tIt's a concurrent macro! " + macro.getID());
-                (new ConcurrentMacroRunner(macro)).execute();
-                startNextMacro();
-            }
-            else{
+//            if (concurrentMacros.contains(macro)) 
+//            {
+//                System.out.println("\tIt's a concurrent macro! " + macro.getID());
+//                (new ConcurrentMacroRunner(macro)).execute();
+//                startNextMacro();
+//            }
+//            else{
                 System.out.println("\tIt's a regular macro! " + macro.getID());
                 macro.execute();
-            }
+//            }
         } else {
             GRTLogger.logSuccess("Completed all macros. Waiting for teleop!");
         }

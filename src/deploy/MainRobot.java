@@ -240,10 +240,9 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
     private void defineAutoMacros() {
         clearAutoControllers();
 
-        autoMode = getAutonomousMode(); //Get our autonomous mode
+        autoMode = 1; //Fuck it, we're doing 5. getAutonomousMode(); //Get our autonomous mode
 
         Vector macros = new Vector();
-        Vector concurrentMacros = new Vector();
 
         double autoShooterAngle = GRTConstants.getValue("autonomousAngle");
         double shootingSpeed = GRTConstants.getValue("shootingRPMS");
@@ -253,124 +252,55 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         GRTLogger.logInfo("autoMode = " + autoMode);
         GRTLogger.logInfo("autoMode = " + autoMode);
         switch (autoMode) {
-            case 10:
-                GRTLogger.logInfo("Straight driving stuff");
-                macros.addElement(new MacroDrive(dt, 3, 3000));
-                macros.addElement(new MacroDrive(dt, -3, 3000));
-                break;
-            case AUTO_MODE_3_FRISBEE:
-                // Macro version of autonomous
-                macros.addElement(new ShooterSet(autoShooterAngle,
-                        shootingSpeed, shooter, 5000));
-                //Shoot our 3 frisbees. 
-                //shoots 4 times in case hopper gets jammed
-                for (int i = 0; i < 4; i++) {
-                    macros.addElement(new Shoot(shooter, 1000));
-                }
-                //spins down shooter and lowers it prior to teleop
-                macros.addElement(new ShooterSet(downAngle, 0, shooter, 1000));
-                break;
-            case AUTO_MODE_7_FRISBEE:
-                double autoDriveDistance = GRTConstants.getValue("autoDistance");
+            
+            case AUTO_MODE_5_FRISBEE:
+                /**
+                 * Okay, five frisbee. Starting in the back right corner of the
+                 * pyramid, we first start by firing our 2 starting frisbees.
+                 */
+                System.out.println("30 Point Autonomous Activated.");
+//                double autoDriveDistance = GRTConstants.getValue(10);
+                double autoDriveDistance = 0.50;    //Drive angled for 1.80m to pickup the two frisbees centered under the pyramid.
 
                 //lowers pickup
                 GRTMacro lowerPickup = new LowerPickup(ep);
                 macros.addElement(lowerPickup);
-                concurrentMacros.addElement(lowerPickup);
+//                concurrentMacros.addElement(lowerPickup);
 
-                //primes shovel, spins up shooter and shoots 4x
-                macros.addElement(new ShooterSet(autoShooterAngle,
-                        shootingSpeed, shooter, 2500));
+                //Sets up shooter angle and flywheel speed
+                System.out.println("Setting shooter up to shoot ");
+                macros.addElement(new ShooterSet(autoShooterAngle, shootingSpeed, shooter, 2500));
+                
+                //Shoot our 3 frisbees (4 shots in case of a misfire)
                 for (int i = 0; i < 4; i++) {
+                    System.out.println("\tShooting a frisbee!");
                     macros.addElement(new Shoot(shooter, 500));
                 }
 
                 //lowers shooter and starts up EP as it starts driving
                 ShooterSet lowerShooter = new ShooterSet(downAngle, 0, shooter, 3500);
                 macros.addElement(lowerShooter);
-                concurrentMacros.addElement(lowerShooter);
+//                concurrentMacros.addElement(lowerShooter);
                 AutoPickup startPickup = new AutoPickup(ep, belts, 300);
                 macros.addElement(startPickup);
-                concurrentMacros.addElement(startPickup);
+//                concurrentMacros.addElement(startPickup);
 
                 //spins around, drives over frisbees
-                System.out.println("180 turn");
-                macros.addElement(new MacroTurn(dt, gyro, 180, 2000));
+                System.out.println("100-something degree turn");
+                macros.addElement(new MacroTurn(dt, gyro, -130, 2000));
                 macros.addElement(new MacroDrive(dt, autoDriveDistance, 4000));
-
-                //spins around and drives back, all while preparing shooter
-                ShooterSet prepareSecondVolley =
-                        new ShooterSet(autoShooterAngle,
-                        shootingSpeed, shooter, 3500);
-                macros.addElement(prepareSecondVolley);
-                concurrentMacros.addElement(prepareSecondVolley);
-                macros.addElement(new MacroTurn(dt, gyro, -180, 2000));
-                macros.addElement(new MacroDrive(dt, autoDriveDistance, 4000));
-
+                macros.addElement(new MacroDrive(dt, -autoDriveDistance, 4000));
+                macros.addElement(new MacroTurn(dt, gyro, 130, 2000));
+                
                 for (int i = 0; i < 5; i++) {
                     macros.addElement(new Shoot(shooter, 500));
                 }
                 //spins down shooter and lowers it prior to teleop
                 macros.addElement(new ShooterSet(downAngle, 0, shooter, 1000));
                 break;
-            case AUTO_MODE_5_FRISBEE:    
-                double autoDistance = 1.27;
-                //lowers pickup
-                GRTMacro lower = new LowerPickup(ep);
-                macros.addElement(lower);
-                concurrentMacros.addElement(lower);
-
-                //primes shovel, spins up shooter and shoots 4x
-                macros.addElement(new ShooterSet(autoShooterAngle,
-                        shootingSpeed, shooter, 2500));
-                for (int i = 0; i < 4; i++) {
-                    macros.addElement(new Shoot(shooter, 500));
-                }
-
-                //lowers shooter and starts up EP as it starts driving
-                ShooterSet lShooter = new ShooterSet(downAngle, 0, shooter, 3500);
-                macros.addElement(lShooter);
-                concurrentMacros.addElement(lShooter);
-                AutoPickup pickup = new AutoPickup(ep, belts, 300);
-                macros.addElement(pickup);
-                concurrentMacros.addElement(pickup);
-
-                //spins around, drives over frisbees
-                System.out.println("180 turn");
-                macros.addElement(new MacroTurn(dt, gyro, 180, 2000));
-                macros.addElement(new MacroDrive(dt, autoDistance, 4000));
-
-                //spins around and drives back, all while preparing shooter
-                ShooterSet prepareVolley =
-                        new ShooterSet(autoShooterAngle,
-                        shootingSpeed, shooter, 3500);
-                macros.addElement(prepareVolley);
-                concurrentMacros.addElement(prepareVolley);
-                macros.addElement(new MacroTurn(dt, gyro, -180, 2000));
-                macros.addElement(new MacroDrive(dt, autoDistance, 4000));
-
-                for (int i = 0; i < 5; i++) {
-                    macros.addElement(new Shoot(shooter, 500));
-                }
-                //spins down shooter and lowers it prior to teleop
-                macros.addElement(new ShooterSet(downAngle, 0, shooter, 1000));
-                break;
-                
-            case AUTO_MODE_DRIVE_CENTER_LEFT:
-                //Set the shooter angle
-                macros.addElement(new ShooterSet(autoShooterAngle,
-                        shootingSpeed, shooter, 5000));
-                //Shoot our 3 frisbees.
-                //shoots 4 times in case hopper gets jammed
-                for (int i = 0; i < 4; i++) {
-                    macros.addElement(new Shoot(shooter, 1000));
-                }
-                
-                macros.addElement(new ShooterSet(downAngle, 0, shooter, 1000)); //spins down shooter and lowers it prior to teleop
-                macros.addElement(new MacroDrive(dt, 2.54, 5000));      //Drive towards the driver 2.54m (100 inches. almost to the other side of the lines).
-                macros.addElement(new MacroTurn(dt, gyro, 90, 3000));   //Turn to the right (the driver's left).
-                macros.addElement((new MacroDrive(dt, 1.00, 2000)));    //Drive towards the leftmost edge of the field.
-                break;
+            
+            default:    //Do nothing
+                return;
         }
         
         macroController = new GRTMacroController(macros);

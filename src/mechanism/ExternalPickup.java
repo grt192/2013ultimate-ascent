@@ -48,6 +48,11 @@ public class ExternalPickup extends GRTLoggedProcess implements SwitchListener {
             raiserMotor.set(LOWER_SPEED);
         }
     }
+    public void lower(double speed) {
+        //System.out.println("lowering ep");
+        //if the chalupa is already lowered it will not lower further
+            raiserMotor.set(speed);
+    }
 
     public void pickUp() {
         rollerMotor.set(1 * ROLLER_SF);

@@ -118,6 +118,7 @@ public class MechController extends EventController implements GRTJoystickListen
                 switch (e.getButtonID()) {
                     case GRTJoystick.KEY_BUTTON_3: 
                         pickerUpper.pickUp();
+                        pickerUpper.lower(0.1);    //Constantly lower the EP to put compression on frisbees
                         break;
                     case GRTJoystick.KEY_BUTTON_2: 
                         pickerUpper.spitOut();
@@ -193,6 +194,7 @@ public class MechController extends EventController implements GRTJoystickListen
                 case GRTJoystick.KEY_BUTTON_3:
                 case GRTJoystick.KEY_BUTTON_2: 
                     pickerUpper.stopRoller();
+                    pickerUpper.stopRaiser();   //Remove the compression we were placing on the frisbee
                     break;
                 case GRTJoystick.KEY_BUTTON_4:
                 case GRTJoystick.KEY_BUTTON_5:

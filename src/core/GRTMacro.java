@@ -69,7 +69,6 @@ public abstract class GRTMacro extends GRTLoggedProcess {
             logInfo("Initializing Macro...");
             initialize();
             hasInitialized = true;
-            logInfo("Finished Initializing Macro...");
             notifyListeners(NOTIFY_INITIALIZE);
             this.startTime = System.currentTimeMillis();
 
@@ -89,9 +88,9 @@ public abstract class GRTMacro extends GRTLoggedProcess {
                     ex.printStackTrace();
                 }
             }
-            logInfo("Killing Macro...");
+            System.out.println("Killing Macro...");
             die();
-            logInfo("Finished Killing Macro...");
+            System.out.println("Notify that we died.");
             notifyListeners(NOTIFY_COMPLETED);
         }
     }
