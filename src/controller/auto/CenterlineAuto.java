@@ -10,6 +10,7 @@ import core.GRTMacro;
 import core.GRTMacroController;
 import macro.AutoPickup;
 import macro.LowerPickup;
+import macro.MacroDelay;
 import macro.MacroDrive;
 import macro.MacroTurn;
 import macro.Shoot;
@@ -29,6 +30,8 @@ public class CenterlineAuto extends GRTMacroController {
     private double autoShooterAngle = GRTConstants.getValue("anglePyramidBackCenter");
     private double shootingSpeed = GRTConstants.getValue("shootingRPMS");
     private double downAngle = GRTConstants.getValue("shooterDown");
+    private double shooterDelay = GRTConstants.getValue("shooterDelay");
+
 
     public CenterlineAuto(GRTDriveTrain dt, Shooter shooter, Belts belts,
             ExternalPickup ep, GRTGyro gyro) {
@@ -54,6 +57,8 @@ public class CenterlineAuto extends GRTMacroController {
         //lowers shooter and starts up EP as it starts driving
         ShooterSet lowerShooter = new ShooterSet(downAngle, 0, shooter, 3500);
         addMacro(lowerShooter);
+        addMacro(new MacroDelay((int) shooterDelay));
+
         AutoPickup startPickup = new AutoPickup(ep, belts, 300);
         addMacro(startPickup);
         
@@ -82,6 +87,7 @@ public class CenterlineAuto extends GRTMacroController {
         addMacro(new MacroDrive(dt, pickupFrisbeesDriveDistance, 3000));//Pickup some frisbees. Change distance based on frisbees on field.
         
         addMacro(new ShooterSet(autoShooterAngle, shootingSpeed, shooter, 2500)); //start moving shooter back
+        addMacro(new MacroDelay((int)shooterDelay));
         
         double backToPyramidAngle = DeadReckoner.angleFrom(startingX, startingY);
         addMacro(new MacroTurn(dt, gyro, backToPyramidAngle, 2000));    //Turn back to the pyramid

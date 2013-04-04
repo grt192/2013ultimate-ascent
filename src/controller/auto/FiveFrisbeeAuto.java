@@ -9,6 +9,7 @@ import core.GRTMacro;
 import core.GRTMacroController;
 import macro.AutoPickup;
 import macro.LowerPickup;
+import macro.MacroDelay;
 import macro.MacroDrive;
 import macro.MacroTurn;
 import macro.Shoot;
@@ -28,6 +29,8 @@ public class FiveFrisbeeAuto extends GRTMacroController {
     private double autoShooterAngle = GRTConstants.getValue("anglePyramidCorner");
     private double shootingSpeed = GRTConstants.getValue("shootingRPMS");
     private double downAngle = GRTConstants.getValue("shooterDown");
+    private double shooterDelay = GRTConstants.getValue("shooterDelay");
+
 
     public FiveFrisbeeAuto(GRTDriveTrain dt, Shooter shooter, Belts belts,
             ExternalPickup ep, GRTGyro gyro) {
@@ -49,6 +52,7 @@ public class FiveFrisbeeAuto extends GRTMacroController {
         //Sets up shooter angle and flywheel speed
         System.out.println("Setting shooter up to shoot ");
         addMacro(new ShooterSet(autoShooterAngle, shootingSpeed, shooter, 2500));
+        addMacro(new MacroDelay((int)shooterDelay));
 
         //Shoot our 3 frisbees (4 shots in case of a misfire)
         for (int i = 0; i < 4; i++) {
@@ -58,6 +62,8 @@ public class FiveFrisbeeAuto extends GRTMacroController {
 
         //lowers shooter and starts up EP as it starts driving
         ShooterSet lowerShooter = new ShooterSet(downAngle, 0, shooter, 3500);
+        addMacro(new MacroDelay((int) shooterDelay));
+
         addMacro(lowerShooter);
         AutoPickup startPickup = new AutoPickup(ep, belts, 300);
         addMacro(startPickup);

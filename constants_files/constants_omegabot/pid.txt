@@ -1,7 +1,7 @@
 ##shooter raiser + flywheel
-shooterRaiserP,0.05
-shooterRaiserI,0.004
-shooterRaiserD,0.04
+shooterRaiserP,0.035
+shooterRaiserI,0.002
+shooterRaiserD,0.0
 raiserTolerance,2.0
 flywheelP,0.0001
 flywheelI,0.0001
