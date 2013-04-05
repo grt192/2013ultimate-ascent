@@ -1,7 +1,11 @@
 ##Autonomous Constants
-autoMode,1
+#0: 3 frisbee auto
+#1: 5 frisbee auto
+#2: center travel auto
+#otherwise is do nothing
+autoMode,0
 
-shooterDelay,2800
+shooterDelay,4000
 
 ##3 frisbee auto
 autoDistance,3

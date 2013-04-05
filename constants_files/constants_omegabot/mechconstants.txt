@@ -11,8 +11,8 @@ shooterEncoderPulseDistance,0.016667
 shootingRPMS,50000
 tareAngle,57
 raiserPotRange,300
-maxRaiserAngle,45
-minRaiserAngle,15
+maxRaiserAngle,42.5
+minRaiserAngle,5
 #Raise/lower speed
 pickUpRaiseSpeed,-0.5
 pickUpLowerSpeed,0.2
