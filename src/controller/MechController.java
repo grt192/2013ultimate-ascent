@@ -284,7 +284,7 @@ public class MechController extends EventController implements GRTJoystickListen
         }
         
         shooterPresetB = GRTConstants.getValue("anglePyramidFrontPreset");
-        shooterPresetY = GRTConstants.getValue("anglePyramidRearPreset");
+        shooterPresetY = GRTConstants.getValue("anglePyramidBackCenter");
         shooterDown = GRTConstants.getValue("shooterDown");
         shootingSpeed = GRTConstants.getValue("shootingRPMS");
     }

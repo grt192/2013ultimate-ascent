@@ -1,6 +1,8 @@
 ##Autonomous Constants
 autoMode,1
 
+shooterDelay,2800
+
 ##3 frisbee auto
 autoDistance,3
 

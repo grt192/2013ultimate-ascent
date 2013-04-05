@@ -57,7 +57,6 @@ public class CenterlineAuto extends GRTMacroController {
         //lowers shooter and starts up EP as it starts driving
         ShooterSet lowerShooter = new ShooterSet(downAngle, 0, shooter, 3500);
         addMacro(lowerShooter);
-        addMacro(new MacroDelay((int) shooterDelay));
 
         AutoPickup startPickup = new AutoPickup(ep, belts, 300);
         addMacro(startPickup);

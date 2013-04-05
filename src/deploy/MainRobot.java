@@ -1,23 +1,21 @@
 package deploy;
 
-import controller.auto.ThreeFrisbeeAuto;
 import actuator.GRTSolenoid;
 import controller.DriveController;
 import controller.MechController;
+import controller.auto.CenterlineAuto;
 import controller.auto.FiveFrisbeeAuto;
+import controller.auto.ThreeFrisbeeAuto;
 import core.GRTConstants;
-import core.GRTMacro;
 import core.GRTMacroController;
 import core.SensorPoller;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 import event.listeners.ConstantUpdateListener;
 import java.util.Vector;
 import logger.GRTLogger;
-import macro.*;
 import mechanism.Belts;
 import mechanism.Climber;
 import mechanism.ExternalPickup;
@@ -44,7 +42,6 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
     private static final int AUTO_MODE_5_FRISBEE = 1;
     private static final int AUTO_MODE_7_FRISBEE = 2;
     private static final int AUTO_MODE_DRIVE_CENTER_LEFT = 3;
-    
     //Private i-vars.
     private GRTDriveTrain dt;
     private Belts belts;
@@ -78,6 +75,12 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         super.disabled();
         GRTLogger.logInfo("Disabling robot. Halting drivetrain");
         dt.setMotorSpeeds(0.0, 0.0);
+        shooter.adjustHeight(0);
+        shooter.setFlywheelOutput(0);
+        ep.stopRaiser();
+        ep.stopRoller();
+        climber.lower();
+        belts.stop();
     }
 
     /**
@@ -236,13 +239,13 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
     }
 
     /**
-     * Lays out definitions of each auto macro routine.
-     * Based on the type of autonomous mode
+     * Lays out definitions of each auto macro routine. Based on the type of
+     * autonomous mode
      */
     private void defineAutoMacros() {
         clearAutoControllers();
 
-        autoMode = 1; //Fuck it, we're doing 5. getAutonomousMode(); //Get our autonomous mode
+        autoMode = getAutonomousMode(); //Fuck it, we're doing 5. getAutonomousMode(); //Get our autonomous mode
 
         Vector macros = new Vector();
 
@@ -251,18 +254,20 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         GRTLogger.logInfo("autoMode = " + autoMode);
         GRTLogger.logInfo("autoMode = " + autoMode);
         switch (autoMode) {
-            
+
             case AUTO_MODE_3_FRISBEE:
                 macroController = new ThreeFrisbeeAuto(shooter);
+                break;
             case AUTO_MODE_5_FRISBEE:
                 macroController = new FiveFrisbeeAuto(dt, shooter, belts, ep, gyro);
                 break;
-            
+            case AUTO_MODE_7_FRISBEE:
+                macroController = new CenterlineAuto(dt, shooter, belts, ep, gyro);
+                break;
             default:    //Do nothing
                 return;
         }
-        
-        macroController = new GRTMacroController(macros);
+
         addAutonomousController(macroController);
     }
 

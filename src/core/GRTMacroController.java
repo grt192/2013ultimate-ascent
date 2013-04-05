@@ -35,10 +35,11 @@ public class GRTMacroController extends EventController implements MacroListener
     public GRTMacroController(Vector macros) {
         super("Macro controller");
         this.macros = macros;
-        System.out.println("Number of macros: " + macros.size());
     }
 
     protected void startListening() {
+//        System.out.println("Number of macros: " + macros.size());
+
         GRTLogger.logInfo("start listen");
         currentIndex = -1;
         for (Enumeration en = macros.elements(); en.hasMoreElements();) {
@@ -51,6 +52,7 @@ public class GRTMacroController extends EventController implements MacroListener
     }
     
     public void addMacro(GRTMacro m){
+//        System.out.println("Adding a macro: #" + macros.size());
         macros.addElement(m);
     }
 
