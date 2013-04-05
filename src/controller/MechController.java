@@ -26,275 +26,273 @@ import sensor.GRTXboxJoystick;
  * @author Calvin, agd
  */
 public class MechController extends EventController implements GRTJoystickListener, XboxJoystickListener, PotentiometerListener, ButtonListener,
-        ConstantUpdateListener {
+       ConstantUpdateListener {
 
-    private GRTJoystick leftJoy;
-    private GRTJoystick rightJoy;
-    private GRTXboxJoystick secondary;
-    private Belts belts;
-    private Climber climber;
-    private ExternalPickup pickerUpper;
-    private Shooter shooter;
-    private GRTDriveTrain dt;
-    
-    private double shootingSpeed;
+	       private GRTJoystick leftJoy;
+	       private GRTJoystick rightJoy;
+	       private GRTXboxJoystick secondary;
+	       private Belts belts;
+	       private Climber climber;
+	       private ExternalPickup pickerUpper;
+	       private Shooter shooter;
+	       private GRTDriveTrain dt;
 
-    private double shooterPresetY;
-    private double shooterPresetB;
-    private double shooterDown;
+	       private double shootingSpeed;
 
-    private double turningDivider;
-    private double storedAngle;
-    
-    private int padPosition = 0; //-1 for left, 1 for right, 0 for center
-    private double DEG_INCREMENT = 0.75;
-    
-    private boolean canShoot = true;
-    
-    private double shotDelay = 0.5;
-    
-    public MechController(GRTJoystick leftJoy, GRTJoystick rightJoy,
-            GRTXboxJoystick secondary,
-            Shooter shooter, ExternalPickup pickerUpper,
-            Climber climber, Belts belts,
-            GRTDriveTrain dt) {
-        super("Mechanism Controller");
-        this.leftJoy = leftJoy;
-        this.rightJoy = rightJoy;
-        this.secondary = secondary;
+	       private double shooterPresetY;
+	       private double shooterPresetB;
+	       private double shooterDown;
 
-        this.belts = belts;
-        this.climber = climber;
-        this.pickerUpper = pickerUpper;
-        this.shooter = shooter;
+	       private double turningDivider;
+	       private double storedAngle;
 
-        this.dt = dt;
-        
-        GRTConstants.addListener(this);
+	       private int padPosition = 0; //-1 for left, 1 for right, 0 for center
+	       private double DEG_INCREMENT = 0.75;
 
-        updateConstants();
-    }
+	       private boolean canShoot = true;
 
-    protected void startListening() {
-        leftJoy.addJoystickListener(this);
-        leftJoy.addButtonListener(this);
+	       private double shotDelay = 0.5;
 
-        rightJoy.addJoystickListener(this);
-        rightJoy.addButtonListener(this);
+	       public MechController(GRTJoystick leftJoy, GRTJoystick rightJoy,
+			       GRTXboxJoystick secondary,
+			       Shooter shooter, ExternalPickup pickerUpper,
+			       Climber climber, Belts belts,
+			       GRTDriveTrain dt) {
+		       super("Mechanism Controller");
+		       this.leftJoy = leftJoy;
+		       this.rightJoy = rightJoy;
+		       this.secondary = secondary;
 
-        secondary.addJoystickListener(this);
-        secondary.addButtonListener(this);
-    }
+		       this.belts = belts;
+		       this.climber = climber;
+		       this.pickerUpper = pickerUpper;
+		       this.shooter = shooter;
 
-    protected void stopListening() {
-        leftJoy.removeJoystickListener(this);
-        leftJoy.removeButtonListener(this);
+		       this.dt = dt;
 
-        rightJoy.removeJoystickListener(this);
-        rightJoy.removeButtonListener(this);
+		       GRTConstants.addListener(this);
 
-        secondary.removeJoystickListener(this);
-        secondary.removeButtonListener(this);
-        
-        
-        //Set the flywheel controller back to zero on disable. Helps prevent the I term from accumulating to quickly
-        shooter.setFlywheelOutput(0.0);
+		       updateConstants();
+	       }
 
-    }
+	       protected void startListening() {
+		       leftJoy.addJoystickListener(this);
+		       leftJoy.addButtonListener(this);
 
-    public void XAxisMoved(JoystickEvent e) {
-    }
+		       rightJoy.addJoystickListener(this);
+		       rightJoy.addButtonListener(this);
 
-    public void YAxisMoved(JoystickEvent e) {
-    }
+		       secondary.addJoystickListener(this);
+		       secondary.addButtonListener(this);
+	       }
 
-    public void AngleChanged(JoystickEvent e) {
-    }
+	       protected void stopListening() {
+		       leftJoy.removeJoystickListener(this);
+		       leftJoy.removeButtonListener(this);
 
-    //commented out code is because betabot is FUBAR
-    public void buttonPressed(ButtonEvent e) {
-        try {
-            if (e.getSource() == rightJoy) {
-                switch (e.getButtonID()) {
-                    case GRTJoystick.KEY_BUTTON_3: 
-                        pickerUpper.pickUp();
-                        pickerUpper.lower(0.1);    //Constantly lower the EP to put compression on frisbees
-                        break;
-                    case GRTJoystick.KEY_BUTTON_2: 
-                        pickerUpper.spitOut();
-                        break;
-                        
-                    case GRTJoystick.KEY_BUTTON_4:
-                        pickerUpper.raise();
-                        break;
-                    case GRTJoystick.KEY_BUTTON_5:
-                        pickerUpper.lower();
-                        break;
-                }  
-            }
+		       rightJoy.removeJoystickListener(this);
+		       rightJoy.removeButtonListener(this);
 
-            else if (e.getSource() == leftJoy) {
-                switch (e.getButtonID()) {
-                    case GRTJoystick.KEY_BUTTON_3: 
-                        climber.raise();
-                        break;
-                    case GRTJoystick.KEY_BUTTON_2:
-                        climber.lower();
-                        break;
-                    case GRTJoystick.KEY_BUTTON_9:
-                        GRTConstants.updateConstants();
-                        break;
-                }   
-            }
+		       secondary.removeJoystickListener(this);
+		       secondary.removeButtonListener(this);
 
-            else if (e.getSource() == secondary){
-                switch (e.getButtonID()){
-                    case GRTXboxJoystick.KEY_BUTTON_X:
-                        shooter.setAngle(shooterDown);
-                        break;
-                    case GRTXboxJoystick.KEY_BUTTON_Y:
-                        shooter.setAngle(shooterPresetY);
-                        break;
-                    case GRTXboxJoystick.KEY_BUTTON_B:
-                        shooter.setAngle(shooterPresetB);
-                        break;
-                    case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
-                        shooter.setSpeed(shootingSpeed);
-                        break;
-                    case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
-                        if (canShoot) {
-                            shooter.shoot();
-                            new Thread(shooterTimer).start();
-                        }
-                        break;
-                    case GRTXboxJoystick.KEY_BUTTON_BACK:
-                        logInfo("Storing angle.");
-                        storedAngle = shooter.getShooterAngle();
-                        System.out.println(storedAngle);
-                        break;
-                    case GRTXboxJoystick.KEY_BUTTON_START:
-                        logInfo("Going to stored angle: " + storedAngle);
-                        shooter.setAngle(storedAngle);
-                }
-            }
-        } catch (NullPointerException ex) {
-            logError("Null pointer encountered when trying to categorize button events");
-            ex.printStackTrace();
-        }
-    }
 
-    public void buttonReleased(ButtonEvent e) {
-        if (e.getSource() == leftJoy) {
-            switch (e.getButtonID()) {
-            }
-        }
+		       //Set the flywheel controller back to zero on disable. Helps prevent the I term from accumulating to quickly
+		       shooter.setFlywheelOutput(0.0);
 
-        else if (e.getSource() == rightJoy) {
-            switch (e.getButtonID()) {
-                case GRTJoystick.KEY_BUTTON_3:
-                case GRTJoystick.KEY_BUTTON_2: 
-                    pickerUpper.stopRoller();
-                    pickerUpper.stopRaiser();   //Remove the compression we were placing on the frisbee
-                    break;
-                case GRTJoystick.KEY_BUTTON_4:
-                case GRTJoystick.KEY_BUTTON_5:
-                    pickerUpper.stopRaiser();
-                    break;
-            }
-        }
+	       }
 
-        else if (e.getSource() == secondary) {
-            switch (e.getButtonID()) {
-                case GRTXboxJoystick.KEY_BUTTON_X:
-                    shooter.setFlywheelOutput(0.0);
-                    break;
-                case GRTXboxJoystick.KEY_BUTTON_A:
-                    shooter.setFlywheelOutput(0.0);
-                    break;
-                case GRTXboxJoystick.KEY_BUTTON_B:
-                    shooter.setFlywheelOutput(0.0);
-                    break;
-                case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
-                    shooter.setSpeed(0.0);
-                    shooter.setFlywheelOutput(0.0);
-                    break;
-                case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
-                    shooter.unShoot();
-                    break;
-            }
-        }
-    }
-    
-    public void leftXAxisMoved(XboxJoystickEvent e) {
-        //Use Xbox left axis to make fine adjustments to the robot's directional heading.
-        logInfo("Left x axis moved!");
-        if (e.getSource() == secondary){
-            System.out.println("Slowly turning dt's");
-            dt.setMotorSpeeds(-e.getData() / turningDivider , e.getData() / turningDivider );
-        }
-    }
+	       public void XAxisMoved(JoystickEvent e) {
+	       }
 
-    public void leftYAxisMoved(XboxJoystickEvent e) {
-    }
+	       public void YAxisMoved(JoystickEvent e) {
+	       }
 
-    public void leftAngleChanged(XboxJoystickEvent e) {
-    }
+	       public void AngleChanged(JoystickEvent e) {
+	       }
 
-    public void rightXAxisMoved(XboxJoystickEvent e) {
-    }
+	       //commented out code is because betabot is FUBAR
+	       public void buttonPressed(ButtonEvent e) {
+		       try {
+			       if (e.getSource() == rightJoy) {
+				       switch (e.getButtonID()) {
+					       case GRTJoystick.KEY_BUTTON_3: 
+						       pickerUpper.pickUp();
+						       break;
+					       case GRTJoystick.KEY_BUTTON_2: 
+						       pickerUpper.spitOut();
+						       break;
 
-    public void rightYAxisMoved(XboxJoystickEvent e) {
-        if (e.getSource() == secondary){
-            shooter.adjustHeight(e.getData());
-        }
-    }
+					       case GRTJoystick.KEY_BUTTON_4:
+						       pickerUpper.raise();
+						       break;
+					       case GRTJoystick.KEY_BUTTON_5:
+						       pickerUpper.lower();
+						       break;
+				       }  
+			       }
 
-    public void padMoved(XboxJoystickEvent e) {
-        int oldPadPosition = padPosition;
-        if (oldPadPosition != (padPosition = e.getData() > 0.5 ? 1 : (e.getData() < -0.5 ? -1 : 0))) {
-            shooter.incrementAngle(padPosition * DEG_INCREMENT);
-        }
-    }
+			       else if (e.getSource() == leftJoy) {
+				       switch (e.getButtonID()) {
+					       case GRTJoystick.KEY_BUTTON_3: 
+						       climber.raise();
+						       break;
+					       case GRTJoystick.KEY_BUTTON_2:
+						       climber.lower();
+						       break;
+					       case GRTJoystick.KEY_BUTTON_9:
+						       GRTConstants.updateConstants();
+						       break;
+				       }   
+			       }
 
-    public void triggerMoved(XboxJoystickEvent e) {
-        if (e.getSource() == secondary){
-            if (Math.abs(e.getData()) <= 0.1){
-                belts.stop();
-            }
-            
-            else if (e.getData() > 0.0){
-                belts.moveDown();
-            }
-            
-            else {
-                belts.moveUp();
-            }
-        }
-    }
-    
-    public void valueChanged(PotentiometerEvent e) {
-        System.out.println("potentiometer value changed: " + e.getData());
-    }
+			       else if (e.getSource() == secondary){
+				       switch (e.getButtonID()){
+					       case GRTXboxJoystick.KEY_BUTTON_X:
+						       shooter.setAngle(shooterDown);
+						       break;
+					       case GRTXboxJoystick.KEY_BUTTON_Y:
+						       shooter.setAngle(shooterPresetY);
+						       break;
+					       case GRTXboxJoystick.KEY_BUTTON_B:
+						       shooter.setAngle(shooterPresetB);
+						       break;
+					       case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
+						       shooter.setSpeed(shootingSpeed);
+						       break;
+					       case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
+						       if (canShoot) {
+							       shooter.shoot();
+							       new Thread(shooterTimer).start();
+						       }
+						       break;
+					       case GRTXboxJoystick.KEY_BUTTON_BACK:
+						       logInfo("Storing angle.");
+						       storedAngle = shooter.getShooterAngle();
+						       System.out.println(storedAngle);
+						       break;
+					       case GRTXboxJoystick.KEY_BUTTON_START:
+						       logInfo("Going to stored angle: " + storedAngle);
+						       shooter.setAngle(storedAngle);
+				       }
+			       }
+		       } catch (NullPointerException ex) {
+			       logError("Null pointer encountered when trying to categorize button events");
+			       ex.printStackTrace();
+		       }
+	       }
 
-    public final void updateConstants() {
-        try {
-            turningDivider = GRTConstants.getValue("turningDivider");
-        } catch(Exception e){
-            turningDivider = 2.0;
-        }
-        
-        shooterPresetB = GRTConstants.getValue("anglePyramidFrontPreset");
-        shooterPresetY = GRTConstants.getValue("anglePyramidBackCenter");
-        shooterDown = GRTConstants.getValue("shooterDown");
-        shootingSpeed = GRTConstants.getValue("shootingRPMS");
-    }
-    
-    private Runnable shooterTimer = new Runnable() {
+	       public void buttonReleased(ButtonEvent e) {
+		       if (e.getSource() == leftJoy) {
+			       switch (e.getButtonID()) {
+			       }
+		       }
 
-        public void run() {
-            canShoot = false;
-            Timer.delay(shotDelay);
-            canShoot = true;
-        }
-    };
-}
+		       else if (e.getSource() == rightJoy) {
+			       switch (e.getButtonID()) {
+				       case GRTJoystick.KEY_BUTTON_3:
+				       case GRTJoystick.KEY_BUTTON_2: 
+					       pickerUpper.stopRoller();
+					       pickerUpper.stopRaiser();   //Remove the compression we were placing on the frisbee
+					       break;
+				       case GRTJoystick.KEY_BUTTON_4:
+				       case GRTJoystick.KEY_BUTTON_5:
+					       pickerUpper.stopRaiser();
+					       break;
+			       }
+		       }
+
+		       else if (e.getSource() == secondary) {
+			       switch (e.getButtonID()) {
+				       case GRTXboxJoystick.KEY_BUTTON_X:
+					       shooter.setFlywheelOutput(0.0);
+					       break;
+				       case GRTXboxJoystick.KEY_BUTTON_A:
+					       shooter.setFlywheelOutput(0.0);
+					       break;
+				       case GRTXboxJoystick.KEY_BUTTON_B:
+					       shooter.setFlywheelOutput(0.0);
+					       break;
+				       case GRTXboxJoystick.KEY_BUTTON_LEFT_SHOULDER:
+					       shooter.setSpeed(0.0);
+					       shooter.setFlywheelOutput(0.0);
+					       break;
+				       case GRTXboxJoystick.KEY_BUTTON_RIGHT_SHOULDER:
+					       shooter.unShoot();
+					       break;
+			       }
+		       }
+	       }
+
+	       public void leftXAxisMoved(XboxJoystickEvent e) {
+	       }
+
+	       public void leftYAxisMoved(XboxJoystickEvent e) {
+		       double scaleFactor = -3.0;
+		       if (e.getSource() == secondary){
+			       System.out.println("adjusting shooter by " + e.getData() / scaleFactor);
+			       shooter.adjustHeight(e.getData() / scaleFactor);
+		       }
+	       }
+
+	       public void leftAngleChanged(XboxJoystickEvent e) {
+	       }
+
+	       public void rightXAxisMoved(XboxJoystickEvent e) {
+	       }
+
+	       public void rightYAxisMoved(XboxJoystickEvent e) {
+		       if (e.getSource() == secondary){
+			       shooter.adjustHeight(e.getData());
+		       }
+	       }
+
+	       public void padMoved(XboxJoystickEvent e) {
+		       int oldPadPosition = padPosition;
+		       if (oldPadPosition != (padPosition = e.getData() > 0.5 ? 1 : (e.getData() < -0.5 ? -1 : 0))) {
+			       shooter.incrementAngle(padPosition * DEG_INCREMENT);
+		       }
+	       }
+
+	       public void triggerMoved(XboxJoystickEvent e) {
+		       if (e.getSource() == secondary){
+			       if (Math.abs(e.getData()) <= 0.1){
+				       belts.stop();
+			       }
+
+			       else if (e.getData() > 0.0){
+				       belts.moveDown();
+			       }
+
+			       else {
+				       belts.moveUp();
+			       }
+		       }
+	       }
+
+	       public void valueChanged(PotentiometerEvent e) {
+		       System.out.println("potentiometer value changed: " + e.getData());
+	       }
+
+	       public final void updateConstants() {
+		       try {
+			       turningDivider = GRTConstants.getValue("turningDivider");
+		       } catch(Exception e){
+			       turningDivider = 2.0;
+		       }
+
+		       shooterPresetB = GRTConstants.getValue("anglePyramidFrontPreset");
+		       shooterPresetY = GRTConstants.getValue("anglePyramidBackCenter");
+		       shooterDown = GRTConstants.getValue("shooterDown");
+		       shootingSpeed = GRTConstants.getValue("shootingRPMS");
+	       }
+
+	       private Runnable shooterTimer = new Runnable() {
+
+		       public void run() {
+			       canShoot = false;
+			       Timer.delay(shotDelay);
+			       canShoot = true;
+		       }
+	       };
+       }

@@ -4,7 +4,7 @@ import actuator.GRTSolenoid;
 import controller.DriveController;
 import controller.MechController;
 import controller.auto.CenterlineAuto;
-import controller.auto.FiveFrisbeeAuto;
+import controller.auto.FiveFrisbeeCenterAuto;
 import controller.auto.ThreeFrisbeeAuto;
 import core.GRTConstants;
 import core.GRTMacroController;
@@ -259,7 +259,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 macroController = new ThreeFrisbeeAuto(shooter);
                 break;
             case AUTO_MODE_5_FRISBEE:
-                macroController = new FiveFrisbeeAuto(dt, shooter, belts, ep, gyro);
+                macroController = new FiveFrisbeeCenterAuto(dt, shooter, belts, ep, gyro);
                 break;
             case AUTO_MODE_7_FRISBEE:
                 macroController = new CenterlineAuto(dt, shooter, belts, ep, gyro);

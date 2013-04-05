@@ -56,14 +56,17 @@ public class ExternalPickup extends GRTLoggedProcess implements SwitchListener {
 
     public void pickUp() {
         rollerMotor.set(1 * ROLLER_SF);
+        lower(0.30);    //Constantly lower the EP to put compression on frisbees                
     }
 
     public void spitOut() {
         rollerMotor.set(-1 * ROLLER_SF);
+        stopRaiser();
     }
 
     public void stopRoller() {
         rollerMotor.set(0);
+        stopRaiser();
     }
 
     public void stopRaiser() {
