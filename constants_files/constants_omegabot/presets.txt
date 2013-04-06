@@ -1,7 +1,6 @@
 ##angle presets
 shooterDown,0
 cornerAngle,25.4
-anglePyramidBackCenter,24.3
-anglePyramidMiddleCenter,27.2
+anglePyramidBackCenter,22.6
 anglePyramidFrontPreset,42
 anglePyramidCorner, 23.0

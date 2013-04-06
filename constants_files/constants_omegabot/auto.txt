@@ -5,16 +5,19 @@
 #otherwise is do nothing
 autoMode,0
 
-shooterDelay,4000
+shooterDelay,6000
 
 ##3 frisbee auto
 autoDistance,3
+offset3Angle, -2.50
 
 ##5 Frisbee auto
-auto5Distance, 1.25
-backupDistance, 0.50
+auto5Distance, 1.80
+backupDistance, 1.50
 headingAngle, 160.0
-shakeAngle, 45.0
+
+##5 Frisbee Center Auto
+auto5CenterAuto, 2.20
 
 ##Centerline auto
 #initial x and y position
