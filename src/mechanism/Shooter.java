@@ -146,7 +146,6 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
             return;
         }
 
-        logInfo("adjusting shooter by " + velocity);
         double currentAngle = getShooterAngle();
         if ((velocity > 0 && currentAngle <= MAX_ANGLE)
                 || (velocity < 0 && currentAngle >= MIN_ANGLE)

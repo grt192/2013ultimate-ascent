@@ -225,11 +225,10 @@ public class MechController extends EventController implements GRTJoystickListen
     }
 
     public void leftYAxisMoved(XboxJoystickEvent e) {
-        double scaleFactor = -3.0;
-        if (e.getSource() == secondary) {
-            System.out.println("adjusting shooter by " + e.getData() / scaleFactor);
-            shooter.adjustHeight(e.getData() / scaleFactor);
+                if (e.getSource() == secondary) {
+            shooter.adjustHeight(-e.getData());
         }
+
     }
 
     public void leftAngleChanged(XboxJoystickEvent e) {
@@ -239,8 +238,10 @@ public class MechController extends EventController implements GRTJoystickListen
     }
 
     public void rightYAxisMoved(XboxJoystickEvent e) {
+                double scaleFactor = -3.0;
         if (e.getSource() == secondary) {
-            shooter.adjustHeight(e.getData());
+            //System.out.println("adjusting shooter by " + e.getData() / scaleFactor);
+            shooter.adjustHeight(-e.getData() / scaleFactor);
         }
     }
 

@@ -29,7 +29,7 @@ public class ThreeFrisbeeAuto extends GRTMacroController {
     public ThreeFrisbeeAuto(Shooter shooter, GRTDriveTrain dt, GRTGyro gyro) {
         //Sets up shooter angle and flywheel speed
         System.out.println("Setting shooter up to shoot ");
-        addMacro(new MacroTurn(dt, gyro, offsetAngle, 3000));
+	//        addMacro(new MacroTurn(dt, gyro, offsetAngle, 3000));
         addMacro(new ShooterSet(autoShooterAngle, shootingSpeed, shooter, 2500));
         addMacro(new MacroDelay((int)shooterDelay));
         //Shoot our 3 frisbees (4 shots in case of a misfire)

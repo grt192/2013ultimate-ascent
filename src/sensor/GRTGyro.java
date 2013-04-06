@@ -55,7 +55,6 @@ public class GRTGyro extends Sensor {
     }
 
     protected void poll() {
-//        System.out.println(gyro.getAngle());
         setState(KEY_ANGLE, gyro.getAngle());
     }
 
