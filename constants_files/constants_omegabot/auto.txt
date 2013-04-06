@@ -11,7 +11,7 @@ shooterDelay,4000
 autoDistance,3
 
 ##5 Frisbee auto
-auto5Distance, 1.80
+auto5Distance, 1.25
 backupDistance, 0.50
 headingAngle, 160.0
 
