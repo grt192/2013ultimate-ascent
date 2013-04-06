@@ -4,7 +4,6 @@ import actuator.GRTSolenoid;
 import controller.DriveController;
 import controller.MechController;
 import controller.auto.CenterlineAuto;
-import controller.auto.FiveFrisbeeCenterAuto;
 import controller.auto.ThreeFrisbeeAuto;
 import core.GRTConstants;
 import core.GRTMacroController;
@@ -221,9 +220,9 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
             case AUTO_MODE_3_FRISBEE:
                 System.out.println("3 frisbee auto");
                 return AUTO_MODE_3_FRISBEE;
-            case AUTO_MODE_5_FRISBEE:
-                System.out.println("5 frisbee auto");
-                return AUTO_MODE_5_FRISBEE;
+//            case AUTO_MODE_5_FRISBEE:
+//                System.out.println("5 frisbee auto");
+//                return AUTO_MODE_5_FRISBEE;
             case AUTO_MODE_7_FRISBEE:
                 System.out.println("7 Frisbee auto");
                 return AUTO_MODE_DRIVE_CENTER_LEFT;
@@ -258,9 +257,9 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
             case AUTO_MODE_3_FRISBEE:
                 macroController = new ThreeFrisbeeAuto(shooter);
                 break;
-            case AUTO_MODE_5_FRISBEE:
-                macroController = new FiveFrisbeeCenterAuto(dt, shooter, belts, ep, gyro);
-                break;
+//            case AUTO_MODE_5_FRISBEE:
+//                macroController = new FiveFrisbeeCenterAuto(dt, shooter, belts, ep, gyro);
+//                break;
             case AUTO_MODE_7_FRISBEE:
                 macroController = new CenterlineAuto(dt, shooter, belts, ep, gyro);
                 break;
