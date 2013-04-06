@@ -14,6 +14,7 @@ autoDistance,3
 auto5Distance, 1.25
 backupDistance, 0.50
 headingAngle, 160.0
+shakeAngle, 45.0
 
 ##Centerline auto
 #initial x and y position
