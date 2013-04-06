@@ -6,10 +6,13 @@ package controller.auto;
 
 import core.GRTConstants;
 import core.GRTMacroController;
+import macro.MacroTurn;
 import macro.MacroDelay;
 import macro.Shoot;
 import macro.ShooterSet;
 import mechanism.Shooter;
+import mechanism.GRTDriveTrain;
+import sensor.GRTGyro;
 
 /**
  *
@@ -21,10 +24,12 @@ public class ThreeFrisbeeAuto extends GRTMacroController {
     private double shootingSpeed = GRTConstants.getValue("shootingRPMS");
     private double downAngle = GRTConstants.getValue("shooterDown");
     private double shooterDelay = GRTConstants.getValue("shooterDelay");
-    
-    public ThreeFrisbeeAuto(Shooter shooter) {
+    private double offsetAngle = GRTConstants.getValue("offset3Angle");
+
+    public ThreeFrisbeeAuto(Shooter shooter, GRTDriveTrain dt, GRTGyro gyro) {
         //Sets up shooter angle and flywheel speed
         System.out.println("Setting shooter up to shoot ");
+        addMacro(new MacroTurn(dt, gyro, offsetAngle, 3000));
         addMacro(new ShooterSet(autoShooterAngle, shootingSpeed, shooter, 2500));
         addMacro(new MacroDelay((int)shooterDelay));
         //Shoot our 3 frisbees (4 shots in case of a misfire)

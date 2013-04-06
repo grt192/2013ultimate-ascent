@@ -255,7 +255,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         switch (autoMode) {
 
             case AUTO_MODE_3_FRISBEE:
-                macroController = new ThreeFrisbeeAuto(shooter);
+                macroController = new ThreeFrisbeeAuto(shooter, dt, gyro);
                 break;
 //            case AUTO_MODE_5_FRISBEE:
 //                macroController = new FiveFrisbeeCenterAuto(dt, shooter, belts, ep, gyro);

@@ -4,3 +4,4 @@ suite/
 nbproject/private/
 *~
 .DS_Store
+*.swp
