@@ -24,29 +24,28 @@ import sensor.GRTGyro;
  * Five frisbee auto, goes to center of pyramid
  * @author Andrew Duffy <gerberduffy@gmail.com>
  */
-public class FiveFrisbeeAuto extends GRTMacroController {
+public class FiveFrisbeeCenterlineAuto extends GRTMacroController {
 
     private double autoShooterAngle = GRTConstants.getValue("anglePyramidBackCenter");
     private double shootingSpeed = GRTConstants.getValue("shootingRPMS");
     private double downAngle = GRTConstants.getValue("shooterDown");
     private double shooterDelay = GRTConstants.getValue("shooterDelay");
 
-
-    public FiveFrisbeeAuto(GRTDriveTrain dt, Shooter shooter, Belts belts,
+    private double autoDriveDistance = GRTConstants.getValue("auto5Distance");
+    
+    
+    public FiveFrisbeeCenterlineAuto(GRTDriveTrain dt, Shooter shooter, Belts belts,
             ExternalPickup ep, GRTGyro gyro) {
         /**
          * Okay, five frisbee. Starting in the back right corner of the pyramid,
          * we first start by firing our 3 starting frisbees.
          */
-        System.out.println("3 Frisbee Autonomous Activated.");
+        System.out.println("5 Frisbee Centerline Autonomous Activated.");
 
-//                double autoDriveDistance = GRTConstants.getValue(10);
-        double backupDistance = GRTConstants.getValue("backupDistance");
         double shakeAngle = GRTConstants.getValue("shakeAngle");
         //lowers pickup
         GRTMacro lowerPickup = new LowerPickup(ep);
         addMacro(lowerPickup);
-//                concurrentMacros.addMacro(lowerPickup);
 
         //Sets up shooter angle and flywheel speed
         System.out.println("Setting shooter up to shoot ");
@@ -67,7 +66,6 @@ public class FiveFrisbeeAuto extends GRTMacroController {
         addMacro(startPickup);
 
         //spins around, drives over frisbees, comes back  
-        System.out.println("100-something degree turn");
         addMacro(new MacroDrive(dt, autoDriveDistance, 4000));
         addMacro(new MacroTurn(dt, gyro, -shakeAngle, 2000));
         addMacro(new MacroTurn(dt, gyro, shakeAngle, 2000));

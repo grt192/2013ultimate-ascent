@@ -28,6 +28,7 @@ public abstract class GRTMacro extends GRTLoggedProcess {
     private static final int NOTIFY_INITIALIZE = 0;
     private static final int NOTIFY_COMPLETED = 1;
     private static final int NOTIFY_TIMEDOUT = 2;
+    protected boolean alive = true;
 
     /**
      * Creates a new macro.
@@ -88,8 +89,13 @@ public abstract class GRTMacro extends GRTLoggedProcess {
                     ex.printStackTrace();
                 }
             }
-            System.out.println("Killing Macro...");
-            die();
+            
+            if (!isAlive()){
+                System.out.println("Killing Macro...");
+                alive = false;
+                die();
+            }
+            
             System.out.println("Notify that we died.");
             notifyListeners(NOTIFY_COMPLETED);
         }
@@ -141,6 +147,10 @@ public abstract class GRTMacro extends GRTLoggedProcess {
      */
     public abstract void die();
 
+    public boolean isAlive(){
+        return alive;
+    }
+    
     public void addListener(MacroListener l) {
         macroListeners.addElement(l);
     }

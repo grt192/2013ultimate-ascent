@@ -52,7 +52,7 @@ public class GRTMacroController extends EventController implements MacroListener
     }
     
     public void addMacro(GRTMacro m){
-//        System.out.println("Adding a macro: #" + macros.size());
+        System.out.println("GRTMacroController " + getID() + "  adding macro #" + (macros.size() + 1));
         macros.addElement(m);
     }
 
@@ -62,7 +62,8 @@ public class GRTMacroController extends EventController implements MacroListener
             GRTMacro m = (GRTMacro) en.nextElement();
             System.out.println("\tKilling macro " + m);
             m.removeListener(this);    
-            if (!m.isDone() && m.hasInitialized){
+            if (!m.isDone() && m.hasInitialized && m.isAlive()){
+                m.alive = false;
                 m.die();
             }
         }
@@ -83,11 +84,6 @@ public class GRTMacroController extends EventController implements MacroListener
     }
     
     private void startNextMacro() {
-        if (!enabled) {
-            System.out.println("Cannot startNextMacro while unenabled!");
-            return;
-        }
-
         System.out.println("Next macro up to bat!");
         if (++currentIndex < macros.size()) {
             System.out.println("Starting new Macros!");

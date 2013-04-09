@@ -36,6 +36,7 @@ public class FiveFrisbeeAuto extends GRTMacroController {
     //Shooter speed
     private double shootingSpeedMiddlePyramid = GRTConstants.getValue("shootingRPMS");
 
+    private double shootingSpeed = GRTConstants.getValue("shootingRPMS");
     //Shooter absolute lowest point
     private double downAngle = GRTConstants.getValue("shooterDown");
     private double shooterDelay = GRTConstants.getValue("shooterDelay");
@@ -50,7 +51,6 @@ public class FiveFrisbeeAuto extends GRTMacroController {
         System.out.println("30 Point Autonomous Activated.");
 
         double autoDriveDistance = GRTConstants.getValue("auto5Distance");    //Drive angled for 1.80m to pickup the two frisbees centered under the pyramid.
-        double backupDistance = GRTConstants.getValue("backupDistance");
         double headingAngle = GRTConstants.getValue("headingAngle");
         //lowers pickup
         GRTMacro lowerPickup = new LowerPickup(ep);

@@ -110,7 +110,7 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
         
         DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput);
         straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
-
+        System.out.println("MACRODRIVE is instanstiated, drive distance is " + distance);
         GRTConstants.addListener(this);
         updateConstants();
     }
@@ -133,6 +133,7 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
 
         DTController.enable();
         straightController.enable();
+        System.out.println("MACRODRIVE is initialized");
     }
 
 
@@ -158,8 +159,7 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
             straightController.disable();
             straightController.free();
         }
-        
-        DeadReckoner.notifyDrive(getDistanceTraveled());    //N
+//        DeadReckoner.notifyDrive(getDistanceTraveled());    //N
     }
     
     public double getDistanceTraveled() {

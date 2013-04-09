@@ -4,7 +4,8 @@ import actuator.GRTSolenoid;
 import controller.DriveController;
 import controller.MechController;
 import controller.auto.CenterlineAuto;
-import controller.auto.FiveFrisbeeCenterAuto;
+import controller.auto.FiveFrisbeeCenterlineAuto;
+import controller.auto.TestAuto;
 import controller.auto.ThreeFrisbeeAuto;
 import core.GRTConstants;
 import core.GRTMacroController;
@@ -245,11 +246,10 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
     private void defineAutoMacros() {
         clearAutoControllers();
 
-        autoMode = getAutonomousMode(); //Fuck it, we're doing 5. getAutonomousMode(); //Get our autonomous mode
+        autoMode = -10;//getAutonomousMode(); //Fuck it, we're doing 5. getAutonomousMode(); //Get our autonomous mode
 
         Vector macros = new Vector();
-
-
+        
         GRTLogger.logInfo("autoMode = " + autoMode);
         GRTLogger.logInfo("autoMode = " + autoMode);
         GRTLogger.logInfo("autoMode = " + autoMode);
@@ -259,13 +259,15 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 macroController = new ThreeFrisbeeAuto(shooter);
                 break;
             case AUTO_MODE_5_FRISBEE:
-                macroController = new FiveFrisbeeCenterAuto(dt, shooter, belts, ep, gyro);
+                macroController = new FiveFrisbeeCenterlineAuto(dt, shooter, belts, ep, gyro);
                 break;
             case AUTO_MODE_7_FRISBEE:
                 macroController = new CenterlineAuto(dt, shooter, belts, ep, gyro);
                 break;
             default:    //Do nothing
-                return;
+                System.out.println("New testing auto");
+                macroController = new TestAuto(dt, gyro);
+                break;
         }
 
         addAutonomousController(macroController);
