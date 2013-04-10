@@ -55,8 +55,6 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
         this.gyro = gyro;
         
         gyro.reset();
-        
-        this.controller = new PIDController(P, I, D, pidSource, pidOutput);
 
         GRTConstants.addListener(this);
         updateConstants();
@@ -82,6 +80,8 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
     }
     
     public void initialize() {
+        controller = new PIDController(P, I, D, pidSource, pidOutput);
+
         startAngle = gyro.getAngle();
         targetAngle = startAngle + turnAngle;
         controller.setOutputRange(-1, 1);
@@ -94,6 +94,8 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
         P = GRTConstants.getValue("TMP");
         I = GRTConstants.getValue("TMI");
         D = GRTConstants.getValue("TMD");
+        
+        controller = new PIDController(P, I, D, pidSource, pidOutput);
     }
     
     public double getAngleTurned() {
