@@ -76,6 +76,7 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
         if (controller != null) {
             controller.disable();
             controller.free();
+            controller = null;
         }
         DeadReckoner.notifyTurn(getAngleTurned());  //Notify of our last heading
     }

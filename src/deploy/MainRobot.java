@@ -1,12 +1,8 @@
 package deploy;
 
 import actuator.GRTSolenoid;
-import controller.DriveController;
-import controller.MechController;
-import controller.auto.CenterlineAuto;
-import controller.auto.FiveFrisbeeCenterlineAuto;
-import controller.auto.TestAuto;
-import controller.auto.ThreeFrisbeeAuto;
+import controller.*;
+import controller.auto.*;
 import core.GRTConstants;
 import core.GRTMacroController;
 import core.SensorPoller;
@@ -16,18 +12,8 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 import event.listeners.ConstantUpdateListener;
 import logger.GRTLogger;
-import mechanism.Belts;
-import mechanism.Climber;
-import mechanism.ExternalPickup;
-import mechanism.GRTDriveTrain;
-import mechanism.Shooter;
-import sensor.GRTBatterySensor;
-import sensor.GRTEncoder;
-import sensor.GRTGyro;
-import sensor.GRTJoystick;
-import sensor.GRTSwitch;
-import sensor.GRTXboxJoystick;
-import sensor.Potentiometer;
+import mechanism.*;
+import sensor.*;
 
 /**
  * Constructor for the main robot. Put all robot components here.
@@ -245,7 +231,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
     private void defineAutoMacros() {
         clearAutoControllers();
 
-        autoMode = -10;//getAutonomousMode(); //Fuck it, we're doing 5. getAutonomousMode(); //Get our autonomous mode
+        autoMode = getAutonomousMode(); //Fuck it, we're doing 5. getAutonomousMode(); //Get our autonomous mode
 
         GRTLogger.logInfo("autoMode = " + autoMode);
         GRTLogger.logInfo("autoMode = " + autoMode);
@@ -262,12 +248,13 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 macroController = new CenterlineAuto(dt, shooter, belts, ep, gyro);
                 break;
             default:    //Do nothing
+                macroController = null;
                 System.out.println("New testing auto");
-                macroController = new TestAuto(dt, gyro);
                 break;
         }
-
-        addAutonomousController(macroController);
+        
+        if (macroController != null)
+            addAutonomousController(macroController);
     }
 
     public final void updateConstants() {

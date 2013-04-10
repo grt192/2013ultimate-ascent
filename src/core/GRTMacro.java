@@ -126,7 +126,7 @@ public abstract class GRTMacro extends GRTLoggedProcess {
      * Resets the macro, as if it had never began.
      */
     public void reset() {
-        hasCompletedExecution = hasStarted = hasTimedOut = false;
+        hasCompletedExecution = hasStarted = hasTimedOut = alive = false;
     }
 
     /**

@@ -60,7 +60,6 @@ public class GRTMacroController extends EventController implements MacroListener
         System.out.println("Disabling macrocontroller");
         for (Enumeration en = macros.elements(); en.hasMoreElements();) {
             GRTMacro m = (GRTMacro) en.nextElement();
-            System.out.println("\tKilling macro " + m);
             m.removeListener(this);    
             m.kill();
         }

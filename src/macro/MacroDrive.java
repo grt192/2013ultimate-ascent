@@ -108,16 +108,13 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
         this.leftEncoder = dt.getLeftEncoder();
         this.rightEncoder = dt.getRightEncoder();
         
-        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput);
-        straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
-        System.out.println("MACRODRIVE is instanstiated, drive distance is " + distance);
         GRTConstants.addListener(this);
         updateConstants();
     }
 
     protected void initialize() {
-        dt.setMotorSpeeds(velocity, velocity);
-
+        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput);
+        straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
         
         leftInitialDistance = leftEncoder.getDistance();
         rightInitialDistance = rightEncoder.getDistance();
@@ -154,10 +151,13 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
         if (DTController != null) {
             DTController.disable();
             DTController.free();
+            DTController = null;
         }
+        
         if (straightController != null) {
             straightController.disable();
             straightController.free();
+            straightController = null;
         }
 //        DeadReckoner.notifyDrive(getDistanceTraveled());    //N
     }
@@ -175,5 +175,8 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
         CD = GRTConstants.getValue("DMCD");
         TOLERANCE = GRTConstants.getValue("DMTol");
         MAX_MOTOR_OUTPUT = GRTConstants.getValue("DMMax");
+        
+        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput);
+        straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
     }
 }
