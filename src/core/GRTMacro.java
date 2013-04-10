@@ -28,7 +28,7 @@ public abstract class GRTMacro extends GRTLoggedProcess {
     private static final int NOTIFY_INITIALIZE = 0;
     private static final int NOTIFY_COMPLETED = 1;
     private static final int NOTIFY_TIMEDOUT = 2;
-    protected boolean alive = true;
+    boolean alive = false;
 
     /**
      * Creates a new macro.
@@ -70,6 +70,7 @@ public abstract class GRTMacro extends GRTLoggedProcess {
             logInfo("Initializing Macro...");
             initialize();
             hasInitialized = true;
+            alive = true;
             notifyListeners(NOTIFY_INITIALIZE);
             this.startTime = System.currentTimeMillis();
 
@@ -90,11 +91,7 @@ public abstract class GRTMacro extends GRTLoggedProcess {
                 }
             }
             
-            if (!isAlive()){
-                System.out.println("Killing Macro...");
-                alive = false;
-                die();
-            }
+            kill();
             
             System.out.println("Notify that we died.");
             notifyListeners(NOTIFY_COMPLETED);
@@ -142,10 +139,18 @@ public abstract class GRTMacro extends GRTLoggedProcess {
      */
     protected abstract void perform();
 
+    protected abstract void die();
+
     /**
      * After executing, or to forcibly halt a macro
      */
-    public abstract void die();
+    public void kill() {
+        if (isAlive()) {
+            System.out.println("Killing macro: " + name);
+            alive = false;
+            die();
+        }
+    }
 
     public boolean isAlive(){
         return alive;

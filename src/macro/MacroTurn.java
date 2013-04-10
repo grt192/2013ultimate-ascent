@@ -71,7 +71,7 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
         }
     }
 
-    public void die() {
+    protected void die() {
         hasCompletedExecution = true;
         if (controller != null) {
             controller.disable();

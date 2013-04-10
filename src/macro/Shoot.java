@@ -35,7 +35,7 @@ public class Shoot extends GRTMacro {
         hasCompletedExecution = true;
     }
 
-    public void die() {        
+    protected void die() {        
     }
 
     protected void initialize() {

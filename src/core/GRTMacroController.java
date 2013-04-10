@@ -62,10 +62,7 @@ public class GRTMacroController extends EventController implements MacroListener
             GRTMacro m = (GRTMacro) en.nextElement();
             System.out.println("\tKilling macro " + m);
             m.removeListener(this);    
-            if (!m.isDone() && m.hasInitialized && m.isAlive()){
-                m.alive = false;
-                m.die();
-            }
+            m.kill();
         }
     }   
 

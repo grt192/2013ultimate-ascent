@@ -33,7 +33,7 @@ public class AutoPickup extends GRTMacro {
         hasCompletedExecution = true;
     }
 
-    public void die() {
+    protected void die() {
     }
     
 }

@@ -32,7 +32,7 @@ public class MacroDelay extends GRTMacro {
         }
     }
 
-    public void die() {        
+    protected void die() {        
     }
 
     protected void initialize() {

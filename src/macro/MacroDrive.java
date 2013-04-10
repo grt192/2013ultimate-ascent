@@ -148,7 +148,7 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
         }
     }
 
-    public void die() {
+    protected void die() {
         hasCompletedExecution = true;
         dt.setMotorSpeeds(0, 0);
         if (DTController != null) {

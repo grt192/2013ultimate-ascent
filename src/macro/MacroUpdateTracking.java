@@ -35,7 +35,7 @@ public class MacroUpdateTracking extends GRTMacro {
     /**
      * Kill the macro
      */
-    public void die() {
+    protected void die() {
         //I regret that I have but one life to give for my robot.
     }
     

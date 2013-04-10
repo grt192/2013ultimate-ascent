@@ -5,7 +5,6 @@
 package macro;
 
 import core.GRTMacro;
-import edu.wpi.first.wpilibj.Timer;
 import mechanism.Shooter;
 
 /**
@@ -38,7 +37,7 @@ public class ShooterSet extends GRTMacro {
         hasCompletedExecution = true;        
     }
 
-    public void die() {
+    protected void die() {
     }
 
     protected void initialize() {
