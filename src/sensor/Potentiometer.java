@@ -14,7 +14,7 @@ import java.util.Vector;
  */
 public class Potentiometer extends Sensor {
 
-    private static final int FILTER_AVG_NUM = 5;
+    private static final int FILTER_AVG_NUM = 1;
     private double[] previousValues = new double[FILTER_AVG_NUM];
     private int pollNum;
     

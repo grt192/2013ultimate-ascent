@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 import event.listeners.ConstantUpdateListener;
-import java.util.Vector;
 import logger.GRTLogger;
 import mechanism.Belts;
 import mechanism.Climber;
@@ -248,15 +247,13 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
 
         autoMode = -10;//getAutonomousMode(); //Fuck it, we're doing 5. getAutonomousMode(); //Get our autonomous mode
 
-        Vector macros = new Vector();
-        
         GRTLogger.logInfo("autoMode = " + autoMode);
         GRTLogger.logInfo("autoMode = " + autoMode);
         GRTLogger.logInfo("autoMode = " + autoMode);
         switch (autoMode) {
 
             case AUTO_MODE_3_FRISBEE:
-                macroController = new ThreeFrisbeeAuto(shooter);
+                macroController = new ThreeFrisbeeAuto(shooter, dt, gyro);
                 break;
             case AUTO_MODE_5_FRISBEE:
                 macroController = new FiveFrisbeeCenterlineAuto(dt, shooter, belts, ep, gyro);
