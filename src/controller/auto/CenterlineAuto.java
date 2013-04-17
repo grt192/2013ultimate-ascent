@@ -39,7 +39,7 @@ public class CenterlineAuto extends GRTMacroController {
          * Starting in the center of the pyramid,
          * we first start by firing our 3 starting frisbees.
          */
-        System.out.println("9001 Point Autonomous Activated.");
+        System.out.println("Massive nerd Point Autonomous Activated.");
 
         //lowers pickup
         GRTMacro lowerPickup = new LowerPickup(ep);

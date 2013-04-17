@@ -78,6 +78,8 @@ public class FiveFrisbeeAuto extends GRTMacroController {
 	addMacro(new MacroTurn(dt, gyro, 180.0, 2000));
         //spins around, drives over frisbees, comes back  
 	addMacro(new MacroDrive(dt, autoDriveDistance, 2000));
+        addMacro(new MacroDrive(dt, -autoDriveDistance, 2000));
+        addMacro(new MacroTurn(dt, gyro, -180.0, 2000));
 	//Shake it!
         addMacro(new MacroTurn(dt, gyro, -shakeAngle, 2000));
         addMacro(new MacroTurn(dt, gyro, shakeAngle, 2000));

@@ -19,6 +19,10 @@ headingAngle, 160.0
 ##5 Frisbee Center Auto
 auto5CenterAuto, 2.20
 
+##7 Frisbee Center Auto
+7autoPyramidDistance, 2
+7autoExtendedDistance, 2
+
 ##Centerline auto
 #initial x and y position
 CenterlineInitialX,0

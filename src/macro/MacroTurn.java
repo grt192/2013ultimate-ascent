@@ -61,12 +61,16 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
     }
 
     protected void perform() {
+        System.out.println("Turn macro current angle: " + (gyro.getAngle() - startAngle));
         if (controller.onTarget()) {
-            if (previouslyOnTarget)
+            System.out.println("On target");
+            if (previouslyOnTarget) {
+                System.out.println("Done turning");
                 hasCompletedExecution = true;
-            else
+            } else
                 previouslyOnTarget = true;
-        }
+        } else
+            previouslyOnTarget = false;
     }
 
     protected void die() {
