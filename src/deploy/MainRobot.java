@@ -28,6 +28,9 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
     private static final int AUTO_MODE_5_FRISBEE = 1;
     private static final int AUTO_MODE_7_FRISBEE = 2;
     private static final int AUTO_MODE_DRIVE_CENTER_LEFT = 3;
+    private static final int AUTO_MODE_5_CENTERLINE_FRISBEE = 4;
+    private static final int AUTO_MODE_CENTERLINE = 5;
+
     //Private i-vars.
     private GRTDriveTrain dt;
     private Belts belts;
@@ -212,6 +215,15 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 return AUTO_MODE_5_FRISBEE;
             case AUTO_MODE_7_FRISBEE:
                 System.out.println("7 Frisbee auto");
+                return AUTO_MODE_DRIVE_CENTER_LEFT;
+            case AUTO_MODE_5_CENTERLINE_FRISBEE:
+                System.out.println("Pick up 2 from Centerline");
+                return AUTO_MODE_5_CENTERLINE_FRISBEE;
+            case AUTO_MODE_CENTERLINE:
+                System.out.println("Pick up 4 from Centerline");
+                return AUTO_MODE_CENTERLINE;
+            case AUTO_MODE_DRIVE_CENTER_LEFT:
+                System.out.println("Drive to side");
                 return AUTO_MODE_DRIVE_CENTER_LEFT;
             default:
                 //We do nothing

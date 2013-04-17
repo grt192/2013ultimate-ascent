@@ -51,7 +51,7 @@ public class FiveFrisbeeAuto extends GRTMacroController {
         System.out.println("30 Point Autonomous Activated.");
 
         double autoDriveDistance = GRTConstants.getValue("auto5Distance");    //Drive angled for 1.80m to pickup the two frisbees centered under the pyramid.
-        double headingAngle = GRTConstants.getValue("headingAngle");
+//        double headingAngle = GRTConstants.getValue("headingAngle");
         //lowers pickup
         GRTMacro lowerPickup = new LowerPickup(ep);
         addMacro(lowerPickup);
