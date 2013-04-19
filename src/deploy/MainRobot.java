@@ -215,7 +215,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 return AUTO_MODE_5_FRISBEE;
             case AUTO_MODE_7_FRISBEE:
                 System.out.println("7 Frisbee auto");
-                return AUTO_MODE_DRIVE_CENTER_LEFT;
+                return AUTO_MODE_7_FRISBEE;
             case AUTO_MODE_5_CENTERLINE_FRISBEE:
                 System.out.println("Pick up 2 from Centerline");
                 return AUTO_MODE_5_CENTERLINE_FRISBEE;
@@ -257,7 +257,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 macroController = new FiveFrisbeeCenterlineAuto(dt, shooter, belts, ep, gyro);
                 break;
             case AUTO_MODE_7_FRISBEE:
-                macroController = new CenterlineAuto(dt, shooter, belts, ep, gyro);
+                macroController = new SevenFrisbeeAuto(shooter, dt, gyro, ep, belts);
                 break;
             case AUTO_MODE_5_CENTERLINE_FRISBEE:
                 macroController = new FiveFrisbeeCenterlineAuto(dt, shooter, belts, ep, gyro);

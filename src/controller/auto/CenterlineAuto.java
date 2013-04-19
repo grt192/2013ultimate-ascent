@@ -62,11 +62,11 @@ public class CenterlineAuto extends GRTMacroController {
         addMacro(startPickup);
         
         //Important Constants
-        double startingX = GRTConstants.getValue("CenterlineInitialX"); //Starting position on the field: X
-        double startingY = GRTConstants.getValue("CenterlineInitialY"); //Starting position on the field: Y
+               double startingY = GRTConstants.getValue("CenterlineInitialY"); //Starting position on the field: Y
         double startingAngle = GRTConstants.getValue("CenterlineStartingAngle"); //Starting heading on the field
         
         //Update the global DeadReckoner with our starting pose.
+         double startingX = GRTConstants.getValue("CenterlineInitialX"); //Starting position on the field: X
         DeadReckoner.setPosition(startingX, startingY, startingAngle);
 
         //Turning constants

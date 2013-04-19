@@ -159,7 +159,7 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
             straightController.free();
             straightController = null;
         }
-//        DeadReckoner.notifyDrive(getDistanceTraveled());    //N
+        DeadReckoner.notifyDrive(getDistanceTraveled());
     }
     
     public double getDistanceTraveled() {

@@ -56,6 +56,8 @@ public class MechController extends EventController implements GRTJoystickListen
     private boolean xBoxBeltsRunning = false;
     private boolean joystickBeltsRunning = false;
     private double shotDelay = 0.5;
+    
+    private MacroTurn testTurn;
 
     public MechController(GRTJoystick leftJoy, GRTJoystick rightJoy,
             GRTXboxJoystick secondary,
@@ -151,9 +153,20 @@ public class MechController extends EventController implements GRTJoystickListen
                     case GRTJoystick.KEY_BUTTON_9:
                         GRTConstants.updateConstants();
                         break;
-                        
+                     
                     case GRTJoystick.KEY_BUTTON_7:
-                        (new MacroTurn(dt, gyro, 45, 4000)).execute();
+                        if (testTurn != null) {
+                            testTurn.kill();
+                        }
+                        testTurn = (new MacroTurn(dt, gyro, 45, 4000));
+                        testTurn.execute();
+                        break;
+                    case GRTJoystick.KEY_BUTTON_6:
+                        if (testTurn != null) {
+                            testTurn.kill();
+                        }
+                        testTurn = (new MacroTurn(dt, gyro, 180, 4000));
+                        testTurn.execute();
                         break;
                 }
             } else if (e.getSource() == secondary) {
