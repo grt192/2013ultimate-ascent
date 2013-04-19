@@ -74,6 +74,7 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
     }
 
     protected void die() {
+        System.out.println("Killing turn macro");
         hasCompletedExecution = true;
         if (controller != null) {
             controller.disable();
@@ -98,6 +99,8 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
         P = GRTConstants.getValue("TMP");
         I = GRTConstants.getValue("TMI");
         D = GRTConstants.getValue("TMD");
+        
+        kill();
         
         controller = new PIDController(P, I, D, pidSource, pidOutput);
     }

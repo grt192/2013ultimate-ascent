@@ -184,16 +184,16 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
 
         System.out.println("Mechs created");
 
+        gyro = new GRTGyro(1, "Turning Gyro");
+        sp.addSensor(gyro);
+        
         //Mechcontroller
         MechController mechController = new MechController(leftPrimary, rightPrimary, secondary,
-                shooter, ep, climber, belts, dt);
+                shooter, ep, climber, belts, dt, gyro);
 
         addTeleopController(mechController);
 
         //Autonomous initializing
-        gyro = new GRTGyro(1, "Turning Gyro");
-        sp.addSensor(gyro);
-
         System.out.println("Start macro creation");
         defineAutoMacros();
 
@@ -258,6 +258,9 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 break;
             case AUTO_MODE_7_FRISBEE:
                 macroController = new CenterlineAuto(dt, shooter, belts, ep, gyro);
+                break;
+            case AUTO_MODE_5_CENTERLINE_FRISBEE:
+                macroController = new FiveFrisbeeCenterlineAuto(dt, shooter, belts, ep, gyro);
                 break;
             default:    //Do nothing
                 macroController = null;

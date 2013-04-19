@@ -12,11 +12,13 @@ import event.listeners.ConstantUpdateListener;
 import event.listeners.GRTJoystickListener;
 import event.listeners.PotentiometerListener;
 import event.listeners.XboxJoystickListener;
+import macro.MacroTurn;
 import mechanism.Belts;
 import mechanism.Climber;
 import mechanism.ExternalPickup;
 import mechanism.GRTDriveTrain;
 import mechanism.Shooter;
+import sensor.GRTGyro;
 import sensor.GRTJoystick;
 import sensor.GRTXboxJoystick;
 
@@ -36,6 +38,7 @@ public class MechController extends EventController implements GRTJoystickListen
     private ExternalPickup pickerUpper;
     private Shooter shooter;
     private GRTDriveTrain dt;
+    private GRTGyro gyro;
 
     private double shootingSpeed;
 
@@ -58,7 +61,7 @@ public class MechController extends EventController implements GRTJoystickListen
             GRTXboxJoystick secondary,
             Shooter shooter, ExternalPickup pickerUpper,
             Climber climber, Belts belts,
-            GRTDriveTrain dt) {
+            GRTDriveTrain dt, GRTGyro gyro) {
         super("Mechanism Controller");
         this.leftJoy = leftJoy;
         this.rightJoy = rightJoy;
@@ -72,6 +75,8 @@ public class MechController extends EventController implements GRTJoystickListen
         this.dt = dt;
 
         GRTConstants.addListener(this);
+        
+        this.gyro = gyro;
 
         updateConstants();
     }
@@ -145,6 +150,10 @@ public class MechController extends EventController implements GRTJoystickListen
                         break;
                     case GRTJoystick.KEY_BUTTON_9:
                         GRTConstants.updateConstants();
+                        break;
+                        
+                    case GRTJoystick.KEY_BUTTON_7:
+                        (new MacroTurn(dt, gyro, 45, 4000)).execute();
                         break;
                 }
             } else if (e.getSource() == secondary) {
