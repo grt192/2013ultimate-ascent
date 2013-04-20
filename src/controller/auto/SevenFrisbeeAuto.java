@@ -47,25 +47,25 @@ public class SevenFrisbeeAuto extends GRTMacroController {
             addMacro(new Shoot(shooter, 500));
         }
         addMacro(new ShooterSet(downAngle, 0, shooter, 2500));
-   
-        
+
+
         //Turn around
-        addMacro( new MacroTurn(dt, gyro, 180.0, 3000));
-        
-        addMacro( new AutoPickup(ep, belts, 500));
-          
+        addMacro(new MacroTurn(dt, gyro, 180.0, 3000));
+
+        addMacro(new AutoPickup(ep, belts, 500));
+
         //Drive to the center of the pyramid
         addMacro(new MacroDrive(dt, centerDistance, 2000));
         //Shake to pick stuff up.
-        addMacro(new MacroTurn(dt, gyro, shakeAngle, 1500));
-        addMacro(new MacroTurn(dt, gyro, -2 * shakeAngle, 1500));
-        addMacro(new MacroTurn(dt, gyro, shakeAngle, 1500));
+        //        addMacro(new MacroTurn(dt, gyro, shakeAngle, 1500));
+        //        addMacro(new MacroTurn(dt, gyro, -2 * shakeAngle, 1500));
+        //        addMacro(new MacroTurn(dt, gyro, shakeAngle, 1500));
 
         //Drive to the last pair of frisbees
         addMacro(new MacroDrive(dt, extendedDistance, 2000));
         //Shake to pick stuff up.
-        addMacro(new MacroTurn(dt, gyro, shakeAngle, 2000));
-        addMacro(new MacroTurn(dt, gyro, -shakeAngle, 2000));
+        //        addMacro(new MacroTurn(dt, gyro, shakeAngle, 2000));
+        //        addMacro(new MacroTurn(dt, gyro, -shakeAngle, 2000));
         //Drive back to where we started.
         addMacro(new MacroDrive(dt, -centerDistance - extendedDistance, 2000));
         addMacro(new MacroTurn(dt, gyro, 180.0, 1500));

@@ -30,9 +30,6 @@ public class FiveFrisbeeAuto extends GRTMacroController {
     private double autoShooterAngle1 = GRTConstants.getValue("anglePyramidBackCenter");
     private double autoShooterAngle2 = GRTConstants.getValue("anglePyramidMiddleCenter");
 
-    //Amount to shake left and right
-    private double shakeAngle = GRTConstants.getValue("shakeAngle");
-
     //Shooter speed
     private double shootingSpeedMiddlePyramid = GRTConstants.getValue("shootingRPMS");
 
@@ -80,9 +77,6 @@ public class FiveFrisbeeAuto extends GRTMacroController {
 	addMacro(new MacroDrive(dt, autoDriveDistance, 2000));
         addMacro(new MacroDrive(dt, -autoDriveDistance, 2000));
         addMacro(new MacroTurn(dt, gyro, -180.0, 2000));
-	//Shake it!
-        addMacro(new MacroTurn(dt, gyro, -shakeAngle, 2000));
-        addMacro(new MacroTurn(dt, gyro, shakeAngle, 2000));
 
 	//Setup the shooter for our second two frisbees
         addMacro(new ShooterSet(autoShooterAngle2, shootingSpeed, shooter, 2500));	

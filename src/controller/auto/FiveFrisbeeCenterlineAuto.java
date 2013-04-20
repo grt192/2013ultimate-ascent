@@ -42,7 +42,6 @@ public class FiveFrisbeeCenterlineAuto extends GRTMacroController {
          */
         System.out.println("5 Frisbee Centerline Autonomous Activated.");
 
-        double shakeAngle = GRTConstants.getValue("shakeAngle");
         //lowers pickup
         GRTMacro lowerPickup = new LowerPickup(ep);
         addMacro(lowerPickup);
@@ -67,8 +66,6 @@ public class FiveFrisbeeCenterlineAuto extends GRTMacroController {
 
         //spins around, drives over frisbees, comes back  
         addMacro(new MacroDrive(dt, autoDriveDistance, 4000));
-        addMacro(new MacroTurn(dt, gyro, -shakeAngle, 2000));
-        addMacro(new MacroTurn(dt, gyro, shakeAngle, 2000));
         addMacro(new ShooterSet(autoShooterAngle, shootingSpeed, shooter, 3500));
         addMacro(new MacroDrive(dt, -autoDriveDistance, 4000));
 
