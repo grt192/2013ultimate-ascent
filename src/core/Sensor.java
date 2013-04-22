@@ -28,7 +28,7 @@ public abstract class Sensor extends GRTLoggedProcess {
      * @param numData number of pieces of data.
      */
     public Sensor(String name, int numData) {
-        super(name, -1);
+        super(name);
         logInfo("New non-threaded sensor as well!");
         running = true;
         data = new double[numData];

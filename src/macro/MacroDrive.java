@@ -19,7 +19,6 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
 
     private GRTDriveTrain dt;
     private double distance = 0;
-    private double velocity = 1;
     private double leftInitialDistance;
     private double rightInitialDistance;
     private PIDController DTController;
@@ -68,15 +67,7 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
         public void pidWrite(double output) {
             double modifier = Math.abs(output);
             //concise code is better code
-            rightSF = 2 - modifier - (leftSF = 1 - (speed * output < 0 ? modifier : 0));
-            
-            /*if (output * speed < 0) { //if their product is less than zero
-                leftSF = 1 - modifier; //leftSF is now low 
-                rightSF = 1;
-            } else {
-                rightSF = 1 - modifier;
-                leftSF = 1;
-            }*/            
+            rightSF = 2 - modifier - (leftSF = 1 - (speed * output < 0 ? modifier : 0)); 
             
             updateMotorSpeeds();
         }
@@ -108,57 +99,40 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
         this.leftEncoder = dt.getLeftEncoder();
         this.rightEncoder = dt.getRightEncoder();
         
-        GRTConstants.addListener(this);
+        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput);
+        straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
+        straightController.setOutputRange(-1, 1);
+        
         updateConstants();
+        GRTConstants.addListener(this);
     }
 
     protected void initialize() {
-        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput);
-        straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
-        
         leftInitialDistance = leftEncoder.getDistance();
         rightInitialDistance = rightEncoder.getDistance();
 
-
-        DTController.setAbsoluteTolerance(TOLERANCE);
-
         DTController.setSetpoint(distance);
         straightController.setSetpoint(0);
-
-        DTController.setOutputRange(-MAX_MOTOR_OUTPUT, MAX_MOTOR_OUTPUT);
-        straightController.setOutputRange(-1.0, 1.0);
 
         DTController.enable();
         straightController.enable();
         System.out.println("MACRODRIVE is initialized");
     }
 
-
-
     protected void perform() {
         if (DTController.onTarget()) {
             System.out.println("On target!");
             if (previouslyOnTarget)
-                hasCompletedExecution = true;
+                notifyFinished();
             else
                 previouslyOnTarget = true;
         }
     }
 
     protected void die() {
-        hasCompletedExecution = true;
         dt.setMotorSpeeds(0, 0);
-        if (DTController != null) {
-            DTController.disable();
-            DTController.free();
-            DTController = null;
-        }
-        
-        if (straightController != null) {
-            straightController.disable();
-            straightController.free();
-            straightController = null;
-        }
+        DTController.disable();
+        straightController.disable();
         DeadReckoner.notifyDrive(getDistanceTraveled());
     }
     
@@ -167,8 +141,6 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
     }
 
     public final void updateConstants() {
-        kill();
-        
         DTP = GRTConstants.getValue("DMP");
         DTI = GRTConstants.getValue("DMI");
         DTD = GRTConstants.getValue("DMD");
@@ -178,7 +150,9 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
         TOLERANCE = GRTConstants.getValue("DMTol");
         MAX_MOTOR_OUTPUT = GRTConstants.getValue("DMMax");
         
-        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput);
-        straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
+        DTController.setPID(DTP, DTI, DTD);
+        straightController.setPID(CP, CI, CD);
+        DTController.setAbsoluteTolerance(TOLERANCE);
+        DTController.setOutputRange(-MAX_MOTOR_OUTPUT, MAX_MOTOR_OUTPUT);
     }
 }

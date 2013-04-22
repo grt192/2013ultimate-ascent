@@ -17,18 +17,18 @@ import java.util.Vector;
  */
 public abstract class GRTMacro extends GRTLoggedProcess {
 
-    protected boolean hasCompletedExecution = false;
-    protected boolean hasTimedOut = false;
-    protected boolean hasInitialized = false;
-    private Vector macroListeners;
+    private boolean hasCompletedExecution = false;
+    private boolean hasTimedOut = false;
+    private boolean hasInitialized = false;
     private boolean hasStarted = false;
-    int timeout;
+    private boolean alive = false;
+    private Vector macroListeners;
+    private int timeout;
     private long startTime;
     private int pollTime;
     private static final int NOTIFY_INITIALIZE = 0;
     private static final int NOTIFY_COMPLETED = 1;
     private static final int NOTIFY_TIMEDOUT = 2;
-    boolean alive = false;
 
     /**
      * Creates a new macro.
@@ -74,20 +74,19 @@ public abstract class GRTMacro extends GRTLoggedProcess {
             notifyListeners(NOTIFY_INITIALIZE);
             this.startTime = System.currentTimeMillis();
 
-            while (!hasCompletedExecution && !hasTimedOut) {
-                if ((System.currentTimeMillis() - startTime) > timeout) {
-                    hasTimedOut = true;
-                    hasCompletedExecution = true;
-                    notifyListeners(NOTIFY_TIMEDOUT);
-                    break;
-                }
-
+            while (!hasCompletedExecution) {
                 perform();
 
                 try {
                     Thread.sleep(pollTime);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
+                }
+                
+                if ((System.currentTimeMillis() - startTime) > timeout) {
+                    hasCompletedExecution = true;
+                    hasTimedOut = true;
+                    notifyListeners(NOTIFY_TIMEDOUT);
                 }
             }
             
@@ -128,6 +127,10 @@ public abstract class GRTMacro extends GRTLoggedProcess {
     public void reset() {
         hasCompletedExecution = hasStarted = hasTimedOut = alive = false;
     }
+    
+    public boolean isAlive(){
+        return alive;
+    }
 
     /**
      * Macro initialization.
@@ -140,6 +143,13 @@ public abstract class GRTMacro extends GRTLoggedProcess {
     protected abstract void perform();
 
     protected abstract void die();
+    
+    /**
+     * Call this to indicate that the loop should no longer run.
+     */
+    protected final void notifyFinished() {
+        hasCompletedExecution = true;
+    }
 
     /**
      * After executing, or to forcibly halt a macro
@@ -147,13 +157,10 @@ public abstract class GRTMacro extends GRTLoggedProcess {
     public void kill() {
         if (isAlive()) {
             System.out.println("Killing macro: " + name);
+            hasCompletedExecution = true;
             alive = false;
             die();
         }
-    }
-
-    public boolean isAlive(){
-        return alive;
     }
     
     public void addListener(MacroListener l) {

@@ -30,6 +30,7 @@ public class MacroUpdateTracking extends GRTMacro {
      */
     protected void perform() {
         vt.updateTrackingData();
+        notifyFinished();
     }
 
     /**

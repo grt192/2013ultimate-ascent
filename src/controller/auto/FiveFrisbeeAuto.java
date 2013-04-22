@@ -30,9 +30,6 @@ public class FiveFrisbeeAuto extends GRTMacroController {
     private double autoShooterAngle1 = GRTConstants.getValue("anglePyramidBackCenter");
     private double autoShooterAngle2 = GRTConstants.getValue("anglePyramidMiddleCenter");
 
-    //Shooter speed
-    private double shootingSpeedMiddlePyramid = GRTConstants.getValue("shootingRPMS");
-
     private double shootingSpeed = GRTConstants.getValue("shootingRPMS");
     //Shooter absolute lowest point
     private double downAngle = GRTConstants.getValue("shooterDown");
@@ -59,10 +56,7 @@ public class FiveFrisbeeAuto extends GRTMacroController {
         addMacro(new MacroDelay((int)shooterDelay));
 	
         //Shoot our 3 frisbees (4 shots in case of a misfire)
-        for (int i = 0; i < 4; i++) {
-            System.out.println("\tShooting a frisbee!");
-            addMacro(new Shoot(shooter, 500));
-        }
+        addMacro(new Shoot(shooter, 500, 4));
 
         //lowers shooter and starts up EP as it starts driving
         ShooterSet lowerShooter = new ShooterSet(downAngle, 0, shooter, 3500);
@@ -81,9 +75,7 @@ public class FiveFrisbeeAuto extends GRTMacroController {
 	//Setup the shooter for our second two frisbees
         addMacro(new ShooterSet(autoShooterAngle2, shootingSpeed, shooter, 2500));	
 
-        for (int i = 0; i < 5; i++) {
-            addMacro(new Shoot(shooter, 500));
-        }
+        addMacro(new Shoot(shooter, 500, 5));
         //spins down shooter and lowers it prior to teleop
         addMacro(new ShooterSet(downAngle, 0, shooter, 1000));
     }

@@ -26,10 +26,11 @@ public class MacroDelay extends GRTMacro {
     protected void perform() {
         try {
             Thread.sleep(timeout);
-            hasCompletedExecution = true;
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
+        
+        notifyFinished();
     }
 
     protected void die() {        

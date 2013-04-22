@@ -29,10 +29,10 @@ public class SevenFrisbeeAuto extends GRTMacroController {
     private double shootingSpeed = GRTConstants.getValue("shootingRPMS");
     private double downAngle = GRTConstants.getValue("shooterDown");
     private double shooterDelay = GRTConstants.getValue("shooterDelay");
-    private double offsetAngle = GRTConstants.getValue("offset3Angle");
+//    private double offsetAngle = GRTConstants.getValue("offset3Angle");
     private double centerDistance = GRTConstants.getValue("7autoPyramidDistance");
     private double extendedDistance = GRTConstants.getValue("7autoExtendedDistance");
-    private double shakeAngle = GRTConstants.getValue("shakeAngle");
+//    private double shakeAngle = GRTConstants.getValue("shakeAngle");
 
     public SevenFrisbeeAuto(Shooter shooter, GRTDriveTrain dt, GRTGyro gyro, ExternalPickup ep, Belts belts) {
         //Sets up shooter angle and flywheel speed
@@ -42,10 +42,7 @@ public class SevenFrisbeeAuto extends GRTMacroController {
         addMacro(new LowerPickup(ep));
         addMacro(new MacroDelay((int) shooterDelay));
         //Shoot our 3 frisbees (4 shots in case of a misfire)
-        for (int i = 0; i < 4; i++) {
-            System.out.println("\tShooting a frisbee!");
-            addMacro(new Shoot(shooter, 500));
-        }
+        addMacro(new Shoot(shooter, 500, 4));
         addMacro(new ShooterSet(downAngle, 0, shooter, 2500));
 
 
@@ -73,11 +70,8 @@ public class SevenFrisbeeAuto extends GRTMacroController {
         addMacro(new ShooterSet(autoShooterAngle, shootingSpeed, shooter, 2500));
         addMacro(new LowerPickup(ep));
         addMacro(new MacroDelay((int) shooterDelay));
-        //Shoot our 3 frisbees (4 shots in case of a misfire)
-        for (int i = 0; i < 4; i++) {
-            System.out.println("\tShooting a frisbee!");
-            addMacro(new Shoot(shooter, 500));
-        }
+        //Shoot our 4 frisbees (5 shots in case of a misfire)
+        addMacro(new Shoot(shooter, 500, 4));
 
     }
 }

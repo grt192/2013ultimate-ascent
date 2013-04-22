@@ -49,10 +49,7 @@ public class CenterlineAuto extends GRTMacroController {
         System.out.println("Setting shooter up to shoot ");
 
         //Shoot our 3 frisbees (4 shots in case of a misfire)
-        for (int i = 0; i < 4; i++) {
-            System.out.println("\tShooting a frisbee!");
-            addMacro(new Shoot(shooter, 500));
-        }
+        addMacro(new Shoot(shooter, 500, 4));
 
         //lowers shooter and starts up EP as it starts driving
         ShooterSet lowerShooter = new ShooterSet(downAngle, 0, shooter, 3500);
@@ -97,10 +94,7 @@ public class CenterlineAuto extends GRTMacroController {
         double turnToShoot = DeadReckoner.turnAngle(startingAngle); //Find the angle we need to turn back to to shoot.
         addMacro(new MacroTurn(dt, gyro, turnToShoot, 2000));
         
-        //Shoot some shit.
-        for (int i = 0; i < 5; i++) {
-            addMacro(new Shoot(shooter, 500));
-        }
+        addMacro(new Shoot(shooter, 500, 5));
         
         //spins down shooter and lowers it prior to teleop
         addMacro(new ShooterSet(downAngle, 0, shooter, 1000));

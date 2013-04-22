@@ -20,9 +20,9 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
     private double targetAngle;
     private double startAngle;
     private final double turnAngle;
-    private GRTGyro gyro;
-    private GRTDriveTrain dt;
-    private PIDController controller;
+    private final GRTGyro gyro;
+    private final GRTDriveTrain dt;
+    private static PIDController controller;
     private double P;
     private double I;
     private double D;
@@ -54,10 +54,10 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
         this.turnAngle = turnAngle;
         this.gyro = gyro;
         
-        gyro.reset();
-
-        GRTConstants.addListener(this);
+        controller = new PIDController(0, 0, 0, pidSource, pidOutput);
+        
         updateConstants();
+        GRTConstants.addListener(this);
     }
 
     protected void perform() {
@@ -66,7 +66,7 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
             System.out.println("On target");
             if (previouslyOnTarget) {
                 System.out.println("Done turning");
-                hasCompletedExecution = true;
+                notifyFinished();
             } else
                 previouslyOnTarget = true;
         } else
@@ -75,18 +75,11 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
 
     protected void die() {
         System.out.println("Killing turn macro");
-        hasCompletedExecution = true;
-        if (controller != null) {
-            controller.disable();
-            controller.free();
-            controller = null;
-        }
+        controller.disable();
         DeadReckoner.notifyTurn(getAngleTurned());  //Notify of our last heading
     }
     
     public void initialize() {
-        controller = new PIDController(P, I, D, pidSource, pidOutput);
-
         startAngle = gyro.getAngle();
         targetAngle = startAngle + turnAngle;
         controller.setOutputRange(-1, 1);
@@ -96,13 +89,12 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
     }
 
     public final void updateConstants() {
+        
         P = GRTConstants.getValue("TMP");
         I = GRTConstants.getValue("TMI");
         D = GRTConstants.getValue("TMD");
         
-        kill();
-        
-        controller = new PIDController(P, I, D, pidSource, pidOutput);
+        controller.setPID(P, I, D);
     }
     
     public double getAngleTurned() {

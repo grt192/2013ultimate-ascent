@@ -29,9 +29,6 @@ public class GRTDriveTrain extends GRTLoggedProcess {
     
     private GRTEncoder leftEncoder, rightEncoder;
     
-    private PIDController leftController, rightController;
-    private double leftP, leftI, leftD, rightP, rightI, rightD;
-
     double power = 1;    //State variable determining if we run at 1/2 power. 
     
     /**
@@ -133,12 +130,6 @@ public class GRTDriveTrain extends GRTLoggedProcess {
      * @param rightVelocity right drivetrain velocity, from -1.0 - 1.0
      */
     public void setMotorSpeeds(double leftVelocity, double rightVelocity) {
-        if (leftController != null) {
-            leftController.disable();
-        }
-        if (rightController != null) {
-            rightController.disable();
-        }
         logInfo("Left: " + leftVelocity + "\tRight: " + rightVelocity);
 
         leftFront.set(leftVelocity * leftFrontSF * power);
@@ -146,19 +137,6 @@ public class GRTDriveTrain extends GRTLoggedProcess {
 
         rightBack.set(rightVelocity * rightBackSF * power);
         rightFront.set(rightVelocity * rightFrontSF * power);
-    }
-    
-    /**
-     * Set the left and right side DT velocities.
-     * 
-     * @param leftVelocity velocity of left side, in RPM
-     * @param rightVelocity velocity of right side, in RPM
-     */
-    public void setSpeeds(double leftVelocity, double rightVelocity) {
-        leftController.setSetpoint(leftVelocity);
-        rightController.setSetpoint(rightVelocity);
-        leftController.enable();
-        rightController.enable();
     }
         
     /**

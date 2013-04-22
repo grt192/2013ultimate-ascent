@@ -5,7 +5,6 @@
 package macro;
 
 import core.GRTMacro;
-import edu.wpi.first.wpilibj.Timer;
 import mechanism.Belts;
 import mechanism.ExternalPickup;
 
@@ -30,7 +29,7 @@ public class AutoPickup extends GRTMacro {
     protected void perform() {
         belts.moveUp();
         ep.pickUp();
-        hasCompletedExecution = true;
+        notifyFinished();
     }
 
     protected void die() {

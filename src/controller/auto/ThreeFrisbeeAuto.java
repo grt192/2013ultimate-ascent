@@ -6,7 +6,6 @@ package controller.auto;
 
 import core.GRTConstants;
 import core.GRTMacroController;
-import macro.MacroTurn;
 import macro.MacroDelay;
 import macro.Shoot;
 import macro.ShooterSet;
@@ -33,10 +32,7 @@ public class ThreeFrisbeeAuto extends GRTMacroController {
         addMacro(new ShooterSet(autoShooterAngle, shootingSpeed, shooter, 2500));
         addMacro(new MacroDelay((int)shooterDelay));
         //Shoot our 3 frisbees (4 shots in case of a misfire)
-        for (int i = 0; i < 4; i++) {
-            System.out.println("\tShooting a frisbee!");
-            addMacro(new Shoot(shooter, 500));
-        }
+        addMacro(new Shoot(shooter, 500, 4));
         addMacro(new ShooterSet(downAngle, 0, shooter, 2500));
     }
     

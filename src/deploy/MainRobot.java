@@ -23,7 +23,6 @@ import sensor.*;
 public class MainRobot extends GRTRobot implements ConstantUpdateListener {
 
     //Autonomous mode constants
-    private static final int AUTO_MODE_DO_NOTHING = -1;
     private static final int AUTO_MODE_3_FRISBEE = 0;
     private static final int AUTO_MODE_5_FRISBEE = 1;
     private static final int AUTO_MODE_7_FRISBEE = 2;
@@ -62,6 +61,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
 
     public void disabled() {
         super.disabled();
+        
         GRTLogger.logInfo("Disabling robot. Halting drivetrain");
         dt.setMotorSpeeds(0.0, 0.0);
         shooter.adjustHeight(0);
@@ -203,35 +203,6 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         encp.startPolling();
     }
 
-    private int getAutonomousMode() {
-        System.out.print("Auto mode: ");
-        //Check the state of the buttons that are on.
-        switch (getPinID("autoMode")) {
-            case AUTO_MODE_3_FRISBEE:
-                System.out.println("3 frisbee auto");
-                return AUTO_MODE_3_FRISBEE;
-            case AUTO_MODE_5_FRISBEE:
-                System.out.println("5 frisbee auto");
-                return AUTO_MODE_5_FRISBEE;
-            case AUTO_MODE_7_FRISBEE:
-                System.out.println("7 Frisbee auto");
-                return AUTO_MODE_7_FRISBEE;
-            case AUTO_MODE_5_CENTERLINE_FRISBEE:
-                System.out.println("Pick up 2 from Centerline");
-                return AUTO_MODE_5_CENTERLINE_FRISBEE;
-            case AUTO_MODE_CENTERLINE:
-                System.out.println("Pick up 4 from Centerline");
-                return AUTO_MODE_CENTERLINE;
-            case AUTO_MODE_DRIVE_CENTER_LEFT:
-                System.out.println("Drive to side");
-                return AUTO_MODE_DRIVE_CENTER_LEFT;
-            default:
-                //We do nothing
-                System.out.println("Auto Strategy: Do nothing. Yep.");
-                return AUTO_MODE_DO_NOTHING;
-        }
-    }
-
     private int getPinID(String name) {
         return (int) GRTConstants.getValue(name);
     }
@@ -243,28 +214,35 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
     private void defineAutoMacros() {
         clearAutoControllers();
 
-        autoMode = getAutonomousMode(); //Fuck it, we're doing 5. getAutonomousMode(); //Get our autonomous mode
+        autoMode = (int) GRTConstants.getValue("autoMode");
 
-        GRTLogger.logInfo("autoMode = " + autoMode);
-        GRTLogger.logInfo("autoMode = " + autoMode);
-        GRTLogger.logInfo("autoMode = " + autoMode);
+        GRTLogger.logInfo("Automode num: " + autoMode);
+        
         switch (autoMode) {
 
             case AUTO_MODE_3_FRISBEE:
+                System.out.println("Auto mode: 3 frisbee");
                 macroController = new ThreeFrisbeeAuto(shooter, dt, gyro);
                 break;
             case AUTO_MODE_5_FRISBEE:
-                macroController = new FiveFrisbeeCenterlineAuto(dt, shooter, belts, ep, gyro);
+                System.out.println("Auto mode: 5 frisbee");
+                macroController = new FiveFrisbeeAuto(dt, shooter, belts, ep, gyro);
                 break;
             case AUTO_MODE_7_FRISBEE:
+                System.out.println("Auto mode: 7 frisbee");
                 macroController = new SevenFrisbeeAuto(shooter, dt, gyro, ep, belts);
                 break;
             case AUTO_MODE_5_CENTERLINE_FRISBEE:
+                System.out.println("Auto mode: 5 frisbee at centerline");
                 macroController = new FiveFrisbeeCenterlineAuto(dt, shooter, belts, ep, gyro);
+                break;
+            case AUTO_MODE_CENTERLINE:
+                System.out.println("Auto mode: 7 frisbee at centerline");
+                macroController = new CenterlineAuto(dt, shooter, belts, ep, gyro);
                 break;
             default:    //Do nothing
                 macroController = null;
-                System.out.println("New testing auto");
+                System.out.println("Auto mode: nothing");
                 break;
         }
         

@@ -34,7 +34,7 @@ public class ShooterSet extends GRTMacro {
     protected void perform() {
         shooter.setAngle(angle);
         shooter.setSpeed(speed);
-        hasCompletedExecution = true;        
+        notifyFinished();
     }
 
     protected void die() {

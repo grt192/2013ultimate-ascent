@@ -52,10 +52,7 @@ public class FiveFrisbeeCenterlineAuto extends GRTMacroController {
         addMacro(new MacroDelay((int)shooterDelay));
 
         //Shoot our 3 frisbees (4 shots in case of a misfire)
-        for (int i = 0; i < 4; i++) {
-            System.out.println("\tShooting a frisbee!");
-            addMacro(new Shoot(shooter, 500));
-        }
+        addMacro(new Shoot(shooter, 500, 4));
 
         //lowers shooter and starts up EP as it starts driving
         ShooterSet lowerShooter = new ShooterSet(downAngle, 0, shooter, 3500);
@@ -69,9 +66,8 @@ public class FiveFrisbeeCenterlineAuto extends GRTMacroController {
         addMacro(new ShooterSet(autoShooterAngle, shootingSpeed, shooter, 3500));
         addMacro(new MacroDrive(dt, -autoDriveDistance, 4000));
 
-        for (int i = 0; i < 5; i++) {
-            addMacro(new Shoot(shooter, 500));
-        }
+        addMacro(new Shoot(shooter, 500, 3));
+        
         //spins down shooter and lowers it prior to teleop
         addMacro(new ShooterSet(downAngle, 0, shooter, 1000));
     }

@@ -82,11 +82,11 @@ public class Shooter extends GRTLoggedProcess implements PotentiometerListener, 
         this.flywheelEncoder = flywheelEncoder;
         this.raiserPot = raiserPot;
 
+        updateConstants();
         lowerLimit.addListener(this);
         raiserPot.addListener(this);
         
         GRTConstants.addListener(this);
-        updateConstants();
     }
 
     /**
