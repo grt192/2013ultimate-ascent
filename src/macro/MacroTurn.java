@@ -20,8 +20,8 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
     private double targetAngle;
     private double startAngle;
     private final double turnAngle;
-    private final GRTGyro gyro;
-    private final GRTDriveTrain dt;
+    private static GRTGyro gyro;
+    private static GRTDriveTrain dt;
     private static PIDController controller;
     private double P;
     private double I;
@@ -29,17 +29,20 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
 
     private boolean previouslyOnTarget = false;
     
-    private PIDSource pidSource = new PIDSource() {
+    private static PIDSource pidSource = new PIDSource() {
         public double pidGet() {
             return gyro.getAngle();
         }
     };
-    private PIDOutput pidOutput = new PIDOutput() {
+    private static PIDOutput pidOutput = new PIDOutput() {
         public void pidWrite(double output) {
             dt.setMotorSpeeds(output, -output);
         }
     };
     
+    {
+        controller = new PIDController(0, 0, 0, pidSource, pidOutput, 0.01);
+    }
     /**
      * Creates a new turning macro, that turns a set number of degrees.
      * 
@@ -50,12 +53,10 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
     public MacroTurn(GRTDriveTrain dt, GRTGyro gyro, double turnAngle, int timeout) {
         super("Turn Macro", timeout, 50);
         
-        this.dt = dt;
+        MacroTurn.dt = dt;
         this.turnAngle = turnAngle;
-        this.gyro = gyro;
-        
-        controller = new PIDController(0, 0, 0, pidSource, pidOutput);
-        
+        MacroTurn.gyro = gyro;
+               
         updateConstants();
         GRTConstants.addListener(this);
     }
@@ -76,10 +77,12 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
     protected void die() {
         System.out.println("Killing turn macro");
         controller.disable();
+        dt.shiftUp();
         DeadReckoner.notifyTurn(getAngleTurned());  //Notify of our last heading
     }
     
     public void initialize() {
+        dt.shiftDown();
         startAngle = gyro.getAngle();
         targetAngle = startAngle + turnAngle;
         controller.setOutputRange(-1, 1);

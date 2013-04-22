@@ -9,8 +9,8 @@ import core.GRTMacroController;
 import macro.MacroDelay;
 import macro.Shoot;
 import macro.ShooterSet;
-import mechanism.Shooter;
 import mechanism.GRTDriveTrain;
+import mechanism.Shooter;
 import sensor.GRTGyro;
 
 /**

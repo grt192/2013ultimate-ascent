@@ -5,10 +5,8 @@
 package controller.auto;
 
 import core.GRTConstants;
-import core.GRTMacroController;
 import macro.MacroDrive;
 import macro.MacroTurn;
-import macro.ShooterSet;
 import mechanism.GRTDriveTrain;
 import mechanism.Shooter;
 import sensor.GRTGyro;
@@ -22,8 +20,9 @@ public class ScumbagAuto extends ThreeFrisbeeAuto {
     
     private double douchebagDistanceToCenter = GRTConstants.getValue("douchebagDistanceToCenter");
     
-    public ScumbagAuto(GRTDriveTrain dt, GRTGyro gyro, Shooter s){
+    public ScumbagAuto(Shooter s, GRTDriveTrain dt, GRTGyro gyro){
         super(s, dt, gyro);
+        System.out.println("Douchbag auto constructor");
         addMacro(new MacroDrive(dt, douchebagDistanceToCenter, 2000));
         addMacro(new MacroTurn(dt, gyro, 10 * 1000, 15 * 1000));
     }

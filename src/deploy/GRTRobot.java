@@ -26,6 +26,7 @@ public abstract class GRTRobot extends SimpleRobot {
      * All Autonomous controllers are started/resumed, and all teleop controllers are paused.
      */
     public void autonomous() {
+        System.out.println("Starting autonomous mode");
         for (Enumeration en = teleopControllers.elements(); en.hasMoreElements();) {
             ((EventController) en.nextElement()).disable();
         }

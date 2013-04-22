@@ -40,7 +40,7 @@ public class GRTMacroController extends EventController implements MacroListener
     protected void startListening() {
 //        System.out.println("Number of macros: " + macros.size());
 
-        GRTLogger.logInfo("start listen");
+        System.out.println("start listen");
         currentIndex = -1;
         for (Enumeration en = macros.elements(); en.hasMoreElements();) {
             GRTMacro m = (GRTMacro) en.nextElement();

@@ -17,36 +17,36 @@ import sensor.GRTEncoder;
  */
 public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
 
-    private GRTDriveTrain dt;
-    private double distance = 0;
-    private double leftInitialDistance;
-    private double rightInitialDistance;
-    private PIDController DTController;
-    private PIDController straightController;
-    private GRTEncoder leftEncoder;
-    private GRTEncoder rightEncoder;
-    private double speed;
-    private double leftSF = 1;
-    private double rightSF = 1;
-    private double DTP;
-    private double DTI;
-    private double DTD;
-    private double CP;
-    private double CI;
-    private double CD;
-    private double TOLERANCE;
+    private static GRTDriveTrain dt;
+    private static double leftInitialDistance;
+    private static double rightInitialDistance;
+    private static PIDController DTController;
+    private static PIDController straightController;
+    private static GRTEncoder leftEncoder;
+    private static GRTEncoder rightEncoder;
+    private static double speed;
+    private static double leftSF = 1;
+    private static double rightSF = 1;
+    private static double DTP;
+    private static double DTI;
+    private static double DTD;
+    private static double CP;
+    private static double CI;
+    private static double CD;
+    private static double TOLERANCE;
+    private static double MAX_MOTOR_OUTPUT;   
     
-    private double MAX_MOTOR_OUTPUT;
+    private double distance;
     
     private boolean previouslyOnTarget = false;
         
-    private PIDSource DTSource = new PIDSource() {
+    private static PIDSource DTSource = new PIDSource() {
         public double pidGet() {
             return (rightTraveledDistance() + leftTraveledDistance()) / 2;
         }
     };
     
-    private PIDOutput DTOutput = new PIDOutput() {
+    private static PIDOutput DTOutput = new PIDOutput() {
         public void pidWrite(double output) {
             speed = output;
             updateMotorSpeeds();
@@ -57,13 +57,13 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
      * Use distance difference, rather than speed difference, to keep
      * robot straight
      */
-    private PIDSource straightSource = new PIDSource() {
+    private static PIDSource straightSource = new PIDSource() {
         public double pidGet() {
             return leftTraveledDistance() - rightTraveledDistance();
         }
     };
     
-    private PIDOutput straightOutput = new PIDOutput() {
+    private static PIDOutput straightOutput = new PIDOutput() {
         public void pidWrite(double output) {
             double modifier = Math.abs(output);
             //concise code is better code
@@ -73,16 +73,22 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
         }
     };
     
-    private void updateMotorSpeeds() {
+    private static void updateMotorSpeeds() {
         dt.setMotorSpeeds(speed * leftSF, speed * rightSF);
     }
     
-    private double rightTraveledDistance() {
+    private static double rightTraveledDistance() {
         return rightEncoder.getDistance() - rightInitialDistance;
     }
     
-    private double leftTraveledDistance() {
+    private static double leftTraveledDistance() {
         return leftEncoder.getDistance() - leftInitialDistance;
+    }
+    
+    {
+        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput);
+        straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
+        straightController.setOutputRange(-1, 1);
     }
 
     /*
@@ -94,14 +100,10 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
      */
     public MacroDrive(GRTDriveTrain dt, double distance, int timeout) {
         super("Drive Macro", timeout);
-        this.dt = dt;
+        MacroDrive.dt = dt;
         this.distance = distance;
-        this.leftEncoder = dt.getLeftEncoder();
-        this.rightEncoder = dt.getRightEncoder();
-        
-        DTController = new PIDController(DTP, DTI, DTD, DTSource, DTOutput);
-        straightController = new PIDController(CP, CI, CD, straightSource, straightOutput);
-        straightController.setOutputRange(-1, 1);
+        MacroDrive.leftEncoder = dt.getLeftEncoder();
+        MacroDrive.rightEncoder = dt.getRightEncoder();
         
         updateConstants();
         GRTConstants.addListener(this);
@@ -116,6 +118,8 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
 
         DTController.enable();
         straightController.enable();
+        
+        leftSF = rightSF = 1;
         System.out.println("MACRODRIVE is initialized");
     }
 
@@ -126,6 +130,8 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
                 notifyFinished();
             else
                 previouslyOnTarget = true;
+        } else {
+            previouslyOnTarget = false;
         }
     }
 
