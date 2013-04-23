@@ -1,27 +1,38 @@
+
+
 ##Autonomous Constants
+#-1: Do nothin
 #0: 3 frisbee auto
 #1: 5 frisbee auto
-#2: center travel auto
-#otherwise is do nothing
-autoMode,0
+#2: 7 frisbee auto
+#3: Drive Center Left
+#4: 5 frisbee centerline 
+#6: Douchebag mode.
+autoMode,1
 
-shooterDelay,6000
+
+shooterDelay,2200
 
 ##3 frisbee auto
 autoDistance,3
 offset3Angle, -2.50
 
 ##5 Frisbee auto
-auto5Distance, 1.80
-backupDistance, 1.50
-headingAngle, 160.0
+auto5Distance, 1.80 
+shakeAngle,15
+#Useless
+headingAngle, 0 
+
+
+
+##7 Frisbee
+7autoPyramidDistance, 0.4
+7autoExtendedDistance, 2.0
+
+
 
 ##5 Frisbee Center Auto
 auto5CenterAuto, 2.20
-
-##7 Frisbee Center Auto
-7autoPyramidDistance, 2
-7autoExtendedDistance, 2
 
 ##Centerline auto
 #initial x and y position
@@ -42,3 +53,5 @@ centerPickupAngle, 90.0
 #How far along the line we want to drive. Prop. to number of frisbees to pickup
 #usually, should be sligthly more than halfway across the field
 pickupFrisbeesDriveDistance, 4.2
+
+douchebagDistanceToCenter, 1.0

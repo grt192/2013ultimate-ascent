@@ -9,7 +9,7 @@ DTDistancePerPulse,0.0003879
 #Shooter
 shooterEncoderPulseDistance,0.016667
 shootingRPMS,50000
-tareAngle,53.5
+tareAngle,52
 raiserPotRange,300
 maxRaiserAngle,42.5
 minRaiserAngle,5

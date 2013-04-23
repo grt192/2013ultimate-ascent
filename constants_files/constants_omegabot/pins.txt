@@ -32,11 +32,11 @@ shooterEncoderB,12
 shooterPotentiometer,2
 
 ##Belt motor
-belts,6
+belts,7
 
 #Pickup motors
 rollerMotor,5
-raiserMotor,7
+raiserMotor,6
 ##Pickup sensors
 pickUpUpperLimit,7
 pickUpLowerLimit,8
