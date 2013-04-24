@@ -28,7 +28,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
     private static final int AUTO_MODE_7_FRISBEE = 2;
     private static final int AUTO_MODE_DRIVE_CENTER_LEFT = 3;
     private static final int AUTO_MODE_5_CENTERLINE_FRISBEE = 4;
-    private static final int AUTO_MODE_CENTERLINE = 5;
+    private static final int AUTO_MODE_WING = 5;
     private static final int AUTO_MODE_DOUCHE = 6;
     private static final int AUTO_MODE_6_FRISBEE = 7;
 
@@ -238,9 +238,9 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
                 System.out.println("Auto mode: 5 frisbee at centerline");
                 macroController = new FiveFrisbeeCenterlineAuto(dt, shooter, belts, ep, gyro);
                 break;
-            case AUTO_MODE_CENTERLINE:
-                System.out.println("Auto mode: 7 frisbee at centerline");
-                macroController = new CenterlineAuto(dt, shooter, belts, ep, gyro);
+            case AUTO_MODE_WING:
+                System.out.println("Auto mode: 5 frisbee at corner to centerline");
+                macroController = new WingAuto(dt, shooter, belts, ep, gyro);
                 break;
             case AUTO_MODE_DOUCHE:
                 System.out.println("Auto mode douche. Go fuck yourself.");
