@@ -12,6 +12,7 @@ import event.listeners.ConstantUpdateListener;
 import event.listeners.GRTJoystickListener;
 import event.listeners.PotentiometerListener;
 import event.listeners.XboxJoystickListener;
+import macro.MacroDrive;
 import macro.MacroTurn;
 import mechanism.Belts;
 import mechanism.Climber;
@@ -59,6 +60,9 @@ public class MechController extends EventController implements GRTJoystickListen
     
     private MacroTurn test45Turn;
     private MacroTurn test180Turn;
+    
+    private MacroDrive test2Drive;
+    private MacroDrive testn2Drive;
 
     public MechController(GRTJoystick leftJoy, GRTJoystick rightJoy,
             GRTXboxJoystick secondary,
@@ -83,6 +87,9 @@ public class MechController extends EventController implements GRTJoystickListen
         
         test45Turn = new MacroTurn(dt, gyro, 45, 4000);
         test180Turn = new MacroTurn(dt, gyro, 180, 4000);
+        
+        test2Drive = new MacroDrive(dt, 2, 4000);
+        testn2Drive = new MacroDrive(dt, -2, 4000);
 
         updateConstants();
     }
@@ -159,12 +166,16 @@ public class MechController extends EventController implements GRTJoystickListen
                         break;
                      
                     case GRTJoystick.KEY_BUTTON_7:
-                        test45Turn.reset();
-                        test45Turn.execute();
+//                        test45Turn.reset();
+//                        test45Turn.execute();
+                        testn2Drive.reset();
+                        testn2Drive.execute();
                         break;
                     case GRTJoystick.KEY_BUTTON_6:
-                        test180Turn.reset();
-                        test180Turn.execute();
+//                        test180Turn.reset();
+//                        test180Turn.execute();
+                        test2Drive.reset();
+                        test2Drive.execute();
                         break;
                 }
             } else if (e.getSource() == secondary) {
