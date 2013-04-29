@@ -11,7 +11,6 @@ import macro.AutoPickup;
 import macro.LowerPickup;
 import macro.MacroDelay;
 import macro.MacroDrive;
-import macro.MacroTurn;
 import macro.Shoot;
 import macro.ShooterSet;
 import mechanism.Belts;
@@ -43,8 +42,7 @@ public class FiveFrisbeeCenterlineAuto extends GRTMacroController {
         System.out.println("5 Frisbee Centerline Autonomous Activated.");
 
         //lowers pickup
-        GRTMacro lowerPickup = new LowerPickup(ep);
-        addMacro(lowerPickup);
+        addMacro(new LowerPickup(ep));
 
         //Sets up shooter angle and flywheel speed
         System.out.println("Setting shooter up to shoot ");
@@ -62,9 +60,9 @@ public class FiveFrisbeeCenterlineAuto extends GRTMacroController {
         addMacro(startPickup);
 
         //spins around, drives over frisbees, comes back  
-        addMacro(new MacroDrive(dt, autoDriveDistance, 4000));
+        addMacro(new MacroDrive(dt, autoDriveDistance, 2500));
         addMacro(new ShooterSet(autoShooterAngle, shootingSpeed, shooter, 3500));
-        addMacro(new MacroDrive(dt, -autoDriveDistance, 4000));
+        addMacro(new MacroDrive(dt, -autoDriveDistance, 2500));
 
         addMacro(new Shoot(shooter, 500, 3));
         

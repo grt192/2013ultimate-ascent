@@ -31,6 +31,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
     private static final int AUTO_MODE_CENTERLINE = 5;
     private static final int AUTO_MODE_DOUCHE = 6;
     private static final int AUTO_MODE_6_FRISBEE = 7;
+    private static final int AUTO_MODE_3_CORNER_FRISBEE = 8;
 
     //Private i-vars.
     private GRTDriveTrain dt;
@@ -168,6 +169,7 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
         Victor beltsMotor = new Victor(getPinID("belts"));
 
         belts = new Belts(beltsMotor);
+        belts.startPolling();
 
 
         //PickerUpper
@@ -249,6 +251,10 @@ public class MainRobot extends GRTRobot implements ConstantUpdateListener {
             case AUTO_MODE_6_FRISBEE:
                 System.out.println("Auto mode: 6 frisbee from front");
                 macroController = new SixFrisbeeAuto(dt, shooter, belts, ep);
+                break;
+            case AUTO_MODE_3_CORNER_FRISBEE:
+                System.out.println("Auto mode: 3 frisbee from corner");
+                macroController = new ThreeFrisbeeCornerAuto(shooter, dt, gyro);
                 break;
             default:    //Do nothing
                 macroController = null;
