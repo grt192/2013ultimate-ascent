@@ -14,7 +14,7 @@ import mechanism.Shooter;
 import sensor.GRTGyro;
 
 /**
- *
+ * 
  * @author Calvin Huang <clhuang@eneron.us>
  */
 public class ThreeFrisbeeCornerAuto extends GRTMacroController {
