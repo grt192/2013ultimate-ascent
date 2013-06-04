@@ -1,6 +1,5 @@
 package macro;
 
-import controller.DeadReckoner;
 import core.GRTConstants;
 import core.GRTMacro;
 import edu.wpi.first.wpilibj.PIDController;
@@ -78,7 +77,6 @@ public class MacroTurn extends GRTMacro implements ConstantUpdateListener{
         System.out.println("Killing turn macro");
         controller.disable();
         dt.shiftUp();
-        DeadReckoner.notifyTurn(getAngleTurned());  //Notify of our last heading
     }
     
     public void initialize() {

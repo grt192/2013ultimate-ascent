@@ -59,7 +59,7 @@ public class CenterlineAuto extends GRTMacroController {
         addMacro(startPickup);
         
         //Important Constants
-               double startingY = GRTConstants.getValue("CenterlineInitialY"); //Starting position on the field: Y
+        double startingY = GRTConstants.getValue("CenterlineInitialY"); //Starting position on the field: Y
         double startingAngle = GRTConstants.getValue("CenterlineStartingAngle"); //Starting heading on the field
         
         //Update the global DeadReckoner with our starting pose.
@@ -77,22 +77,22 @@ public class CenterlineAuto extends GRTMacroController {
         System.out.println("Attempting Center Pickup!!!");
         System.out.println("Attempting Center Pickup!!!");
         
-        addMacro(new MacroTurn(dt, gyro, DeadReckoner.turnAngle(centerlineDriveAngle), 3000));  //Turn to the angle that gets us to the left side of the field.
+        //addMacro(new MacroTurn(dt, gyro, DeadReckoner.turnAngle(centerlineDriveAngle), 3000));  //Turn to the angle that gets us to the left side of the field.
         addMacro(new MacroDrive(dt, driveToCenter, 5000)); //Drive over to the center line
-        addMacro(new MacroTurn(dt, gyro, DeadReckoner.turnAngle(centerPickupAngle), 2000));   //Turn to the frisbees
+        //addMacro(new MacroTurn(dt, gyro, DeadReckoner.turnAngle(centerPickupAngle), 2000));   //Turn to the frisbees
         addMacro(new MacroDrive(dt, pickupFrisbeesDriveDistance, 3000));//Pickup some frisbees. Change distance based on frisbees on field.
         
         addMacro(new ShooterSet(autoShooterAngle, shootingSpeed, shooter, 2500)); //start moving shooter back
         addMacro(new MacroDelay((int)shooterDelay));
         
-        double backToPyramidAngle = DeadReckoner.angleFrom(startingX, startingY);
-        addMacro(new MacroTurn(dt, gyro, backToPyramidAngle, 2000));    //Turn back to the pyramid
+        //double backToPyramidAngle = DeadReckoner.angleFrom(startingX, startingY);
+        //addMacro(new MacroTurn(dt, gyro, backToPyramidAngle, 2000));    //Turn back to the pyramid
         
-        double backToPyramidDistance = DeadReckoner.distanceFrom(startingX, startingY);
-        addMacro(new MacroDrive(dt, backToPyramidDistance, 5000));  //Drive back to the pyramid
+        //double backToPyramidDistance = DeadReckoner.distanceFrom(startingX, startingY);
+        //addMacro(new MacroDrive(dt, backToPyramidDistance, 5000));  //Drive back to the pyramid
         
-        double turnToShoot = DeadReckoner.turnAngle(startingAngle); //Find the angle we need to turn back to to shoot.
-        addMacro(new MacroTurn(dt, gyro, turnToShoot, 2000));
+        //double turnToShoot = DeadReckoner.turnAngle(startingAngle); //Find the angle we need to turn back to to shoot.
+        //addMacro(new MacroTurn(dt, gyro, turnToShoot, 2000));
         
         addMacro(new Shoot(shooter, 500, 5));
         

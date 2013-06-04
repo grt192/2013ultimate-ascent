@@ -1,6 +1,5 @@
 package macro;
 
-import controller.DeadReckoner;
 import core.GRTConstants;
 import core.GRTMacro;
 import edu.wpi.first.wpilibj.PIDController;
@@ -136,10 +135,12 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
         
         if (DTController.onTarget()) {
             System.out.println("On target!");
-            if (previouslyOnTarget)
+            if (previouslyOnTarget) {
                 notifyFinished();
-            else
+            }
+            else {
                 previouslyOnTarget = true;
+            }
         } else {
             previouslyOnTarget = false;
         }
@@ -149,7 +150,6 @@ public class MacroDrive extends GRTMacro implements ConstantUpdateListener {
         dt.setMotorSpeeds(0, 0);
         DTController.disable();
         straightController.disable();
-        DeadReckoner.notifyDrive(getDistanceTraveled());
     }
     
     public double getDistanceTraveled() {
